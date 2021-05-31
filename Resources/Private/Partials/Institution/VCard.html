@@ -1,0 +1,69 @@
+<html xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      xmlns:nkg="http://typo3.org/ns/Nordkirche/NkGoogleMap/ViewHelpers"
+      xmlns:nke="http://typo3.org/ns/Nordkirche/NkcEvent/ViewHelpers"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+    <f:if condition="{institution}">
+        <f:then>
+
+            <n:titleTag>
+                <f:format.htmlentitiesDecode>
+                    <f:render partial="Institution/Name" arguments="{institution: institution}" />
+                </f:format.htmlentitiesDecode>
+            </n:titleTag>
+
+            <f:if condition="{institution.institutionType}">
+                <p>{institution.institutionType.name}</p>
+            </f:if>
+
+            <h1><f:render partial="Institution/Name" arguments="{institution: institution}" /></h1>
+
+            <f:if condition="{institution.picture}">
+                <img alt="" src="{n:uri.image(image: institution.picture, width: '768c', height: '480c')}" />
+            </f:if>
+
+            <f:if condition="{institution.logo}">
+                <img alt="" src="{n:uri.image(image: institution.logo, width: '320')}"
+            </f:if>
+
+            <f:render partial="Institution/Address" arguments="{institution: institution}" />
+
+            <f:render partial="ContactItem/Ordinary" arguments="{contactItems: institution.contactItems}" />
+
+            <f:format.html>{institution.description}</f:format.html>
+
+            <f:if condition="{institution.parentInstitutions}">
+                <p>
+                    Gehört zu: <f:for each="{institution.parentInstitutions}" as="parentInstitution" iteration="iterator"><f:if condition="{iterator.index} > 0">, </f:if><f:link.action action="show" pageUid="{settings.flexform.pidSingle}" arguments="{uid: parentInstitution.id}"><f:render partial="Institution/Name" arguments="{institution: parentInstitution}" /></f:link.action></f:for>
+                </p>
+            </f:if>
+
+            <f:if condition="{institution.address.latitude} && {institution.address.longitude} && {institution.mapVisibility}">
+                <nkg:widget.googleMap markers="{mapMarkers}" configuration="" />
+            </f:if>
+
+
+            <nke:findEvents institution="{institution.id}">
+                <f:if condition="{events->f:count()}">
+
+                    <h3>Treffen Sie uns vor Ort:</h3>
+                    <f:link.action pageUid="{settings.flexform.pidEventList}" controller="Event" action="list" extensionName="NkcEvent" pluginName="Main" arguments="{searchRequest: {organizer : institution.id}}" >
+                        <strong>{events.recordCount}</strong> Veranstaltungen
+                    </f:link.action>
+                </f:if>
+            </nke:findEvents>
+
+            <f:render partial="ContactItem/SocialMedia" arguments="{contactItems: institution.contactItems}" />
+
+            <f:render partial="Institution/Persons" arguments="{clusteredPersons: clusteredPersons}" />
+
+            <f:render partial="Institution/ChildInstitutions" arguments="{childInstitutions: childInstitutions}" />
+
+        </f:then>
+        <f:else>
+            <h3>Die Einrichtung konnte leider nicht gefunden werden</h3>
+        </f:else>
+    </f:if>
+
+</html>

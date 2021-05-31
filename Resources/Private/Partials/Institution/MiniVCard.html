@@ -1,0 +1,15 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+    <f:if condition="{institution}">
+        <f:link.page additionalParams="{tx_nkcaddress_institution: {uid: institution.id}}" pageUid="{settings.flexform.pidSingle}">
+            <f:render partial="Institution/Name" arguments="{institution: institution}" />
+        </f:link.page>
+
+        <f:render partial="Institution/Address" arguments="{institution: institution}" />
+
+        <f:render partial="ContactItem/Ordinary" arguments="{contactItems: institution.contactItems}" />
+
+        <f:render partial="ContactItem/SocialMedia" arguments="{contactItems: institution.contactItems, hideHeader: 1}" />
+    </f:if>
+</html>

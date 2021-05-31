@@ -1,0 +1,36 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+    <f:link.page additionalParams="{tx_nkcaddress_person: {uid: person.id}}" pageUid="{settings.flexform.pidSingle}">
+        {person.name.formatted}
+    </f:link.page>
+
+    <f:for each="{person.functions}" as="function" iteration="iterator">
+        <f:if condition="{iterator.index} == 0">
+            <p>
+                {function.availableFunction.name}
+                <br />
+                {function.responsibilities}
+            </p>
+            <f:if condition="{function.address}">
+                <f:then>
+                    <f:render partial="Person/Address" arguments="{address: function.address}" />
+                </f:then>
+                <f:else>
+                    <f:render partial="Institution/Address" arguments="{institution: function.institution}" />
+                </f:else>
+            </f:if>
+
+            <f:if condition="{function.contactItems}">
+                <f:then>
+                    <f:render partial="ContactItem/Ordinary" arguments="{contactItems: function.contactItems}" />
+                </f:then>
+                <f:else>
+                    <f:render partial="ContactItem/Ordinary" arguments="{contactItems: function.institution.contactItems}" />
+                </f:else>
+            </f:if>
+
+        </f:if>
+    </f:for>
+</html>
+

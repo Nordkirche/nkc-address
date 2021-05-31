@@ -1,0 +1,381 @@
+
+plugin.tx_nkcaddress_person {
+    view {
+        templateRootPaths.0 = EXT:nkc_address/Resources/Private/Templates/
+        templateRootPaths.1 = {$plugin.tx_nkcaddress_person.view.templateRootPath}
+        partialRootPaths.0 = EXT:nkc_address/Resources/Private/Partials/
+        partialRootPaths.1 = {$plugin.tx_nkcaddress_person.view.partialRootPath}
+        layoutRootPaths.0 = EXT:nkc_address/Resources/Private/Layouts/
+        layoutRootPaths.1 = {$plugin.tx_nkcaddress_person.view.layoutRootPath}
+
+        widget.Nordkirche\NkGoogleMap\ViewHelpers\Widget\GoogleMapViewHelper.templateRootPaths.0 = EXT:nk_google_map/Resources/Private/Templates/
+    }
+    persistence {
+        storagePid = {$plugin.tx_nkcaddress_person.persistence.storagePid}
+        #recursive = 1
+    }
+    features {
+        skipDefaultArguments = 1
+    }
+    mvc {
+    }
+    settings {
+        maxItems = 50
+
+        personIconName = /typo3conf/ext/nkc_base/Resources/Public/MapIcons/person.svg
+
+        personTypeIconName = /typo3conf/ext/nkc_base/Resources/Public/Icons/type_person.svg
+
+        flexformDefault {
+            pidSingle = {$plugin.tx_nkcaddress.settings.pidPersonSingle}
+            pidList = {$plugin.tx_nkcaddress.settings.pidPersonList}
+            pidInstitutionSingle = {$plugin.tx_nkcaddress.settings.pidInstitutionSingle}
+            pidInstitutionList = {$plugin.tx_nkcaddress.settings.pidInstitutionList}
+        }
+
+        socialMediaChannels {
+            0 = twitter
+            1 = facebook
+            2 = xing
+            3 = instagram
+            4 = pinterest
+            5 = flickr
+        }
+
+        ajaxTypeNum = {$plugin.tx_nkcaddress_person.ajaxTypeNum}
+
+        paginate {
+            itemsPerPage = 20
+            insertAbove = 1
+            insertBelow = 1
+            templatePath =
+            prevNextHeaderTags = 1
+            maximumNumberOfLinks = 3
+        }
+    }
+}
+
+plugin.tx_nkcaddress_institution {
+    view {
+        templateRootPaths.0 = EXT:nkc_address/Resources/Private/Templates/
+        templateRootPaths.1 = {$plugin.tx_nkcaddress_institution.view.templateRootPath}
+        partialRootPaths.0 = EXT:nkc_address/Resources/Private/Partials/
+        partialRootPaths.1 = {$plugin.tx_nkcaddress_institution.view.partialRootPath}
+        layoutRootPaths.0 = EXT:nkc_address/Resources/Private/Layouts/
+        layoutRootPaths.1 = {$plugin.tx_nkcaddress_institution.view.layoutRootPath}
+
+        widget.Nordkirche\NkGoogleMap\ViewHelpers\Widget\GoogleMapViewHelper.templateRootPaths.0 = EXT:nk_google_map/Resources/Private/Templates/
+
+    }
+    persistence {
+        storagePid = {$plugin.tx_nkcaddress_institution.persistence.storagePid}
+        #recursive = 1
+    }
+    features {
+        skipDefaultArguments = 1
+        # if set to 1, the enable fields are ignored in BE context
+        ignoreAllEnableFieldsInBe = 0
+        # Should be on by default, but can be disabled if all action in the plugin are uncached
+        requireCHashArgumentForActionArguments = 0
+    }
+    mvc {
+        #callDefaultActionIfActionCantBeResolved = 1
+    }
+    settings {
+
+        institutionIconName = /typo3conf/ext/nkc_base/Resources/Public/MapIcons/inst_%s.svg
+        institutionTypeIconName =  /typo3conf/ext/nkc_base/Resources/Public/Icons/type_kirche.svg
+
+        institutionIconPngName = {$plugin.tx_nkcaddress_map.iconDomain}/typo3conf/ext/nkc_base/Resources/Public/MapIcons/inst_%s.png
+
+        maxItems = 50
+
+        staticMapStyle = &zoom=14&format=png&maptype=roadmap&style=element:geometry%7Ccolor:0xf5f5f5&style=element:labels.icon%7Cvisibility:off&style=element:labels.text.fill%7Ccolor:0x616161&style=element:labels.text.stroke%7Ccolor:0xf5f5f5&style=feature:administrative.land_parcel%7Celement:labels.text.fill%7Ccolor:0xbdbdbd&style=feature:landscape.man_made%7Celement:geometry.fill%7Ccolor:0x9eb1cc%7Clightness:30&style=feature:landscape.natural%7Celement:geometry.fill%7Ccolor:0x93b1cc%7Clightness:70&style=feature:landscape.natural.landcover%7Celement:geometry.fill%7Ccolor:0x93b1cc%7Clightness:30&style=feature:landscape.natural.terrain%7Celement:geometry.fill%7Ccolor:0x93b1cc&style=feature:poi%7Celement:geometry%7Ccolor:0xeeeeee&style=feature:poi%7Celement:labels.text.fill%7Ccolor:0x757575&style=feature:poi.park%7Celement:geometry%7Ccolor:0xe5e5e5&style=feature:poi.park%7Celement:geometry.fill%7Ccolor:0x93b1cc%7Clightness:45&style=feature:poi.park%7Celement:labels.text.fill%7Ccolor:0x9e9e9e&style=feature:poi.place_of_worship%7Celement:geometry.fill%7Ccolor:0x591464%7Csaturation:100&style=feature:road%7Celement:geometry%7Ccolor:0xffffff&style=feature:road.arterial%7Celement:labels.text.fill%7Ccolor:0x757575&style=feature:road.highway%7Celement:geometry%7Ccolor:0xdadada&style=feature:road.highway%7Celement:labels.text.fill%7Ccolor:0x616161&style=feature:road.local%7Celement:labels.text.fill%7Ccolor:0x9e9e9e&style=feature:transit.line%7Celement:geometry%7Ccolor:0xe5e5e5&style=feature:transit.station%7Celement:geometry%7Ccolor:0xeeeeee&style=feature:water%7Celement:geometry%7Ccolor:0xc9c9c9&style=feature:water%7Celement:geometry.fill%7Ccolor:0xf9fcfe&style=feature:water%7Celement:labels.text.fill%7Ccolor:0x9e9e9e
+
+        apiKey = {$plugin.tx_nkcaddress_map.apiKey}
+
+        flexformDefault {
+            pidSingle = {$plugin.tx_nkcaddress.settings.pidInstitutionSingle}
+            pidList = {$plugin.tx_nkcaddress.settings.pidInstitutionList}
+            pidPersonSingle = {$plugin.tx_nkcaddress.settings.pidPersonSingle}
+            pidPersonList = {$plugin.tx_nkcaddress.settings.pidPersonList}
+        }
+
+        socialMediaChannels {
+            0 = twitter
+            1 = facebook
+            2 = xing
+            3 = instagram
+            4 = pinterest
+            5 = flickr
+        }
+
+        paginate {
+            itemsPerPage = 20
+            insertAbove = 1
+            insertBelow = 1
+            templatePath =
+            prevNextHeaderTags = 1
+            maximumNumberOfLinks = 3
+        }
+
+        ajaxTypeNum = {$plugin.tx_nkcaddress_institution.ajaxTypeNum}
+
+        mapping {
+            institutionIcon {
+                4 = kirchengemeinde
+                6 = friedhof
+                9 = kirche
+                11 = kita
+                12 = kirchenkreis
+                16 = synode
+                22 = diakonie
+                31 = kirchenamt
+                33 = kirchenbuero
+                35 = bischof
+                37 = kirchenleitung
+                42 = kirchenamt
+                65 = tagungshaus
+                122 = pfadfinder
+            }
+
+            label {
+                101 = Alt - Bischöfin / Alt - Bischof
+                108 = Pastorin / Pastor
+                112 = Pröbsting / Probst
+                11 = Bischöfin / Bischof
+                122 = Ansprechartnerin / Ansprechpartner
+                128 = Vorsitzende / Vorsitzender
+                132 = Missionarin / Missionar
+                136 = Assistentin / Assistent
+                140 = Referentin / Referent
+                153 = Ansprechpartnerin / Ansprechpartner
+                156 = Beauftragte / Beauftragter
+                157 = Beauftragte / Beauftragter der Nordkirche
+                160 = Carillonneurin / Carillonneur
+                162 = Datenpflegerin / Datenpfleger
+                164 = Dezernentin / Dezernent
+                167 = Diakonie - Mitarbeiterin / Diakonie - Mitarbeiter
+                166 = Diakonin / Diakon
+                172 = Friedhofs - Mitarbeiterin / -Mitarbeiter
+                174 = Friedhofsverwalterin / -Verwalter
+                176 = Fundraiserin / Fundraiser
+                178 = Gemeindepädagogin / -Pädagoge
+                180 = Geschäftsführerin / Geschäftsführer
+                182 = Hauptpastorin / Hauptpastor
+                184 = Hausmeisterin / Hausmeister
+                186 = Kinder - und Jugendmitarbeiterin / -Mitarbeiter
+                188 = Kirchenkreis - Beauftragte / -Beauftragter
+                190 = Kirchenmusikerin / Kirchenmusiker
+                192 = KiTa - Mitarbeiterin / KiTa - Mitarbeiter
+                194 = Küsterin / Küster
+                196 = Landeskirchliche Beauftragte / -Beauftragter
+                199 = Mentorin / Mentor
+                202 = Mitarbeiterin / Mitarbeiter
+                204 = Pfadfinderin / Pfadfinder
+                207 = Prädikantin / Prädikant
+                209 = Präsidentin / Präsident
+                214 = Redakteurin / Redakteur
+                217 = Sachbearbeiterin / Sachbearbeiter
+                220 = Seelsorgerin / Seelsorger
+                222 = Sekretärin / Sekretär
+                224 = Sozialarbeiterin / Sozialarbeiter
+                226 = Sozialpädagogin / Sozialpädagoge
+                229 = Stellvertreterin / Stellvertreter
+                231 = Studienleiterin / Studienleiter
+                233 = Synodale / Synodaler
+                235 = Verwaltungsangestellte / Verwaltungsangestellter
+                238 = Vize - Präsidentin / Vize - Präsident
+            }
+            id {
+                102 = 101
+                110 = 108
+                114 = 112
+                118 = 11
+                124 = 122
+                130 = 128
+                134 = 132
+                138 = 136
+                154 = 153
+                158 = 156
+                159 = 157
+                161 = 160
+                163 = 162
+                165 = 164
+                168 = 167
+                169 = 166
+                173 = 172
+                175 = 174
+                177 = 176
+                179 = 178
+                181 = 180
+                183 = 182
+                185 = 184
+                187 = 186
+                189 = 188
+                191 = 190
+                193 = 192
+                195 = 194
+                197 = 196
+                200 = 199
+                203 = 202
+                205 = 204
+                208 = 207
+                210 = 209
+                215 = 214
+                216 = 140
+                218 = 217
+                221 = 220
+                223 = 222
+                225 = 224
+                227 = 226
+                230 = 229
+                232 = 231
+                234 = 233
+                236 = 235
+                239 = 238
+            }
+        }
+    }
+}
+
+plugin.tx_nkcaddress_map {
+    view {
+        templateRootPaths.0 = EXT:nkc_address/Resources/Private/Templates/
+        templateRootPaths.1 = {$plugin.tx_nkcaddress_map.view.templateRootPath}
+        partialRootPaths.0 = EXT:nkc_address/Resources/Private/Partials/
+        partialRootPaths.1 = {$plugin.tx_nkcaddress_map.view.partialRootPath}
+        layoutRootPaths.0 = EXT:nkc_address/Resources/Private/Layouts/
+        layoutRootPaths.1 = {$plugin.tx_nkcaddress_map.view.layoutRootPath}
+
+        widget.Nordkirche\NkGoogleMap\ViewHelpers\Widget\GoogleMapViewHelper.templateRootPaths.0 = EXT:nk_google_map/Resources/Private/Templates/
+    }
+    persistence {
+        storagePid = {$plugin.tx_nkcaddress_map.persistence.storagePid}
+        #recursive = 1
+    }
+    features {
+         skipDefaultArguments = 1
+        # if set to 1, the enable fields are ignored in BE context
+        ignoreAllEnableFieldsInBe = 0
+        # Should be on by default, but can be disabled if all action in the plugin are uncached
+        requireCHashArgumentForActionArguments = 0
+    }
+    mvc {
+        #callDefaultActionIfActionCantBeResolved = 1
+    }
+    settings {
+
+        institutionIconName = /typo3conf/ext/nkc_base/Resources/Public/MapIcons/inst_%s.svg
+
+        institutionIconPngName = {$plugin.tx_nkcaddress_map.iconDomain}/typo3conf/ext/nkc_base/Resources/Public/MapIcons/inst_%s.png
+
+        institutionTypeIconName =  /typo3conf/ext/nkc_base/Resources/Public/Icons/type_kirche.svg
+        personTypeIconName = /typo3conf/ext/nkc_base/Resources/Public/Icons/type_person.svg
+
+
+        mapping < plugin.tx_nkcaddress_institution.settings.mapping
+
+        personIconName = /typo3conf/ext/nkc_base/Resources/Public/MapIcons/person.svg
+
+        staticMapStyle < plugin.tx_nkcaddress_institution.settings.staticMapStyle
+
+
+        flexformDefault {
+            pidInstitutionSingle = {$plugin.tx_nkcaddress.settings.pidInstitutionSingle}
+            pidInstitutionList = {$plugin.tx_nkcaddress.settings.pidInstitutionList}
+            pidPersonSingle = {$plugin.tx_nkcaddress.settings.pidPersonSingle}
+            pidPersonList = {$plugin.tx_nkcaddress.settings.pidPersonList}
+        }
+
+        maxItems = 50
+
+        asyncLoadingMaxItems = 30
+
+        paginate {
+            itemsPerPage = 20
+            insertAbove = 1
+            insertBelow = 1
+            templatePath =
+            prevNextHeaderTags = 1
+            maximumNumberOfLinks = 3
+        }
+
+        mapping {
+            institutionIcon < plugin.tx_nkcaddress_institution.settings.mapping.institutionIcon
+        }
+
+        apiKey < plugin.tx_nkcaddress_institution.settings.apiKey
+
+        ajaxTypeNum = {$plugin.tx_nkcaddress_map.ajaxTypeNum}
+
+        ajaxListTypeNum = {$plugin.tx_nkcaddress_institution.ajaxTypeNum}
+    }
+}
+
+
+[getTSFE().type == {$plugin.tx_nkcaddress_person.ajaxTypeNum}]
+  lib.contentElement.settings.additionalConfig.plainResult = 1
+[global]
+
+[getTSFE().type == {$plugin.tx_nkcaddress_institution.ajaxTypeNum}]
+    lib.contentElement.settings.additionalConfig.plainResult = 1
+[global]
+
+[getTSFE().type == {$plugin.tx_nkcaddress_map.ajaxTypeNum}]
+    lib.contentElement.settings.additionalConfig.plainResult = 1
+[global]
+
+mapAddressData = PAGE
+mapAddressData {
+  typeNum = {$plugin.tx_nkcaddress_map.ajaxTypeNum}
+
+  config {
+    disableAllHeaderCode = 1
+    disableCharsetHeader = 1
+    disablePrefixComment = 1
+
+    additionalHeaders {
+      10 {
+        header = Content-Type: application/json; charset=utf-8
+        replace = 1
+      }
+    }
+  }
+  
+  10 = CONTENT
+  10 {
+    table = tt_content
+    select.pidInList = this
+    select.uidInList = ###UID###
+    select.markers {
+      UID.data = GP:uid
+      UID.intval = 1
+    }
+  }
+}
+
+ajaxPersonData = PAGE
+ajaxPersonData {
+    typeNum = {$plugin.tx_nkcaddress_person.ajaxTypeNum}
+
+    config {
+        disableAllHeaderCode = 1
+        disableCharsetHeader = 1
+        disablePrefixComment = 1
+    }
+
+    10 = CONTENT
+    10 {
+        table = tt_content
+        select.pidInList = this
+        select.uidInList = ###UID###
+        select.markers {
+            UID.data = GP:uid
+            UID.intval = 1
+        }
+    }
+}
+
+ajaxInstitutionData < ajaxPersonData
+ajaxInstitutionData.typeNum = {$plugin.tx_nkcaddress_institution.ajaxTypeNum}

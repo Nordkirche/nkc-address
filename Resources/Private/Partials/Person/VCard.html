@@ -1,0 +1,82 @@
+<html xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      xmlns:nkg="http://typo3.org/ns/Nordkirche/NkGoogleMap/ViewHelpers"
+      xmlns:na="http://typo3.org/ns/Nordkirche/NkcAddress/ViewHelpers"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+    <f:if condition="{person}">
+        <f:then>
+
+            <n:titleTag>
+                <f:format.htmlentitiesDecode>
+                    {person.name.formatted}
+                </f:format.htmlentitiesDecode>
+            </n:titleTag>
+
+            <h1>{person.name.formatted}</h1>
+
+            <f:for each="{person.functions}" as="function" iteration="iterator">
+                <f:if condition="{iterator.index} == 0">
+                    <h2>{function.availableFunction.name}</h2>
+                    <h3>{function.responsibilities}</h3>
+                </f:if>
+            </f:for>
+
+            <f:if condition="{person.picture}">
+
+                <img alt="{person.name.formatted}" title="{person.name.formatted}" src="{n:uri.image(image: person.picture, width: '373c', height: '223c')}" />
+
+                <f:if condition="{person.name.formatted}">
+                    {person.name.formatted}
+                </f:if>
+                <f:if condition="{person.picture.details.copyright}">
+                    &copy; {person.picture.details.copyright}
+                </f:if>
+            </f:if>
+
+            <f:for each="{person.functions}" as="function" iteration="iterator">
+                <f:if condition="{iterator.index} == 0">
+
+                    <f:if condition="{function.institution.logo}">
+                        <img src="{n:uri.image(image:function.institution.logo)}"
+                             width="320"
+                             alt="{function.institution.name}" title="{function.institution.name}" />
+                    </f:if>
+
+                    <f:render partial="Person/Institution" arguments="{function: function, institution: function.institution}" />
+
+                    <f:for each="{mapMarkers}" key="id" as="marker">
+                        <f:if condition="{id} == {function.id}">
+                            <nkg:widget.googleMap markers="{0: marker}" configuration="" />
+                        </f:if>
+                    </f:for>
+                </f:if>
+            </f:for>
+
+            <f:for each="{person.functions}" as="function" iteration="iterator">
+                <f:if condition="{iterator.index} > 0">
+                    <h2>{function.availableFunction.name}</h2>
+                    <h2>{function.responsibilities}</h2>
+
+                    <f:if condition="{function.institution.picture}">
+                        <img src="{n:uri.image(image:function.institution.picture)}"
+                             width="320"
+                             alt="{function.institution.name}" title="{function.institution.name}" />
+                    </f:if>
+
+                    <f:render partial="Person/Institution" arguments="{function: function, institution: function.institution}" />
+
+                    <f:for each="{mapMarkers}" key="id" as="marker">
+                        <f:if condition="{id} == {function.id}">
+                            <nkg:widget.googleMap markers="{0: marker}" configuration="" fitOnClick=".folding-section__title" />
+                        </f:if>
+                    </f:for>
+                </f:if>
+            </f:for>
+        </f:then>
+        <f:else>
+            Die Person konnte nicht gefunden werden
+        </f:else>
+    </f:if>
+
+</html>

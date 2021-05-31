@@ -1,0 +1,62 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:nkb="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      xmlns:v="http://typo3.org/ns/FluidTYPO3/Vhs"
+      data-namespace-typo3-fluid="true">
+<f:switch expression="{contactItem.type}">
+    <f:case value="Telefon">
+        <li>
+            <a href="tel:{contactItem.value}">{contactItem.value}</a>
+        </li>
+    </f:case>
+    <f:case value="Mobil">
+        <li>
+            <a href="tel:{contactItem.value}">{contactItem.value}</a>
+        </li>
+    </f:case>
+    <f:case value="Fax">
+        <li>
+            {contactItem.value}
+        </li>
+    </f:case>
+    <f:case value="E-Mail">
+        <li>
+			<f:link.email email="{contactItem.value}" />
+        </li>
+    </f:case>
+    <f:case value="Website">
+        <li>
+            <f:if condition="{contactItem.value -> v:format.substring(start: 0, length: 4)} == 'http'">
+                <f:then>
+                    <a href="{contactItem.value}"target="_blank">{contactItem.value}</a>
+                </f:then>
+                <f:else>
+                    <a href="http://{contactItem.value}" target="_blank">{contactItem.value}</a>
+                </f:else>
+            </f:if>
+        </li>
+    </f:case>
+    <f:case value="facebook">
+        <a href="http://{contactItem.value}" target="_blank"><span>facebook</span></a>
+    </f:case>
+    <f:case value="twitter">
+        <a href="http://{contactItem.value}" target="_blank"><span>twitter</span></a>
+    </f:case>
+    <f:case value="instagram">
+        <a href="http://{contactItem.value}" target="_blank"><span>instagram</span></a>
+    </f:case>
+    <f:case value="flickr">
+        <a href="http://{contactItem.value}" target="_blank"><span>flickr</span></a>
+    </f:case>
+    <f:case value="Xing">
+        <a href="http://{contactItem.value}" target="_blank"><span>xing</span></a>
+    </f:case>
+    <f:case value="pinterest">
+        <a href="http://{contactItem.value}" target="_blank"><span>pinterest</span></a>
+    </f:case>
+    <f:defaultCase>
+        <li>
+            {contactItem.type}:&nbsp;<nkb:makeClickable>{contactItem.value}</nkb:makeClickable>
+        </li>
+    </f:defaultCase>
+</f:switch>
+</html>

@@ -1,0 +1,25 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:v="http://typo3.org/ns/FluidTYPO3/Vhs/ViewHelpers"
+	  xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+    <f:for each="{contactItems}" as="contactItem">
+        <f:if condition="{n:inArray(needle: contactItem.type, strtolower: 1, haystack: settings.socialMediaChannels)}">
+            <f:else>
+                <v:variable.set name="displayItems" value="1" />
+            </f:else>
+        </f:if>
+    </f:for>
+
+    <f:if condition="{displayItems}">
+        <ul>
+            <f:for each="{contactItems->n:orderByProperty(property: 'type', order: 'Telefon,Mobil,Fax,E-Mail,Website')}" as="contactItem">
+                <f:if condition="{n:inArray(needle: contactItem.type, strtolower: 1, haystack: settings.socialMediaChannels)}">
+                    <f:else>
+                        <v:render.template file="EXT:nkc_address/Resources/Private/Partials/ContactItem/ContactItem.html" variables="{contactItem: contactItem, settings: settings}" />
+                    </f:else>
+                </f:if>
+            </f:for>
+        </ul>
+    </f:if>
+</html>

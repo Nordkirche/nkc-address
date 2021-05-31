@@ -1,0 +1,52 @@
+<html xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      xmlns:v="http://typo3.org/ns/FluidTYPO3/Vhs"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+    <f:layout name="Default" />
+
+    <f:section name="main">
+
+        <f:if condition="{settings.flexform.showFilter}">
+            <f:render partial="Person/SearchForm" arguments="{searchRequest : searchRequest, searchPid : searchPid, filter: filter}" />
+        </f:if>
+
+        <f:if condition="{persons}">
+            <f:then>
+
+                <f:if condition="{settings.flexform.showFilter}">
+                    <h3>Ihre Suche ergab {persons.recordCount} Treffer</h3>
+                </f:if>
+
+                <f:if condition="{settings.flexform.paginate.mode} > 1">
+                    <f:then>
+                        <n:widget.paginate objects="{persons}" as="paginatedPersons" configuration="{settings.flexform.paginate}">
+                            <f:for each="{paginatedPersons}" as="person">
+                                <f:render partial="Person/Teaser" arguments="{person: person}" />
+                            </f:for>
+                        </n:widget.paginate>
+                    </f:then>
+                    <f:else>
+                        <div class="ajax-list-wrapper">
+                            <div class="ajax-list">
+                                <f:for each="{persons}" as="person">
+                                    <f:render partial="Person/Teaser" arguments="{person: person, settings: settings}" />
+                                </f:for>
+                            </div>
+                            <f:if condition="{settings.flexform.paginate.mode} == 1">
+                                <f:if condition="{persons.pageCount} >= {query->n:nextPage()}">
+                                    <div class="ajax-list__next-page" data-request-uri="{f:uri.action(action: 'list', arguments: {currentPage: '{query->n:nextPage()}', searchRequest: searchRequest.array}, additionalParams: {type: settings.ajaxTypeNum, uid: content.uid})}">
+                                        <v:render.template file="EXT:nkc_base/Resources/Private/Partials/LoadMoreButton.html" />
+                                    </div>
+                                </f:if>
+                            </f:if>
+                        </div>
+                    </f:else>
+                </f:if>
+            </f:then>
+            <f:else>
+                Keine Personen gefunden
+            </f:else>
+        </f:if>
+    </f:section>
+</html>

@@ -1,0 +1,31 @@
+<html xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+<f:if condition="{childInstitutions}">
+
+    <h3>Unsere Einrichtungen</h3>
+
+    <f:for each="{childInstitutions}" key="institutionType" as="childInstitutionGroup">
+
+        <h2>{institutionType}</h2>
+
+        <f:for each="{childInstitutionGroup}" as="childInstitution">
+
+            <f:if condition="{childInstitution.picture}">
+                <img src="{n:uri.image(image: childInstitution.picture, width: '320c', height: '200c')}" />
+            </f:if>
+
+            <f:if condition="{childInstitution.logo}">
+                <img src="{n:uri.image(image:childInstitution.logo)}" width="320" />
+            </f:if>
+
+            <f:link.action action="show" pageUid="{settings.flexform.pidSingle}" arguments="{uid: childInstitution.id}"><f:render partial="Institution/Name" arguments="{institution: childInstitution}" /></f:link.action>
+
+            <f:render partial="Institution/Address" arguments="{institution: childInstitution}" />
+
+            <f:render partial="ContactItem/Ordinary" arguments="{contactItems: childInstitution.contactItems}" />
+
+        </f:for>
+    </f:for>
+</f:if>
+</html>

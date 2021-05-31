@@ -1,0 +1,51 @@
+<html xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      xmlns:v="http://typo3.org/ns/FluidTYPO3/Vhs"
+      data-namespace-typo3-fluid="true">
+
+    <f:if condition="{settings.flexform.pidSingle}">
+        <f:then>
+            <v:variable.set name="pidSingle" value="{settings.flexform.pidSingle}" />
+        </f:then>
+        <f:else>
+            <v:variable.set name="pidSingle" value="{settings.flexform.pidPersonSingle}" />
+        </f:else>
+    </f:if>
+
+    <f:link.page additionalParams="{tx_nkcaddress_person: {uid: person.id}}" pageUid="{pidSingle}">
+        <f:if condition="{person.picture}">
+            <f:then>
+                <n:image image="{person.picture}" width="1024c" height="700c" alt="{person.name.formatted}" />
+            </f:then>
+        </f:if>
+    </f:link.page>
+
+    <f:image src="{settings.personTypeIconName}" alt="" />
+
+
+    <h2>
+        <f:link.page additionalParams="{tx_nkcaddress_person: {uid: person.id}}" pageUid="{pidSingle}">
+            {person.name.formatted}
+        </f:link.page>
+    </h2>
+
+    <f:for each="{person.functions}" as="personFunction">
+        <p>
+            <f:if condition="{personFunction.institution}">
+                <v:render.template file="EXT:nkc_address/Resources/Private/Partials/Institution/Name.html" variables="{institution: personFunction.institution}" /><br />
+            </f:if>
+
+            <f:if condition="{personFunction.responsibilities}">
+                {personFunction.responsibilities}
+            </f:if>
+            <f:if condition="{personFunction.availableFunction.name}">
+                <f:if condition="{personFunction.responsibilities}">|</f:if>
+                {personFunction.availableFunction.name}
+            </f:if>
+            <f:if condition="{personFunction.institution.zipCode}">
+                <f:if condition="{personFunction.responsibilities} || {personFunction.availableFunction.name}">|</f:if>
+                {personFunction.institution.zipCode} {personFunction.institution.city}
+            </f:if>
+        </p>
+    </f:for>
+
+</html>

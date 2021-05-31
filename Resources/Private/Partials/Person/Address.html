@@ -1,0 +1,18 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+	<f:if condition="{address}">
+		<f:then>
+			<f:if condition="{address.street}">
+				<f:then>
+					{address.street}<br />
+					{address.zipCode} {address.city}
+				</f:then>
+				<f:else if="{address.poBox}">
+					<f:then>
+						Postfach {address.poBox}<br />
+						{address.poBoxZipCode} {address.city}
+					</f:then>
+				</f:else>
+			</f:if>
+		</f:then>
+	</f:if>
+</html>

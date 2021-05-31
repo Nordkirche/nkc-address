@@ -1,0 +1,34 @@
+<html xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<div>
+
+    <f:if condition="{person.picture}">
+        <img src="{n:uri.image(image: person.picture, width: '320c', height: '200c')}" />
+    </f:if>
+
+    <f:link.action action="show" controller="Person" pageUid="{settings.flexform.pidPersonSingle}" arguments="{uid: person.id}">{person.name.formatted}</f:link.action>
+
+    <p>{function.responsibilities}</p>
+
+    <f:if condition="{function.address}">
+        <f:then>
+            <f:render partial="Person/Address" arguments="{address: function.address}" />
+        </f:then>
+
+        <f:comment>
+            <f:else if="{person.address}">
+                <f:render partial="Person/Address" arguments="{address: person.address}" />
+            </f:else>
+        </f:comment>
+
+        <f:else if="{function.institution.address}">
+            <f:render partial="Person/Address" arguments="{address: function.institution.address}" />
+        </f:else>
+    </f:if>
+
+    <f:render partial="ContactItem/Ordinary" arguments="{contactItems: function.contactItems, socialMediaChannels: {0: 'twitter', 1: 'facebook', 2: 'xing', 3: 'instagram', 4: 'pinterest'}}" />
+</div>
+
+</html>

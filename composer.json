@@ -1,0 +1,23 @@
+{
+    "name": "nordkirche/nkc-address",
+    "type": "typo3-cms-extension",
+    "description": "TYPO3 Extension zur Darstellung von Personen und Institutionen aus der NAPI",
+    "license": "GPL-2.0",
+    "author": [
+        {
+            "name": "netzleuchten GmbH",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "typo3/cms-core": "^10.4",
+        "fluidtypo3/vhs": "^6.0",
+        "nordkirche/nkc-base": "^10.4",
+        "nordkirche/nk-google-map": "^10.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nordkirche\\NkcAddress\\": "Classes"
+        }
+    }
+}

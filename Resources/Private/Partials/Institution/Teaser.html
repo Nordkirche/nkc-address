@@ -1,0 +1,43 @@
+<html xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      xmlns:na="http://typo3.org/ns/Nordkirche/NkcAddress/ViewHelpers"
+      xmlns:v="http://typo3.org/ns/FluidTYPO3/Vhs"
+      data-namespace-typo3-fluid="true">
+
+    <f:if condition="{settings.flexform.pidSingle}">
+        <f:then>
+            <v:variable.set name="pidSingle" value="{settings.flexform.pidSingle}" />
+        </f:then>
+        <f:else>
+            <v:variable.set name="pidSingle" value="{settings.flexform.pidInstitutionSingle}" />
+        </f:else>
+    </f:if>
+
+    <f:if condition="{institution.picture}">
+        <f:link.page additionalParams="{tx_nkcaddress_institution: {uid: institution.id}}" pageUid="{pidSingle}">
+            <n:image image="{institution.picture}" width="1024c" height="700c" alt="" />
+        </f:link.page>
+    </f:if>
+
+    <f:if condition="{institution.address.latitude} && {institution.address.longitude}">
+        <f:link.page additionalParams="{tx_nkcaddress_institution: {uid: institution.id}}" pageUid="{pidSingle}">
+            <img src="https://maps.googleapis.com/maps/api/staticmap?size=180x180&markers=icon:{institution.institutionType.id->na:institutionIcon(mapping: settings.mapping.institutionIcon, baseName: settings.institutionIconPngName)}|{institution.address.latitude},{institution.address.longitude}&key={settings.apiKey}&center={institution.address.latitude},{institution.address.longitude}{settings.staticMapStyle}" />
+        </f:link.page>
+    </f:if>
+
+    <f:image src="{settings.institutionTypeIconName}" alt="" />
+
+    <h2>
+        <f:link.page additionalParams="{tx_nkcaddress_institution: {uid: institution.id}}" pageUid="{pidSingle}">
+            <v:render.template file="EXT:nkc_address/Resources/Private/Partials/Institution/Name.html" variables="{institution: institution}" /><br />
+        </f:link.page>
+    </h2>
+
+    <f:if condition="{institution.institutionType}">
+        <p>{institution.institutionType.name}</p>
+    </f:if>
+
+    <p>
+        <v:render.template file="EXT:nkc_address/Resources/Private/Partials/Institution/Address.html" variables="{institution: institution}" />
+    </p>
+
+</html>

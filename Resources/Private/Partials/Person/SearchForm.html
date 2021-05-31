@@ -1,0 +1,42 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+    <f:if condition="{settings.flexform.header}">
+        <f:then>
+            <h{settings.flexform.header_layout}>{settings.flexform.header}</h{settings.flexform.header_layout}>
+        </f:then>
+        <f:else>
+            <h1>
+                Personen
+            </h1>
+        </f:else>
+    </f:if>
+
+    <form method="get">
+        <input type="hidden" name="tx_nkcaddress_person[action]" value="search" />
+        <input type="hidden" name="id" value="{searchPid}" />
+        <input type="hidden" name="no_cache" value="1" />
+
+        <f:if condition="{filter.cities}">
+            <label>Orte</label>
+            <ul>
+                <li data-caption="Orte" data-value="">Orte</li>
+                <f:for each="{filter.cities}" as="city">
+                    <li data-caption="{city.name}" data-value="{city.name}">
+                        <a href="">{city.name}</a>
+                    </li>
+                </f:for>
+                <li >
+                    <input name="tx_nkcaddress_person[searchRequest][city]"type="text" placeholder="PLZ &#x2F; Orte" value="{searchRequest.city}" />
+                    <button type="submit"></button>
+                </li>
+            </ul>
+        </f:if>
+
+        <input name="tx_nkcaddress_person[searchRequest][search]" type="text" placeholder="Suchbegriff" value="{searchRequest.search}" />
+
+        <button type="submit"></button>
+
+    </form>
+
+</html>

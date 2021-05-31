@@ -1,0 +1,71 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+    <div class="map-tooltip">
+
+		<div class="map-tooltip__info">
+		    <f:if condition="{institution.picture}">
+                <div class="image">
+                    <n:image image="{institution.picture}" width="80c" height="80c" />
+                </div>
+            </f:if>
+			<strong>
+				<f:render partial="Institution/Name" arguments="{institution: institution}" />
+			</strong>
+
+			<br />
+
+			<f:render partial="Institution/Address" arguments="{institution: institution}" />
+		</div>
+
+        <ul>
+            <f:for each="{institution.contactItems->n:orderByProperty(property: 'type', order: 'Telefon,Mobil,Fax,E-Mail,Website')}" as="contactItem">
+                <f:if condition="{n:inArray(needle: contactItem.type, strtolower: 1, haystack: {0: 'telefon', 1: 'e-mail'})}">
+                    <f:then>
+                        <f:render partial="ContactItem/ContactItem" arguments="{contactItem: contactItem, settings: settings}" />
+                    </f:then>
+                </f:if>
+            </f:for>
+        </ul>
+
+		<div class="map-tooltip__links">
+			<f:if condition="{settings.mapInfo.recordUid} != {institution.id}">
+				<f:if condition="{settings.backendContext}">
+					<f:then>
+						<f:comment>Speziellen Link ViewHelper nutzen</f:comment>
+						<f:if condition="{settings.flexform.pidInstitutionSingle}">
+							<f:then>
+								<n:link.page pageUid="{settings.flexform.pidInstitutionSingle}" additionalParams="{tx_nkcaddress_institution: {uid: institution.id}}">Mehr erfahren</n:link.page>
+							</f:then>
+							<f:else>
+								<n:link.page pageUid="{settings.flexform.pidSingle}" additionalParams="{tx_nkcaddress_institution: {uid: institution.id}}">Mehr erfahren</n:link.page>
+							</f:else>
+						</f:if>
+
+					</f:then>
+					<f:else>
+						<f:if condition="{settings.flexform.pidInstitutionSingle}">
+							<f:then>
+								<f:link.page pageUid="{settings.flexform.pidInstitutionSingle}" additionalParams="{tx_nkcaddress_institution: {uid: institution.id}}">Mehr erfahren</f:link.page>
+							</f:then>
+							<f:else>
+								<f:link.page pageUid="{settings.flexform.pidSingle}" additionalParams="{tx_nkcaddress_institution: {uid: institution.id}}">Mehr erfahren</f:link.page>
+							</f:else>
+						</f:if>
+					</f:else>
+				</f:if>
+			</f:if>
+
+			<br />
+
+			<f:if condition="{institution.address.street} && {institution.address.zipCode} && {institution.address.city}">
+				<a target="_blank" href="https://maps.google.de/?daddr={institution.address.street}%20{institution.address.zipCode}%20{institution.address.city}">Route berechnen</a>
+				<br />
+			</f:if>
+
+			<br />
+
+		</div>
+
+    </div>
+</html>

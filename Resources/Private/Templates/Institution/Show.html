@@ -1,0 +1,19 @@
+<html xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      xmlns:nkg="http://typo3.org/ns/Nordkirche/NkGoogleMap/ViewHelpers"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+<f:layout name="Default" />
+
+<f:section name="main">
+
+    <f:if condition="{settings.flexform.showTemplate}">
+        <f:then>
+            <f:render partial="Institution/{settings.flexform.showTemplate}.html" arguments="{_all}" />
+        </f:then>
+        <f:else>
+            <f:render partial="Institution/VCard.html" arguments="{_all}" />
+        </f:else>
+    </f:if>
+
+</f:section>

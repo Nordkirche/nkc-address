@@ -1,0 +1,38 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+	<f:if condition="{person.contactItems}">
+		<dl>
+		<f:for each="{person.contactItems}" as="contactItem">
+			<f:switch expression="{contactItem.type}">
+				<f:case value="Telefon">
+					<dt>Telefon</dt>
+					<dd><a href="tel://{contactItem.value}">{contactItem.value}</a></dd>
+				</f:case>
+				<f:case value="Fax">
+					<dt>Fax</dt>
+					<dd>{contactItem.value}</dd>
+				</f:case>
+				<f:case value="E-Mail">
+					<dt>E-Mail</dt>
+					<dd><f:link.email email="{contactItem.value}" /></dd>
+				</f:case>
+				<f:case value="Website">
+					<dt>Website</dt>
+					<dd><a href="http://{contactItem.value}" target="_blank">{contactItem.value}</a></dd>
+				</f:case>
+				<f:case value="facebook">
+					<dt>facebook</dt>
+					<dd><a href="http://{contactItem.value}" target="_blank">{contactItem.value}</a></dd>
+				</f:case>
+				<f:case value="twitter">
+					<dt>twitter</dt>
+					<dd><a href="http://{contactItem.value}" target="_blank">{contactItem.value}</a></dd>
+				</f:case>
+				<f:defaultCase>
+					<dt>{contactItem.type}</dt>
+					<dd>{contactItem.value}</dd>
+				</f:defaultCase>
+			</f:switch>
+		</f:for>
+		</dl>
+	</f:if>
+</html>

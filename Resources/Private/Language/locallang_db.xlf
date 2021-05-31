@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<xliff version="1.0">
+    <file source-language="en" datatype="plaintext" original="messages" product-name="nkc_address" date="2017-06-06T15:08:27+02:00">
+        <header/>
+        <body>
+            <trans-unit id="tx_nkc_address_domain_model_person">
+                <source>Ausgabe von Personen</source>
+            </trans-unit>
+            <trans-unit id="tx_nkc_address_domain_model_person.description">
+                <source>Frei konfigurierbare Listen und Detail-Ansicht von Personen</source>
+            </trans-unit>
+
+            <trans-unit id="tx_nkc_address_domain_model_institution">
+                <source>Ausgabe von Institutionen</source>
+            </trans-unit>
+            <trans-unit id="tx_nkc_address_domain_model_institution.description">
+                <source>Frei konfigurierbare Listen und Detail-Ansicht von Institutionen</source>
+            </trans-unit>
+
+            <trans-unit id="tx_nkc_address_map">
+                <source>Kartendarstellung von Adressen</source>
+            </trans-unit>
+            <trans-unit id="tx_nkc_address_map.description">
+                <source>Frei konfigurierbare Google Karte für Personen und Institutionen</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

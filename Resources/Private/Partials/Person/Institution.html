@@ -1,0 +1,29 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+	<h4><f:link.action action="show" controller="Institution" arguments="{uid: institution.id}" pageUid="{settings.flexform.pidInstitutionSingle}"><f:render partial="Institution/Name" arguments="{institution: institution}" /></f:link.action></h4>
+
+	<f:if condition="{function.address}">
+		<f:then>
+			<f:render partial="Person/Address" arguments="{address: function.address}" />
+		</f:then>
+		<f:else>
+			<f:render partial="Institution/Address" arguments="{institution: institution}" />
+		</f:else>
+	</f:if>
+
+	<f:if condition="{function.contactItems}">
+		<f:then>
+
+			<f:render partial="ContactItem/Ordinary" arguments="{contactItems: function.contactItems}" />
+
+			<f:render partial="ContactItem/SocialMedia" arguments="{contactItems: function.contactItems, isPerson: 1}" />
+
+		</f:then>
+		<f:else>
+
+			<f:render partial="ContactItem/Ordinary" arguments="{contactItems: institution.contactItems}" />
+
+			<f:render partial="ContactItem/SocialMedia" arguments="{contactItems: institution.contactItems, isPerson: 1}" />
+
+		</f:else>
+	</f:if>
+</html>

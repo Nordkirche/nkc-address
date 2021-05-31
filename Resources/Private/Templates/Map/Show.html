@@ -1,0 +1,24 @@
+<html xmlns:nkg="http://typo3.org/ns/Nordkirche/NkGoogleMap/ViewHelpers"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+    <f:layout name="Default" />
+
+    <f:section name="main">
+        <f:if condition="{mapMarkers}">
+            <f:then>
+                <f:comment>
+                    Default view with loaded markers
+                </f:comment>
+                <nkg:widget.googleMap markers="{mapMarkers}" configuration="{center: settings.flexform.center, lon: settings.flexform.longitude, lat: settings.flexform.latitude, facets: facets, header: settings.flexform.header, header_layout: settings.flexform.header_layout, cssClass: 'wide'}" />
+            </f:then>
+            <f:else>
+                <f:comment>
+                    Async loading of markers
+                </f:comment>
+                <nkg:widget.googleMap requestUri="{requestUri}" streamUri="{streamUri}" configuration="{center: settings.flexform.center, lon: settings.flexform.longitude, lat: settings.flexform.latitude, facets: facets, header: settings.flexform.header, header_layout: settings.flexform.header_layout, cssClass: 'wide', pagination: 'tx_nkcaddress_map[page]'}" />
+            </f:else>
+        </f:if>
+    </f:section>
+
+</html>

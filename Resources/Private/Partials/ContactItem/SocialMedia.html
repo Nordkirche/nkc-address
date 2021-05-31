@@ -1,0 +1,33 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:v="http://typo3.org/ns/FluidTYPO3/Vhs/ViewHelpers"
+	  xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
+    <f:for each="{contactItems}" as="contactItem">
+        <f:if condition="{n:inArray(needle: contactItem.type, strtolower: 1, haystack: settings.socialMediaChannels)}">
+            <f:then>
+                <v:variable.set name="displayItems" value="1" />
+            </f:then>
+        </f:if>
+    </f:for>
+
+    <f:if condition="{displayItems}">
+        <f:if condition="{hideHeader} == FALSE">
+            <f:if condition="{isPerson}">
+                <f:then>
+                    <h3>Folgen Sie mir im Netz:</h3>
+                </f:then>
+                <f:else>
+                    <h3>Folgen Sie uns im Netz:</h3>
+                </f:else>
+            </f:if>
+        </f:if>
+        <f:for each="{contactItems->n:orderByProperty(property: 'type', order: 'facebook,twitter,Xing,instagram,pinterest,flickr')}" as="contactItem">
+            <f:if condition="{n:inArray(needle: contactItem.type, strtolower: 1, haystack: settings.socialMediaChannels)}">
+                <f:then>
+                    <v:render.template file="EXT:nkc_address/Resources/Private/Partials/ContactItem/ContactItem.html" variables="{contactItem: contactItem, settings: settings}" />
+                </f:then>
+            </f:if>
+        </f:for>
+    </f:if>
+</html>

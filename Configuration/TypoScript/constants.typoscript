@@ -1,0 +1,76 @@
+plugin.tx_nkcaddress {
+    settings {
+        # cat=plugin.tx_nkcaddress/file; type=string; label=Page ID Institutionen Detail
+        pidInstitutionSingle = 126
+
+        # cat=plugin.tx_nkcaddress/file; type=string; label=Page ID Institutionen Liste
+        pidInstitutionList = 123
+
+        # cat=plugin.tx_nkcaddress/file; type=string; label=Page ID Personen Detail
+        pidPersonSingle = 127
+
+        # cat=plugin.tx_nkcaddress/file; type=string; label=Page ID Personen Liste
+        pidPersonList = 86
+    }
+}
+
+
+plugin.tx_nkcaddress_person {
+    view {
+        # cat=plugin.tx_nkcaddress_person/file; type=string; label=Path to template root (FE)
+        templateRootPath = EXT:nkc_address/Resources/Private/Templates/
+        # cat=plugin.tx_nkcaddress_person/file; type=string; label=Path to template partials (FE)
+        partialRootPath = EXT:nkc_address/Resources/Private/Partials/
+        # cat=plugin.tx_nkcaddress_person/file; type=string; label=Path to template layouts (FE)
+        layoutRootPath = EXT:nkc_address/Resources/Private/Layouts/
+    }
+    persistence {
+        # cat=plugin.tx_nkcaddress_person//a; type=string; label=Default storage PID
+        storagePid =
+    }
+
+    # cat=plugin.tx_nkcaddress_person//a; type=string; label=AJAX page type
+    ajaxTypeNum = 737884
+}
+
+plugin.tx_nkcaddress_institution {
+    view {
+        # cat=plugin.tx_nkcaddress_institution/file; type=string; label=Path to template root (FE)
+        templateRootPath = EXT:nkc_address/Resources/Private/Templates/
+        # cat=plugin.tx_nkcaddress_institution/file; type=string; label=Path to template partials (FE)
+        partialRootPath = EXT:nkc_address/Resources/Private/Partials/
+        # cat=plugin.tx_nkcaddress_institution/file; type=string; label=Path to template layouts (FE)
+        layoutRootPath = EXT:nkc_address/Resources/Private/Layouts/
+    }
+    persistence {
+        # cat=plugin.tx_nkcaddress_institution//a; type=string; label=Default storage PID
+        storagePid =
+    }
+    
+    # cat=plugin.tx_nkcaddress_institution//a; type=string; label=AJAX page type
+    ajaxTypeNum = 737883
+}
+
+plugin.tx_nkcaddress_map {
+    view {
+        # cat=plugin.tx_nkcaddress_map/file; type=string; label=Path to template root (FE)
+        templateRootPath = EXT:nkc_address/Resources/Private/Templates/
+        # cat=plugin.tx_nkcaddress_map/file; type=string; label=Path to template partials (FE)
+        partialRootPath = EXT:nkc_address/Resources/Private/Partials/
+        # cat=plugin.tx_nkcaddress_map/file; type=string; label=Path to template layouts (FE)
+        layoutRootPath = EXT:nkc_address/Resources/Private/Layouts/
+    }
+    persistence {
+        # cat=plugin.tx_nkcaddress_map//a; type=string; label=Default storage PID
+        storagePid =
+    }    
+    
+    # cat=plugin.tx_nkcaddress_map//a; type=string; label=AJAX page type
+    ajaxTypeNum = 737882
+
+    # cat=plugin.tx_nkcaddress_map//a; type=string; label=GMaps API key
+    apiKey =
+
+    # cat=plugin.tx_nkcaddress_map//a; type=string; label=Your website domain for gmaps markers (example: https://www.meine-kirche.de)
+    iconDomain =
+}

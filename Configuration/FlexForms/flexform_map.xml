@@ -1,0 +1,476 @@
+<T3DataStructure>
+	<sheets>
+		<sDEF>
+			<ROOT>
+				<TCEforms>
+					<sheetTitle>Funktion</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+					<switchableControllerActions>
+						<TCEforms>
+							<label>Funktion wählen</label>
+							<config>
+								<type>select</type>
+								<renderType>selectSingle</renderType>
+								<items>
+									<numIndex index="0">
+										<numIndex index="0">Kartenansicht</numIndex>
+										<numIndex index="1">Map->show;Map->data;Map->paginatedData</numIndex>
+									</numIndex>
+									<numIndex index="1">
+										<numIndex index="0">Kartenansicht mit Liste</numIndex>
+										<numIndex index="1">Map->list;Map->data;Map->paginatedData</numIndex>
+									</numIndex>
+								</items>
+								<default>Map->show;Map->data;Map->paginatedData</default>
+							</config>
+						</TCEforms>
+					</switchableControllerActions>
+
+					<settings.flexform.showFilter>
+						<TCEforms>
+							<label>Nutzer sollen die Ausgabe filtern können</label>
+							<onChange>reload</onChange>
+							<config>
+								<type>check</type>
+							</config>
+						</TCEforms>
+					</settings.flexform.showFilter>
+
+					<settings.flexform.stream>
+						<TCEforms>
+							<label>Marker sukzessive nachladen</label>
+							<config>
+								<type>check</type>
+							</config>
+						</TCEforms>
+					</settings.flexform.stream>
+
+					<settings.flexform.center>
+						<TCEforms>
+							<label>Zentrum der Karte </label>
+							<onChange>reload</onChange>
+							<config>
+								<type>radio</type>
+								<default>0</default>
+								<items>
+									<numIndex index="0">
+										<numIndex index="0">Karte automatisch ausrichten</numIndex>
+										<numIndex index="1">0</numIndex>
+									</numIndex>
+
+									<numIndex index="1">
+										<numIndex index="0">Karte fest über Geo-Koordinaten ausrichten</numIndex>
+										<numIndex index="1">1</numIndex>
+									</numIndex>
+
+									<numIndex index="2">
+										<numIndex index="0">Karte anhand der Position des Betrachters ausrichten</numIndex>
+										<numIndex index="1">2</numIndex>
+									</numIndex>
+								</items>
+							</config>
+						</TCEforms>
+					</settings.flexform.center>
+
+					<settings.flexform.latitude>
+						<TCEforms>
+							<label>Breitengrad</label>
+							<config>
+								<type>input</type>
+								<size>5</size>
+								<default></default>
+							</config>
+							<displayCond>FIELD:settings.flexform.center:=:1</displayCond>
+						</TCEforms>
+					</settings.flexform.latitude>
+
+					<settings.flexform.longitude>
+						<TCEforms>
+							<label>Längengrad</label>
+							<config>
+								<type>input</type>
+								<size>5</size>
+								<default></default>
+							</config>
+							<displayCond>FIELD:settings.flexform.center:=:1</displayCond>
+						</TCEforms>
+					</settings.flexform.longitude>
+				</el>
+			</ROOT>
+		</sDEF>
+		<sMarker>
+			<ROOT>
+				<TCEforms>
+					<sheetTitle>Marker</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+
+					<settings.flexform.allInstitutions>
+						<TCEforms>
+							<onChange>reload</onChange>
+							<label>Alle Institutionen zeigen</label>
+							<config>
+								<type>check</type>
+							</config>
+						</TCEforms>
+					</settings.flexform.allInstitutions>
+
+
+					<settings.flexform.institutionCollection>
+						<TCEforms>
+							<label>Diese Institutionen darstellen</label>
+							<config>
+								<type>user</type>
+								<renderType>napiItemSelector</renderType>
+								<allowed>institution</allowed>
+								<minItems>0</minItems>
+								<maxItems>99</maxItems>
+								<size>10</size>
+							</config>
+							<displayCond>FIELD:settings.flexform.allInstitutions:!=:1</displayCond>
+						</TCEforms>
+					</settings.flexform.institutionCollection>
+
+					<settings.flexform.selectInstitutionOption>
+						<TCEforms>
+							<label>Welche Institutionen sollen dargestellt werden?</label>
+							<config>
+								<type>select</type>
+								<renderType>selectSingle</renderType>
+								<items>
+									<numIndex index="0">
+										<numIndex index="0">Die ausgewählten</numIndex>
+										<numIndex index="1">SELECTION</numIndex>
+									</numIndex>
+									<numIndex index="1">
+										<numIndex index="0">Die Unterinstitutionen der ausgewählten (1. Ebene)</numIndex>
+										<numIndex index="1">CHILDREN</numIndex>
+									</numIndex>
+									<numIndex index="2">
+										<numIndex index="0">Die Unterinstitutionen der ausgewählten (alle)</numIndex>
+										<numIndex index="1">CHILDREN_RECURSIVE</numIndex>
+									</numIndex>
+									<numIndex index="3">
+										<numIndex index="0">Die ausgewählten und deren Unterinstitutionen (1. Ebene)</numIndex>
+										<numIndex index="1">BOTH</numIndex>
+									</numIndex>
+									<numIndex index="4">
+										<numIndex index="0">Die ausgewählten und deren Unterinstitutionen (alle)</numIndex>
+										<numIndex index="1">BOTH_RECURSIVE</numIndex>
+									</numIndex>
+								</items>
+							</config>
+							<displayCond>FIELD:settings.flexform.allInstitutions:!=:1</displayCond>
+						</TCEforms>
+					</settings.flexform.selectInstitutionOption>
+
+					<settings.flexform.institutionType>
+						<TCEforms>
+							<label>Alle Institutionen dieses Typs darstellen</label>
+							<config>
+								<type>select</type>
+								<renderType>selectMultipleSideBySide</renderType>
+								<itemsProcFunc>Nordkirche\NkcBase\CustomField\SelectObject->createNapiItems</itemsProcFunc>
+								<allowed>institutionType</allowed>
+							</config>
+							<displayCond>FIELD:settings.flexform.allInstitutions:!=:1</displayCond>
+						</TCEforms>
+					</settings.flexform.institutionType>
+
+					<settings.flexform.categories>
+						<TCEforms>
+							<label>Institutionen mit diesen Kategorien darstellen</label>
+							<exclude>1</exclude>
+							<config>
+								<type>select</type>
+								<renderMode>tree</renderMode>
+								<renderType>selectTree</renderType>
+								<treeConfig>
+									<parentField>parent</parentField>
+									<appearance>
+										<maxLevels>99</maxLevels>
+										<expandAll>TRUE</expandAll>
+										<showHeader>TRUE</showHeader>
+									</appearance>
+								</treeConfig>
+								<foreign_table>sys_category</foreign_table>
+								<foreign_table_where>AND (sys_category.sys_language_uid = 0 OR sys_category.l10n_parent = 0) ORDER BY sys_category.sorting</foreign_table_where>
+								<size>10</size>
+								<autoSizeMax>20</autoSizeMax>
+								<minitems>0</minitems>
+								<maxitems>20</maxitems>
+							</config>
+							<displayCond>FIELD:settings.flexform.allInstitutions:!=:1</displayCond>
+						</TCEforms>
+					</settings.flexform.categories>
+
+					<settings.flexform.allPersons>
+						<TCEforms>
+							<onChange>reload</onChange>
+							<label>Alle Personen zeigen</label>
+							<config>
+								<type>check</type>
+							</config>
+						</TCEforms>
+					</settings.flexform.allPersons>
+
+
+					<settings.flexform.personCollection>
+						<TCEforms>
+							<label>Diese Personen darstellen</label>
+							<config>
+								<type>user</type>
+								<renderType>napiItemSelector</renderType>
+								<allowed>person</allowed>
+								<minItems>0</minItems>
+								<maxItems>99</maxItems>
+								<size>10</size>
+							</config>
+							<displayCond>FIELD:settings.flexform.allPersons:!=:1</displayCond>
+						</TCEforms>
+					</settings.flexform.personCollection>
+
+					<settings.flexform.functionType>
+						<TCEforms>
+							<label>Alle Personen mit diesem Funktionstyp darstellen</label>
+							<config>
+								<type>select</type>
+								<renderType>selectMultipleSideBySide</renderType>
+								<itemsProcFunc>Nordkirche\NkcBase\CustomField\SelectObject->createNapiItems</itemsProcFunc>
+								<allowed>functionType</allowed>
+							</config>
+							<displayCond>FIELD:settings.flexform.allPersons:!=:1</displayCond>
+						</TCEforms>
+					</settings.flexform.functionType>
+
+					<settings.flexform.availableFunction>
+						<TCEforms>
+							<label>Alle Personen mit dieser Funktion darstellen</label>
+							<config>
+								<type>select</type>
+								<renderType>selectMultipleSideBySide</renderType>
+								<itemsProcFunc>Nordkirche\NkcBase\CustomField\SelectObject->createNapiItems</itemsProcFunc>
+								<allowed>availableFunction</allowed>
+							</config>
+							<displayCond>FIELD:settings.flexform.allPersons:!=:1</displayCond>
+						</TCEforms>
+					</settings.flexform.availableFunction>
+
+				</el>
+			</ROOT>
+		</sMarker>
+		<sTemplate>
+			<ROOT>
+				<TCEforms>
+					<sheetTitle>Ausgabe</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+
+					<settings.flexform.header>
+						<TCEforms>
+							<label>Überschrift für Suchformular (optional)</label>
+							<config>
+								<type>input</type>
+								<size>30</size>
+								<default></default>
+							</config>
+							<displayCond>FIELD:sDEF.settings.flexform.showFilter:=:1</displayCond>
+						</TCEforms>
+					</settings.flexform.header>
+
+					<settings.flexform.header_layout>
+						<TCEforms>
+							<label>Layout</label>
+							<config>
+								<type>select</type>
+								<renderType>selectSingle</renderType>
+								<items>
+									<numIndex index="0">
+										<numIndex index="0">Überschrift 1</numIndex>
+										<numIndex index="1">1</numIndex>
+									</numIndex>
+									<numIndex index="1">
+										<numIndex index="0">Überschrift 2</numIndex>
+										<numIndex index="1">2</numIndex>
+									</numIndex>
+									<numIndex index="2">
+										<numIndex index="0">Überschrift 3</numIndex>
+										<numIndex index="1">3</numIndex>
+									</numIndex>
+								</items>
+								<default>2</default>
+							</config>
+							<displayCond>FIELD:sDEF.settings.flexform.showFilter:=:1</displayCond>
+						</TCEforms>
+					</settings.flexform.header_layout>
+
+					<settings.flexform.maxItems>
+						<TCEforms>
+							<label>Maximale Anzahl</label>
+							<config>
+								<type>input</type>
+								<size>5</size>
+								<default></default>
+							</config>
+							<displayCond>FIELD:sDEF.switchableControllerActions:=:Map->list;Map->data;Map->paginatedData</displayCond>
+						</TCEforms>
+					</settings.flexform.maxItems>
+
+					<settings.flexform.paginate.mode>
+						<TCEforms>
+							<label>Art der Paginierung</label>
+							<onChange>reload</onChange>
+							<config>
+								<type>select</type>
+								<renderType>selectSingle</renderType>
+								<items>
+									<numIndex index="0">
+										<numIndex index="0">Keine Paginierung</numIndex>
+										<numIndex index="1">0</numIndex>
+									</numIndex>
+									<numIndex index="1">
+										<numIndex index="0">Button zum Laden weiterer Elemente</numIndex>
+										<numIndex index="1">1</numIndex>
+									</numIndex>
+									<numIndex index="2">
+										<numIndex index="0">Blätternavigation einblenden</numIndex>
+										<numIndex index="1">2</numIndex>
+									</numIndex>
+								</items>
+							</config>
+							<displayCond>FIELD:sDEF.switchableControllerActions:=:Map->list;Map->data;Map->paginatedData</displayCond>
+						</TCEforms>
+					</settings.flexform.paginate.mode>
+
+					<settings.flexform.paginate.itemsPerPage>
+						<TCEforms>
+							<label>Anzahl Elemente pro Seite</label>
+							<config>
+								<type>input</type>
+								<size>5</size>
+								<default>25</default>
+							</config>
+							<displayCond>
+								<AND>
+									<numIndex index="0">FIELD:sDEF.switchableControllerActions:=:Map->list;Map->data;Map->paginatedData</numIndex>
+									<numIndex index="1">FIELD:settings.flexform.paginate.mode:!=:0</numIndex>
+								</AND>
+							</displayCond>
+						</TCEforms>
+					</settings.flexform.paginate.itemsPerPage>
+
+					<settings.flexform.paginate.insertAbove>
+						<TCEforms>
+							<label>Paginierung über der Liste anzeigen</label>
+							<config>
+								<type>check</type>
+								<default>0</default>
+							</config>
+							<displayCond>
+								<AND>
+									<numIndex index="0">FIELD:sDEF.switchableControllerActions:=:Map->list;Map->data;Map->paginatedData</numIndex>
+									<numIndex index="1">FIELD:settings.flexform.paginate.mode:=:2</numIndex>
+								</AND>
+							</displayCond>
+						</TCEforms>
+					</settings.flexform.paginate.insertAbove>
+
+					<settings.flexform.paginate.insertBelow>
+						<TCEforms>
+							<label>Paginierung unter der Liste anzeigen</label>
+							<config>
+								<type>check</type>
+								<default>1</default>
+							</config>
+							<displayCond>
+								<AND>
+									<numIndex index="0">FIELD:sDEF.switchableControllerActions:=:Map->list;Map->data;Map->paginatedData</numIndex>
+									<numIndex index="1">FIELD:settings.flexform.paginate.mode:=:2</numIndex>
+								</AND>
+							</displayCond>
+						</TCEforms>
+					</settings.flexform.paginate.insertBelow>
+
+					<settings.flexform.paginate.maximumNumberOfLinks>
+						<TCEforms>
+							<label>Anzahl Links in Paginierung</label>
+							<config>
+								<type>input</type>
+								<size>5</size>
+								<default>5</default>
+							</config>
+							<displayCond>
+								<AND>
+									<numIndex index="0">FIELD:sDEF.switchableControllerActions:=:Map->list;Map->data;Map->paginatedData</numIndex>
+									<numIndex index="1">FIELD:settings.flexform.paginate.mode:=:2</numIndex>
+								</AND>
+							</displayCond>
+						</TCEforms>
+					</settings.flexform.paginate.maximumNumberOfLinks>
+
+				</el>
+			</ROOT>
+		</sTemplate>
+		<sPages>
+			<ROOT>
+				<TCEforms>
+					<sheetTitle>Seiten</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+
+				<el>
+					<settings.flexform.pidInstitutionSingle>
+						<TCEforms>
+							<label>Seite für Einzelansicht von Institutionen</label>
+							<config>
+								<type>group</type>
+								<internal_type>db</internal_type>
+								<allowed>pages</allowed>
+								<size>1</size>
+								<maxitems>1</maxitems>
+								<minitems>0</minitems>
+								<show_thumbs>1</show_thumbs>
+								<wizards>
+									<suggest>
+										<type>suggest</type>
+										<default>
+											<searchWholePhrase>1</searchWholePhrase>
+										</default>
+									</suggest>
+								</wizards>
+							</config>
+						</TCEforms>
+					</settings.flexform.pidInstitutionSingle>
+
+					<settings.flexform.pidPersonSingle>
+						<TCEforms>
+							<label>Seite für Einzelansicht von Personen</label>
+							<config>
+								<type>group</type>
+								<internal_type>db</internal_type>
+								<allowed>pages</allowed>
+								<size>1</size>
+								<maxitems>1</maxitems>
+								<minitems>0</minitems>
+								<show_thumbs>1</show_thumbs>
+								<wizards>
+									<suggest>
+										<type>suggest</type>
+										<default>
+											<searchWholePhrase>1</searchWholePhrase>
+										</default>
+									</suggest>
+								</wizards>
+							</config>
+						</TCEforms>
+					</settings.flexform.pidPersonSingle>
+
+				</el>
+			</ROOT>
+		</sPages>
+	</sheets>
+</T3DataStructure>
