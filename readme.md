@@ -49,7 +49,7 @@ Bitte stellen Sie sicher, dass in der TYPO3-Konfiguration die Debug Option deakt
  
     $GLOBALS['TYPO3_CONF_VARS']['FE']['debug'] = 0;
 
-Andernfalls wird bei einer JSON Responses von TYPO3 ein Cacche Hinweis angefügt und die Karten-Marker können nicht nachgeladen werden.
+Andernfalls wird bei einer JSON Responses von TYPO3 ein Cache Hinweis angefügt und die Karten-Marker können nicht nachgeladen werden.
 
 
 ## Fehler gefunden?
