@@ -8,9 +8,12 @@ use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
 use Nordkirche\Ndk\Domain\Repository\PersonRepository;
 use Nordkirche\Ndk\Service\NapiService;
 use Nordkirche\NkcAddress\Domain\Dto\SearchRequest;
+use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Frontend\Controller\ErrorController;
+use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
 
 class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
 {
@@ -138,6 +141,7 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
 
     /**
      * @param int $uid
+     * @throws ImmediateResponseException
      */
     public function showAction($uid = null)
     {
@@ -151,29 +155,41 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
                         ]
         ];
 
-        if ($this->settings['flexform']['singlePerson']) {
-            // Personis selected in flexform
-            $person = $this->napiService->resolveUrl($this->settings['flexform']['singlePerson'], $includes);
-        } elseif ((int)$uid) {
-            // Find by uid
-            $person = $this->personRepository->getById($uid, $includes);
-        } else {
-            $person = false;
+        try {
+
+            if ($this->settings['flexform']['singlePerson']) {
+                // Personis selected in flexform
+                $person = $this->napiService->resolveUrl($this->settings['flexform']['singlePerson'], $includes);
+            } elseif ((int)$uid) {
+                // Find by uid
+                $person = $this->personRepository->getById($uid, $includes);
+            } else {
+                $person = false;
+            }
+
+            $this->settings['mapInfo']['recordUid'] = $person ? $person->getId() : 0;
+
+            // Get map markers for all functions
+            $mapMarkers = $person ? $this->getMapMarkers($person) : [];
+
+            // Get current cObj
+            $cObj = $this->configurationManager->getContentObject();
+
+            $this->view->assignMultiple([
+                'person' => $person,
+                'mapMarkers' => $mapMarkers,
+                'content' => $cObj->data
+            ]);
+
+        } catch (\Exception $e) {
+            // Page not found
+            $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
+                $GLOBALS['TYPO3_REQUEST'],
+                'Person konnte nicht gefunden werden',
+                ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
+            );
+            throw new ImmediateResponseException($response);
         }
-
-        $this->settings['mapInfo']['recordUid'] = $person ? $person->getId() : 0;
-
-        // Get map markers for all functions
-        $mapMarkers = $person ? $this->getMapMarkers($person) : [];
-
-        // Get current cObj
-        $cObj = $this->configurationManager->getContentObject();
-
-        $this->view->assignMultiple([
-            'person' => $person,
-            'mapMarkers' => $mapMarkers,
-            'content' => $cObj->data
-        ]);
     }
 
     /**

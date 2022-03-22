@@ -1,16 +1,16 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
       data-namespace-typo3-fluid="true">
 
-	<f:if condition="{clusteredPersons}">
+	<f:if condition="{institution.teams->f:count()}">
 
         <h2>Zugehörige Personen</h2>
 
-        <f:for each="{clusteredPersons}" as="cluster">
+        <f:for each="{institution.teams}" as="team">
 
-            <h3>{cluster.name}</h3>
+            <h3>{team.functionType.title}</h3>
 
-            <f:for each="{cluster.functions}" as="item">
-                <f:render partial="Institution/Person" arguments="{function: item.function, person: item.person}" />
+            <f:for each="{team.functions}" as="item">
+                <f:render partial="Institution/Person" arguments="{function: item, person: item.person}" />
             </f:for>
         </f:for>
 	</f:if>

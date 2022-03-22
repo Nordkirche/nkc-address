@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<xliff version="1.0">
+    <file source-language="de" datatype="plaintext" original="messages" product-name="nkc_address" date="2022-02-06T15:08:27+02:00">
+        <header/>
+        <body>
+            <trans-unit id="tx_nkc_address_day.1">
+                <source>Montag</source>
+            </trans-unit>
+            <trans-unit id="tx_nkc_address_day.2">
+                <source>Dienstag</source>
+            </trans-unit>
+            <trans-unit id="tx_nkc_address_day.3">
+                <source>Mittwoch</source>
+            </trans-unit>
+            <trans-unit id="tx_nkc_address_day.4">
+                <source>Donnerstag</source>
+            </trans-unit>
+            <trans-unit id="tx_nkc_address_day.5">
+                <source>Freitag</source>
+            </trans-unit>
+            <trans-unit id="tx_nkc_address_day.6">
+                <source>Sonnabend</source>
+            </trans-unit>
+            <trans-unit id="tx_nkc_address_day.7">
+                <source>Sonntag</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
