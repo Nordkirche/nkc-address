@@ -11,10 +11,11 @@ call_user_func(
             'Nordkirche.NkcAddress',
             'Person',
             [
-                'Person' => 'show, list, search, searchForm'
+                'Person' => 'show, list, search, searchForm, redirect'
             ],
             // non-cacheable actions
             [
+                'Person' => 'redirect'
             ]
         );
 

@@ -11,9 +11,12 @@ use Nordkirche\NkcAddress\Domain\Dto\SearchRequest;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
 {
@@ -140,6 +143,22 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
     }
 
     /**
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
+     */
+    public function redirectAction()
+    {
+        if ($nkcp = intval(GeneralUtility::_GP('nkcp'))) {
+
+            $this->uriBuilder->reset()->setTargetPageUid($this->settings['flexform']['pidSingle']);
+            $uri = $this->uriBuilder->uriFor('show', ['uid' => $nkcp]);
+            $this->redirectToURI($uri);
+        }  else {
+            $this->redirectToURI('/');
+        }
+    }
+
+    /**
      * @param int $uid
      * @throws ImmediateResponseException
      */
@@ -241,7 +260,10 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
                     'lon' 	=> $address->getLongitude(),
                     'info' 	=> $this->renderMapInfo($person, $institution, $address),
                     'type'  => $type,
-                    'icon' 	=> $this->settings['personIconName']
+                    'icon' 	=> $this->settings['personIconName'],
+                    'object' => 'p',
+                    'id'    => $person->getId()
+
                 ];
                 $mapMarkers[$functionId] = $marker;
             }
@@ -252,9 +274,11 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
      * Add a marker
      *
      * @param \Nordkirche\Ndk\Domain\Model\Person\Person $person
+     * @param boolean $asyncInfo
      * @return array
      */
-    public function createSingleMarker($person)
+    public function createSingleMarker($person, $asyncInfo = TRUE)
+
     {
         $address = false;
         $institution = false;
@@ -287,9 +311,11 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
                     'name'  => $person->getName()->getFormatted(),
                     'lat' 	=> $address->getLatitude(),
                     'lon' 	=> $address->getLongitude(),
-                    'info' 	=> $this->renderMapInfo($person, $institution, $address),
+                    'info' 	=> $asyncInfo ? '' : $this->renderMapInfo($person, $institution, $address),
                     'icon' 	=> $this->settings['personIconName'],
-                    'type'  => $type
+                    'type'  => $type,
+                    'object' => 'p',
+                    'id'    => $person->getId()
                 ];
                 return $marker;
             }
@@ -301,38 +327,42 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
      * @param \Nordkirche\Ndk\Domain\Model\Person\Person $person
      * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $institution
      * @param \Nordkirche\Ndk\Domain\Model\Address
+     * @param string $template
      * @return string
      */
-    private function renderMapInfo($person, $institution, $address)
+    private function renderMapInfo($person, $institution, $address, $template = 'Person/MapInfo')
     {
         if ($this->standaloneView == false) {
             // Init standalone view
 
-            $config= $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+            $config = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 
             $absTemplatePaths = [];
-            foreach ($config['view']['templateRootPaths'] as $path) {
-                $absTemplatePaths[] = GeneralUtility::getFileAbsFileName($path);
+            if (is_array($config['view']['templateRootPaths'])) {
+                foreach ($config['view']['templateRootPaths'] as $path) {
+                    $absTemplatePaths[] = GeneralUtility::getFileAbsFileName($path);
+                }
             }
-
             if (count($absTemplatePaths) == 0) {
                 $absTemplatePaths[] =  GeneralUtility::getFileAbsFileName('EXT:nkc_address/Resources/Private/Templates/');
             }
 
             $absLayoutPaths = [];
-            foreach ($config['view']['layoutRootPaths'] as $path) {
-                $absLayoutPaths[] = GeneralUtility::getFileAbsFileName($path);
+            if (is_array($config['view']['layoutRootPaths'])) {
+                foreach ($config['view']['layoutRootPaths'] as $path) {
+                    $absLayoutPaths[] = GeneralUtility::getFileAbsFileName($path);
+                }
             }
-
             if (count($absLayoutPaths) == 0) {
                 $absLayoutPaths[] = GeneralUtility::getFileAbsFileName('EXT:nkc_address/Resources/Private/Layouts/');
             }
 
             $absPartialPaths = [];
-            foreach ($config['view']['partialRootPaths'] as $path) {
-                $absPartialPaths[] = GeneralUtility::getFileAbsFileName($path);
+            if (is_array($config['view']['partialRootPaths'])) {
+                foreach ($config['view']['partialRootPaths'] as $path) {
+                    $absPartialPaths[] = GeneralUtility::getFileAbsFileName($path);
+                }
             }
-
             if (count($absPartialPaths) == 0) {
                 $absPartialPaths[] = GeneralUtility::getFileAbsFileName('EXT:nkc_address/Resources/Private/Partials/');
             }
@@ -349,15 +379,93 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
                 $absTemplatePaths
             );
 
-            $this->standaloneView->setTemplate('Person/MapInfo');
+            $this->standaloneView->setTemplate($template);
         }
 
-        $this->standaloneView->assignMultiple(['person' 	    => $person,
+        $this->standaloneView->assignMultiple([     'person' 	    => $person,
                                                     'institution'   => $institution,
                                                     'address'       => $address,
                                                     'settings'	    => $this->settings]);
 
         return $this->standaloneView->render();
+    }
+
+
+    /**
+     * @param array $personList
+     * @param array $config
+     * @return string
+     * @return array|mixed
+     */
+    public function retrieveMarkerInfo($personList, $config) {
+
+        parent::initializeAction();
+
+        $this->personRepository = $this->api->factory(PersonRepository::class);
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+
+        /** @var ContentObjectRenderer $contentObjectRenderer */
+        $contentObjectRenderer = $objectManager->get(ContentObjectRenderer::class);
+        $this->configurationManager->setContentObject($contentObjectRenderer);
+
+        // Required for link.email viewhelper
+        $GLOBALS['TSFE']->cObj = $contentObjectRenderer;
+
+        $this->settings = $config['plugin']['tx_nkcaddress_person']['settings'];
+
+        $this->settings['flexform'] = $this->settings['flexformDefault'];
+
+        $query = new \Nordkirche\Ndk\Domain\Query\PersonQuery();
+
+        $query->setInclude(
+            [
+                Person::RELATION_FUNCTIONS => [
+                    PersonFunction::RELATION_ADDRESS,
+                    PersonFunction::RELATION_AVAILABLE_FUNCTION,
+                    PersonFunction::RELATION_INSTITUTION => [
+                        Institution::RELATION_ADDRESS,
+                        Institution::RELATION_INSTITUTION_TYPE
+                    ]
+                ]
+            ]);
+
+        $query->setPersons($personList);
+
+        $query->setPageSize(100);
+
+        $persons = $this->personRepository->get($query);
+
+        $result = '';
+
+        foreach($persons as $person) {
+
+            $address = FALSE;
+            $institution = FALSE;
+
+            foreach($person->getFunctions() as $function) {
+                if ($function instanceof PersonFunction) {
+                    if (!$address) {
+                        if ($function->getInstitution() && $function->getInstitution()->getAddress()) {
+                            $address = $function->getInstitution()->getAddress();
+                            $institution = $function->getInstitution();
+                        } elseif ($function->getAddress()) {
+                            $address = $function->getAddress();
+                        }
+                    }
+                }
+            }
+
+            if (!($address instanceof \Nordkirche\Ndk\Domain\Model\Address)) {
+                $address = $person->getAddress();
+            }
+
+            if ($address instanceof \Nordkirche\Ndk\Domain\Model\Address) {
+                $result .= $this->renderMapInfo($person, $institution, $address, 'Person/AsyncMapInfo');
+            }
+        }
+
+        return $result;
     }
 
     /**
