@@ -23,9 +23,9 @@
             <img src="https://maps.googleapis.com/maps/api/staticmap?size=180x180&markers=icon:{institution.institutionType.id->na:institutionIcon(mapping: settings.mapping.institutionIcon, baseName: settings.institutionIconPngName)}|{institution.address.latitude},{institution.address.longitude}&key={settings.apiKey}&center={institution.address.latitude},{institution.address.longitude}{settings.staticMapStyle}" />
         </f:link.page>
     </f:if>
-
-    <f:image src="{settings.institutionTypeIconName}" alt="" />
-
+    <f:if condition="{settings.institutionTypeIconName}">
+        <f:image src="{settings.institutionTypeIconName}" alt="" />
+    </f:if>
     <h2>
         <f:link.page additionalParams="{tx_nkcaddress_institution: {uid: institution.id}}" pageUid="{pidSingle}">
             <v:render.template file="EXT:nkc_address/Resources/Private/Partials/Institution/Name.html" variables="{institution: institution}" /><br />
