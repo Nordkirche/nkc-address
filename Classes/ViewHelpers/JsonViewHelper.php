@@ -107,24 +107,27 @@ class JsonViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelpe
             $image = '';
         }
 
-        return [
+        $result = [
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
-            'address' => [
-                '@type' => 'PostalAddress',
-                'addressLocality' => $institution->getAddress()->getCity(),
-                'postalCode' => $institution->getAddress()->getZipCode(),
-                'streetAddress' => $institution->getAddress()->getStreet()
-            ],
             'name' => $institution->getOfficialName(),
             'email' => $this->getContactItem($institution, 'E-Mail'),
             'image' => $image,
             'telephone' => $this->getContactItem($institution, 'Telefon'),
             'url' => $this->getContactItem($institution, 'Website'),
-
         ];
 
+        if ($institution->getAddress() instanceof Address) {
+            $result['address'] = [
+                '@type' => 'PostalAddress',
+                'addressLocality' => $institution->getAddress()->getCity(),
+                'postalCode' => $institution->getAddress()->getZipCode(),
+                'streetAddress' => $institution->getAddress()->getStreet()
+            ];
+        }
+        return $result;
     }
+
 
     /**
      * @param $object
