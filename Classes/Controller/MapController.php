@@ -725,7 +725,10 @@ class MapController extends BaseController
                     }
                 }
             }
-            asort($facetsArray[$facet_type]);
+            if (is_array($facetsArray[$facet_type])) {
+                asort($facetsArray[$facet_type]);
+            }
+
         }
 
         return $facetsArray;
