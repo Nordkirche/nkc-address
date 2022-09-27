@@ -69,10 +69,10 @@ class JsonViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelpe
                 'affiliation' => ($function instanceof PersonFunction) ? $this->getInstitutionData($function->getInstitution()) : '',
                 'email' => $this->getContactItem($function, 'E-Mail'),
                 'image' => $image,
-                'jobTitle' => $function->getTitle(),
+                'jobTitle' =>  ($function instanceof PersonFunction) ? $function->getTitle() : '',
                 'name' => $person->getName()->getFormatted(),
-                'telephone' => $this->getContactItem($function, 'Telefon'),
-                'url' => $this->getContactItem($function, 'Website'),
+                'telephone' =>  ($function instanceof PersonFunction) ? $this->getContactItem($function, 'Telefon') : '',
+                'url' =>  ($function instanceof PersonFunction) ? $this->getContactItem($function, 'Website') : '',
             ];
 
             if ($address instanceof Address) {
