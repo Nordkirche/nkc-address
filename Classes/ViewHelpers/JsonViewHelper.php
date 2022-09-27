@@ -137,9 +137,11 @@ class JsonViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelpe
     private function getContactItem($object, $type)
     {
         /** @var ContactItem $contactItem */
-        foreach($object->getContactItems() as $contactItem) {
-            if ($contactItem->getType() == $type) {
-                return $contactItem->getValue();
+        if ($object) {
+            foreach($object->getContactItems() as $contactItem) {
+                if ($contactItem->getType() == $type) {
+                    return $contactItem->getValue();
+                }
             }
         }
     }
