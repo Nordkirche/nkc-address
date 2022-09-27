@@ -66,7 +66,7 @@ class JsonViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelpe
             $result = [
                 '@context' => 'https://schema.org',
                 '@type' => 'Person',
-                'affiliation' => $this->getInstitutionData($function->getInstitution()),
+                'affiliation' => ($function instanceof PersonFunction) ? $this->getInstitutionData($function->getInstitution()) : '',
                 'email' => $this->getContactItem($function, 'E-Mail'),
                 'image' => $image,
                 'jobTitle' => $function->getTitle(),
