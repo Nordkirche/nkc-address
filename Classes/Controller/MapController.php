@@ -15,7 +15,7 @@ use Nordkirche\NkcBase\Controller\BaseController;
 use Nordkirche\NkcBase\Service\ApiService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\View\JsonView;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 class MapController extends BaseController
@@ -206,10 +206,17 @@ class MapController extends BaseController
 
     /**
      * @param int $page
+     * @param string $requestId
      * @return string
      */
-    public function paginatedDataAction($page = 1)
+    public function paginatedDataAction($page = 1, $requestId = '')
     {
+        if (!trim($requestId)) {
+            return '[]';
+        }
+
+        $result = [];
+
         $this->view->setVariablesToRender(['json']);
 
         // Manually activation of pagination mode
@@ -222,14 +229,36 @@ class MapController extends BaseController
 
         $mapMarkerJson = $cacheInstance->get($this->getCacheKey($cObj));
 
+        $markerCounter = 0;
+
         if (trim($mapMarkerJson)) {
-            $this->view->assignMultiple(['json' => json_decode($mapMarkerJson, TRUE)]);
-        } else {
-            list($limit, $mapItems, $recordCount) = $this->getMapItems($this->settings, false, $page);
+            $result = json_decode($mapMarkerJson, TRUE);
+            $markerCounter = sizeof($result['data']);
+        }
+        if ($markerCounter > 0) {
+            $this->view->assign('json', $result);
+         } else {
+            // Try to get paginated cache
+            $mapMarkerJson = $cacheInstance->get($this->getCacheKey($cObj).'-'.$requestId.'-'.$page);
 
-            $mapMarkers = $this->createMarkers($mapItems);
+            if (trim($mapMarkerJson)) {
+                $result = json_decode($mapMarkerJson, TRUE);
+                $this->view->assign('json', $result);
+            } else {
+                list($limit, $mapItems, $recordCount) = $this->getMapItems($this->settings, false, $page, 50);
 
-            $this->view->assignMultiple(['json' => ['data' => $mapMarkers]]);
+                $mapMarkers = $this->createMarkers($mapItems);
+
+                if (sizeof($mapMarkers) == 0) {
+                    $this->cacheCleanGarbage($this->getCacheKey($cObj), $requestId, $page);
+                }
+
+                $mapMarkerJson = json_encode(['crdate' => time(), 'data' => $mapMarkers]);
+
+                $cacheInstance->set($this->getCacheKey($cObj) . '-' . $requestId . '-' . $page, $mapMarkerJson);
+
+                $this->view->assign('json', ['data' => $mapMarkers]);
+            }
         }
     }
 
@@ -696,11 +725,40 @@ class MapController extends BaseController
                     }
                 }
             }
-            asort($facetsArray[$facet_type]);
+            if (is_array($facetsArray[$facet_type])) {
+                asort($facetsArray[$facet_type]);
+            }
+
         }
 
         return $facetsArray;
     }
+
+    /**
+     * @param $cacheKey
+     * @param $requestId
+     * @param $numPages
+     */
+    private function cacheCleanGarbage($cacheKey, $requestId, $numPages) {
+        $cacheInstance = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('tx_nkgooglemaps');
+        $markerArray = [];
+        for($page=1; $page <= $numPages; $page++) {
+            $mapMarkerJson = $cacheInstance->get($cacheKey.'-'.$requestId.'-'.$page);
+            if ($mapMarkerJson) {
+                $mapMarkers = json_decode($mapMarkerJson, TRUE);
+                if (sizeof($mapMarkers)) {
+                    $markerArray = array_merge($markerArray, $mapMarkers['data']);
+                    $cacheInstance->set($cacheKey.'-'.$requestId.'-'.$page, '');
+                }
+            }
+        }
+
+        if (sizeof($markerArray)) {
+            $mapMarkerJson = json_encode(['crdate' => time(), 'data' => $markerArray]);
+            $cacheInstance->set($cacheKey, $mapMarkerJson);
+        }
+    }
+
 
     /**
      * @return string

@@ -1,0 +1,46 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+    <div class="map-tooltip">
+
+		<div class="map-tooltip__info">
+			<div class="image">
+				<n:image image="{institution.picture}" width="80c" height="80c" />
+			</div>
+
+			<strong>
+				<f:render partial="Institution/Name" arguments="{institution: institution}" />
+			</strong>
+
+			<br />
+
+			<f:render partial="Institution/Address" arguments="{institution: institution}" />
+		</div>
+
+		<div>
+			<ul>
+				<f:for each="{institution.contactItems->n:orderByProperty(property: 'type', order: 'Telefon,Mobil,Fax,E-Mail,Website')}" as="contactItem">
+					<f:if condition="{n:inArray(needle: contactItem.type, strtolower: 1, haystack: {0: 'telefon', 1: 'e-mail'})}">
+						<f:then>
+							<f:render partial="ContactItem/ContactItem" arguments="{contactItem: contactItem, settings: settings}" />
+						</f:then>
+					</f:if>
+				</f:for>
+			</ul>
+		</div>
+
+		<div>
+			<f:if condition="{settings.mapInfo.recordUid} != {institution.id}">
+				<a href="{settings.shortLink}{institution.id}">Mehr erfahren</a>
+			</f:if>
+
+			<br />
+
+			<f:if condition="{institution.address.street} && {institution.address.zipCode} && {institution.address.city}">
+				<a target="_blank" href="https://maps.google.de/?daddr={institution.address.street}%20{institution.address.zipCode}%20{institution.address.city}">Route berechnen</a>
+				<br />
+			</f:if>
+		</div>
+
+    </div>
+</html>

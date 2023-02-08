@@ -27,6 +27,10 @@
 										<numIndex index="0">Einzelansicht: Die Visitenkarte einer Person</numIndex>
 										<numIndex index="1">Person->show</numIndex>
 									</numIndex>
+									<numIndex index="3">
+										<numIndex index="0">Weiterleitung zu Personen-Visitenkarte</numIndex>
+										<numIndex index="1">Person->redirect</numIndex>
+									</numIndex>
 								</items>
 								<default>Person->list;Person->search</default>
 							</config>

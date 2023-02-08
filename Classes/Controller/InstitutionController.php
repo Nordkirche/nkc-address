@@ -3,17 +3,21 @@
 namespace Nordkirche\NkcAddress\Controller;
 
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
-use Nordkirche\Ndk\Domain\Model\Person\Person;
+use Nordkirche\Ndk\Domain\Model\Institution\OpeningHours;
 use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
 use Nordkirche\Ndk\Domain\Repository\FunctionTypeRepository;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
 use Nordkirche\Ndk\Domain\Repository\PersonRepository;
 use Nordkirche\NkcAddress\Domain\Dto\SearchRequest;
-
-use Nordkirche\NkcBase\Service\ApiService;
+use Nordkirche\Ndk\Domain\Model\Institution\Team;
+use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Frontend\Controller\ErrorController;
+use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
 
 class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseController
 {
@@ -135,6 +139,7 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
 
     /**
      * @param \Nordkirche\NkcAddress\Domain\Dto\SearchRequest $searchRequest
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
      */
     public function searchAction($searchRequest = null)
     {
@@ -149,14 +154,27 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
 
     /**
      * @param int $uid
+     * @throws ImmediateResponseException
      */
     public function showAction($uid = null)
     {
-        $includes = [ Institution::RELATION_ADDRESS, Institution::RELATION_INSTITUTION_TYPE, Institution::RELATION_MAP_CHILDREN, Institution::RELATION_PARENT_INSTITUTIONS ];
+        $includes = [
+            Institution::RELATION_ADDRESS,
+            Institution::RELATION_INSTITUTION_TYPE,
+            Institution::RELATION_MAP_CHILDREN,
+            Institution::RELATION_PARENT_INSTITUTIONS,
+            Institution::RELATION_TEAMS => [
+                Team::RELATION_FUNCTIONS => [
+                    PersonFunction::RELATION_PERSON
+                ],
+                Team::RELATION_FUNCTION_TYPE,
+            ]
+        ];
 
         if ($this->settings['flexform']['singleInstitution']) {
             // Institution is selected in flexform
             try {
+                /** @var Institution $institution */
                 $institution = $this->napiService->resolveUrl($this->settings['flexform']['singleInstitution'], $includes);
             } catch (\Exception $e) {
                 $institution = false;
@@ -164,6 +182,7 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
         } elseif ((int)$uid) {
             // Find by uid
             try {
+                /** @var Institution $institution */
                 $institution = $this->institutionRepository->getById($uid, $includes);
             } catch (\Exception $e) {
                 $institution = false;
@@ -172,35 +191,44 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
             $institution = false;
         }
 
-        $this->settings['mapInfo']['recordUid'] = $institution ? $institution->getId() : 0;
-
-        $clusteredPersons = false;
-        $childInstitutions = false;
-        $mapMarkers = false;
-
         if ($institution) {
             // Get sub objects
+            $openingHours = [];
 
-            // Get all related persons
-            $clusteredPersons = $this->getInstitutionPersons($institution);
+            $this->settings['mapInfo']['recordUid'] = $institution->getId();
 
             // Get children
             $childInstitutions = $this->getChildInstitutions($institution);
 
             // Get map markers
-            $mapMarkers = $this->getMapMarkers($institution);
+            $mapMarkers = $this->getMapMarkers($institution, FALSE);
+
+            // Parse opening hours table
+            if ($this->settings['flexform']['openingHours']) {
+                $openingHours = $this->prepareOpeningHours($institution);
+            }
+
+            // Get current cObj
+            $cObj = $this->configurationManager->getContentObject();
+
+            $this->view->assignMultiple([
+                'institution' => $institution,
+                'childInstitutions' => $childInstitutions,
+                'mapMarkers' => $mapMarkers,
+                'openingHours' => $openingHours,
+                'content' => $cObj->data
+            ]);
+
+        } else {
+            // Page not found
+            $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
+                $GLOBALS['TYPO3_REQUEST'],
+                'Einrichtung konnte nicht gefunden werden',
+                ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
+            );
+            throw new ImmediateResponseException($response);
         }
 
-        // Get current cObj
-        $cObj = $this->configurationManager->getContentObject();
-
-        $this->view->assignMultiple([
-            'institution' => $institution,
-            'clusteredPersons'	=> $clusteredPersons,
-            'childInstitutions' => $childInstitutions,
-            'mapMarkers' => $mapMarkers,
-            'content' => $cObj->data
-        ]);
     }
 
     /**
@@ -221,18 +249,19 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
      * Create marker array
      *
      * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $institution
+     * @param boolean
      * @return array
      */
-    private function getMapMarkers($institution)
+    private function getMapMarkers($institution, $asyncInfo = TRUE)
     {
         $mapMarkers = [];
 
         if ($institution->getMapVisibility() == true) {
-            $this->createMarker($mapMarkers, $institution);
+            $this->createMarker($mapMarkers, $institution, $asyncInfo);
             if ($institution->getMapChildren()) {
                 /** @var \Nordkirche\Ndk\Domain\Model\Institution\Institution $childInstitution */
                 foreach ($institution->getMapChildren() as $childInstitution) {
-                    $this->createMarker($mapMarkers, $childInstitution);
+                    $this->createMarker($mapMarkers, $childInstitution, $asyncInfo);
                 }
             }
         }
@@ -242,9 +271,10 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
 
     /**
      * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $institution
+     * @param string $template
      * @return string
      */
-    public function renderMapInfo($institution)
+    public function renderMapInfo($institution, $template = 'Institution/MapInfo')
     {
         if ($this->standaloneView == false) {
             // Init standalone view
@@ -252,17 +282,20 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
             $config = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 
             $absTemplatePaths = [];
-            foreach ($config['view']['templateRootPaths'] as $path) {
-                $absTemplatePaths[] = GeneralUtility::getFileAbsFileName($path);
+            if (is_array($config['view']['templateRootPaths'])) {
+                foreach ($config['view']['templateRootPaths'] as $path) {
+                    $absTemplatePaths[] = GeneralUtility::getFileAbsFileName($path);
+                }
             }
-
             if (count($absTemplatePaths) == 0) {
                 $absTemplatePaths[] =  GeneralUtility::getFileAbsFileName('EXT:nkc_address/Resources/Private/Templates/');
             }
 
             $absLayoutPaths = [];
-            foreach ($config['view']['layoutRootPaths'] as $path) {
-                $absLayoutPaths[] = GeneralUtility::getFileAbsFileName($path);
+            if (is_array($config['view']['layoutRootPaths'])) {
+                foreach ($config['view']['layoutRootPaths'] as $path) {
+                    $absLayoutPaths[] = GeneralUtility::getFileAbsFileName($path);
+                }
             }
 
             if (count($absLayoutPaths) == 0) {
@@ -270,8 +303,10 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
             }
 
             $absPartialPaths = [];
-            foreach ($config['view']['partialRootPaths'] as $path) {
-                $absPartialPaths[] = GeneralUtility::getFileAbsFileName($path);
+            if (is_array($config['view']['partialRootPaths'])) {
+                foreach ($config['view']['partialRootPaths'] as $path) {
+                    $absPartialPaths[] = GeneralUtility::getFileAbsFileName($path);
+                }
             }
 
             if (count($absPartialPaths) == 0) {
@@ -290,7 +325,7 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
                 $absTemplatePaths
             );
 
-            $this->standaloneView->setTemplate('Institution/MapInfo');
+            $this->standaloneView->setTemplate($template);
         }
 
         $this->standaloneView->assignMultiple(['institution' => $institution,
@@ -304,8 +339,9 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
      *
      * @param array $mapMarkers
      * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $institution
+     * @param bool $asyncInfo
      */
-    public function createMarker(&$mapMarkers, $institution)
+    public function createMarker(&$mapMarkers, $institution, $asyncInfo = TRUE)
     {
 
         // Get type of institution
@@ -321,16 +357,62 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
             // Check geo coordinates
             if ($address->getLatitude() && $address->getLongitude()) {
                 $marker = [
+                    'object' => 'i',
+                    'id'    => $institution->getId(),
                     'title' => $institution->getName(),
                     'lat' 	=> $address->getLatitude(),
                     'lon' 	=> $address->getLongitude(),
-                    'info' 	=> $this->renderMapInfo($institution),
+                    'info' 	=> $asyncInfo ? '' : $this->renderMapInfo($institution),
                     'type'  => 'institution-' . $typeId,
                     'icon' 	=> $this->getIcon($typeId)
                 ];
                 $mapMarkers[] = $marker;
             }
         }
+    }
+
+    /**
+     * @param array $institutionList
+     * @param array $config
+     * @return string
+     * @return array|mixed
+     */
+    public function retrieveMarkerInfo($institutionList, $config) {
+
+        parent::initializeAction();
+
+        $this->institutionRepository = $this->api->factory(InstitutionRepository::class);
+        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $this->configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+
+        /** @var ContentObjectRenderer $contentObjectRenderer */
+        $contentObjectRenderer = $objectManager->get(ContentObjectRenderer::class);
+        $this->configurationManager->setContentObject($contentObjectRenderer);
+
+        // Required for link.email viewhelper
+        $GLOBALS['TSFE']->cObj = $contentObjectRenderer;
+
+        $this->settings = $config['plugin']['tx_nkcaddress_institution']['settings'];
+
+        $this->settings['flexform'] = $this->settings['flexformDefault'];
+
+        $query = new \Nordkirche\Ndk\Domain\Query\InstitutionQuery();
+
+        $query->setInclude([Institution::RELATION_ADDRESS, Institution::RELATION_INSTITUTION_TYPE]);
+
+        $query->setInstitutions($institutionList);
+
+        $query->setPageSize(100);
+
+        $institutions = $this->institutionRepository->get($query);
+
+        $result = '';
+
+        foreach($institutions as $institution) {
+            $result .= $this->renderMapInfo($institution, 'Institution/AsyncMapInfo');
+        }
+
+        return $result;
     }
 
     /**
@@ -390,40 +472,6 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
         ksort($groupedChildInstitutions);
 
         return $groupedChildInstitutions;
-    }
-
-    /**
-     * Get all persons related to the institution, clustered by function type
-     *
-     * @param $institution
-     * @return array
-     */
-    private function getInstitutionPersons($institution)
-    {
-        $query = new \Nordkirche\Ndk\Domain\Query\PersonQuery();
-
-        $query->setInstitutions([$institution->getId()]);
-
-        $query->setPageSize(99);
-
-        $query->setInclude(
-            [    Person::RELATION_FUNCTIONS,
-                                Person::RELATION_FUNCTIONS => [
-                                    PersonFunction::RELATION_INSTITUTION,
-                                    PersonFunction::RELATION_ADDRESS,
-                                    PersonFunction::RELATION_AVAILABLE_FUNCTION
-                                ]
-            ]
-        );
-
-        $persons = ApiService::getAllItems($this->personRepository, $query);
-
-        if ($persons) {
-            $functionTypes = ApiService::getAllItems($this->functionTypeRepository, new \Nordkirche\Ndk\Domain\Query\PageQuery());
-            $persons = \Nordkirche\NkcAddress\Service\InstitutionService::groupPersonByRoleType($institution, $persons, $functionTypes);
-        }
-
-        return $persons;
     }
 
     /**
@@ -492,4 +540,68 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
 
         return $filter;
     }
+
+    /**
+     * Prepare opening hours for output
+     *
+     * @param Institution $institution
+     * @return array
+     */
+    /**
+     * Prepare opening hours for output
+     *
+     * @param Institution $institution
+     * @return array
+     */
+    private function prepareOpeningHours($institution)
+    {
+        $openingHoursTable = [];
+        /** @var OpeningHours $openingHours */
+        foreach($institution->getOpeningHours() as $openingHours) {
+            if (!isset($openingHoursTable[$openingHours->getDayOfWeek()])) {
+                $openingHoursTable[$openingHours->getDayOfWeek()] = [
+                    'day'   => $openingHours->getDayOfWeek(),
+                    'name'  => '',
+                    'items' => []
+                ];
+            }
+
+            if ($openingHours->getName()) {
+                $openingHoursTable[$openingHours->getDayOfWeek()]['name'] = $openingHours->getName();
+            }
+
+            $openingHoursTable[$openingHours->getDayOfWeek()]['items'][] = $openingHours;
+        }
+
+        $max = 0;
+        foreach($openingHoursTable as $openingHours) {
+            $size = sizeof($openingHours['items']);
+            if ($size > $max) $max = $size;
+        }
+
+        $size = $max;
+
+        foreach($openingHoursTable as $index => $openingHours) {
+            if (sizeof($openingHours['items']) < $size) {
+                for($i = sizeof($openingHours['items']); $i< $max; $i++) {
+                    $openingHoursTable[$index]['items'][] = false;
+                }
+            }
+        }
+
+        return $openingHoursTable;
+    }
+
+    /**
+     * Napi returns incomplete date for opening hours.
+     * NDK cannot convert to DateTime object and returns it as string
+     *
+     * @param string $date
+     * @return string
+     */
+    private function convertDate($date)
+    {
+        return implode('.', array_reverse(explode('-', $date)));
+    }
+
 }

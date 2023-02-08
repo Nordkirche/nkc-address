@@ -263,6 +263,17 @@
 						</TCEforms>
 					</settings.flexform.showTemplate>
 
+					<settings.flexform.openingHours>
+						<TCEforms>
+							<label>Öffnungszeiten anzeigen</label>
+							<config>
+								<type>check</type>
+								<default>0</default>
+							</config>
+							<displayCond>FIELD:sDEF.switchableControllerActions:=:Institution->show</displayCond>
+						</TCEforms>
+					</settings.flexform.openingHours>
+
 					<settings.flexform.sortOption>
 						<TCEforms>
 							<label>Wonach soll die Ausgabe sortiert werden?</label>

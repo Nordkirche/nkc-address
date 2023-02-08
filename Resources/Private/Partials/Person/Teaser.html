@@ -19,8 +19,9 @@
         </f:if>
     </f:link.page>
 
-    <f:image src="{settings.personTypeIconName}" alt="" />
-
+    <f:if condition="{settings.personTypeIconName}">
+        <f:image src="{settings.personTypeIconName}" alt="" />
+    </f:if>
 
     <h2>
         <f:link.page additionalParams="{tx_nkcaddress_person: {uid: person.id}}" pageUid="{pidSingle}">

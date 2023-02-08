@@ -1,0 +1,43 @@
+<html xmlns:n="http://typo3.org/ns/Nordkirche/NkcBase/ViewHelpers"
+      xmlns:nkg="http://typo3.org/ns/Nordkirche/NkGoogleMap/ViewHelpers"
+      xmlns:nke="http://typo3.org/ns/Nordkirche/NkcEvent/ViewHelpers"
+      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+    <f:if condition="{openingHours} && {settings.flexform.openingHours}">
+        <div class="opening-hours">
+            <h4>Öffnungszeiten</h4>
+            <table cellpadding="0" cellspacing="0">
+                <f:for each="{openingHours}" as="day">
+                    <tr>
+                        <td><f:translate key="tx_nkc_address_day.{day.day}" /></td>
+                        <f:if condition="{day.name}">
+                            <f:then>
+                                <td>{day.name}</td>
+                            </f:then>
+                            <f:else>
+                                <td></td>
+                            </f:else>
+                        </f:if>
+                        <f:for each="{day.items}" as="item">
+                            <f:if condition="{item}">
+                                <f:then>
+                                <f:if condition="{item.closed}">
+                                    <f:then>
+                                        <td>geschlossen</td>
+                                    </f:then>
+                                    <f:else>
+                                        <td>{item.openingTime} - {item.closingTime}</td>
+                                    </f:else>
+                                </f:if>
+                                </f:then>
+                                <f:else>
+                                    <td>&nbsp;</td>
+                                </f:else>
+                            </f:if>
+                        </f:for>
+                    </tr>
+                </f:for>
+            </table>
+        </div>
+    </f:if>
+</html>
