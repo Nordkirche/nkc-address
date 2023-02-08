@@ -12,8 +12,8 @@
     "require": {
         "typo3/cms-core": "^10.4",
         "fluidtypo3/vhs": "^6.0",
-        "nordkirche/nkc-base": "dev-develop",
-        "nordkirche/nk-google-map": "dev-develop"
+        "nordkirche/nkc-base": "^10.4",
+        "nordkirche/nk-google-map": "^10.4"
     },
     "autoload": {
         "psr-4": {
