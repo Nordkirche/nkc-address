@@ -20,11 +20,11 @@
 
                 <f:if condition="{settings.flexform.paginate.mode} > 1">
                     <f:then>
-                        <n:widget.paginate objects="{persons}" as="paginatedPersons" configuration="{settings.flexform.paginate}">
+                        <n:paginate objects="{persons}" as="paginatedPersons" configuration="{settings.flexform.paginate}">
                             <f:for each="{paginatedPersons}" as="person">
                                 <f:render partial="Person/Teaser" arguments="{person: person}" />
                             </f:for>
-                        </n:widget.paginate>
+                        </n:paginate>
                     </f:then>
                     <f:else>
                         <div class="ajax-list-wrapper">

@@ -1,6 +1,6 @@
 <?php
 
-defined('TYPO3_MODE') || die('Access denied.');
+defined('TYPO3') || die('Access denied.');
 
 call_user_func(
     function () {
@@ -8,38 +8,38 @@ call_user_func(
         $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = 'tx_nkcaddress_map[page]';
 
         \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-            'Nordkirche.NkcAddress',
+            'NkcAddress',
             'Person',
             [
-                'Person' => 'show, list, search, searchForm, redirect'
+                \Nordkirche\NkcAddress\Controller\PersonController::class => 'show, list, search, searchForm, redirect'
             ],
             // non-cacheable actions
             [
-                'Person' => 'redirect'
+                \Nordkirche\NkcAddress\Controller\PersonController::class => 'redirect'
             ]
         );
 
         \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-            'Nordkirche.NkcAddress',
+            'NkcAddress',
             'Institution',
             [
-                'Institution' => 'show, list, search, searchForm, redirect'
+                \Nordkirche\NkcAddress\Controller\InstitutionController::class => 'show, list, search, searchForm, redirect'
             ],
             // non-cacheable actions
             [
-                'Institution' => 'redirect'
+                \Nordkirche\NkcAddress\Controller\InstitutionController::class => 'redirect'
             ]
         );
 
         \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-            'Nordkirche.NkcAddress',
+            'NkcAddress',
             'Map',
             [
-                'Map' => 'show,list,data,paginatedData',
+                \Nordkirche\NkcAddress\Controller\MapController::class => 'show,list,data,paginatedData',
             ],
             // non-cacheable actions
             [
-                'Map' => 'paginatedData'
+                \Nordkirche\NkcAddress\Controller\MapController::class => 'paginatedData'
             ]
         );
 
@@ -49,7 +49,7 @@ call_user_func(
                 wizards.newContentElement.wizardItems.plugins {
                     elements {
                         address_person {
-                            iconIdentifier = content-image 
+                            iconIdentifier = content-image
                             title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:tx_nkc_address_domain_model_person
                             description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:tx_nkc_address_domain_model_person.description
                             tt_content_defValues {
@@ -67,7 +67,7 @@ call_user_func(
                             }
                         }
                         address_map {
-                            iconIdentifier = content-image 
+                            iconIdentifier = content-image
                             title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:tx_nkc_address_map
                             description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:tx_nkc_address_map.description
                             tt_content_defValues {

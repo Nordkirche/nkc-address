@@ -2,6 +2,9 @@
 
 namespace Nordkirche\NkcAddress\ViewHelpers;
 
+use Nordkirche\Ndk\Api;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use Nordkirche\NkcAddress\Service\InstitutionLinkService;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
 use Nordkirche\Ndk\Service\NapiService;
@@ -18,28 +21,27 @@ class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
 {
 
     /**
-     * @var \Nordkirche\Ndk\Api
+     * @var Api
      */
     protected $api;
 
     /**
-     * @var \Nordkirche\Ndk\Service\NapiService
+     * @var NapiService
      */
     protected $napiService;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+     * @var ConfigurationManagerInterface
      */
     protected $configurationManager;
 
     /**
-     * @var \Nordkirche\NkcAddress\Service\InstitutionLinkService
-     * @TYPO3\CMS\Extbase\Annotation\Inject
+     * @var InstitutionLinkService
      */
     protected $institutionLinkService;
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\InstitutionRepository
+     * @var InstitutionRepository
      */
     protected $institutionRepository;
 
@@ -56,13 +58,13 @@ class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
     protected $settings = [];
 
     /**
-     * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $cm
+     * @param ConfigurationManagerInterface $cm
      */
-    public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $cm)
+    public function injectConfigurationManager(ConfigurationManagerInterface $cm)
     {
         $this->configurationManager = $cm;
         $this->settings = $this->configurationManager->getConfiguration(
-            \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
             'nkcaddress',
             'institution'
         );
@@ -106,7 +108,7 @@ class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
         $targetInstitution  = $this->arguments['institution'];
 
         if (!($targetInstitution  instanceof Institution)) {
-            /** @var \Nordkirche\Ndk\Domain\Model\Institution\Institution $targetInstitution */
+            /** @var Institution $targetInstitution */
             $targetInstitution = $this->institutionRepository->getById($this->arguments['institution'], $includes);
         }
 
@@ -179,5 +181,10 @@ class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
         $output = $this->tag->render();
 
         return $output;
+    }
+
+    public function injectInstitutionLinkService(InstitutionLinkService $institutionLinkService): void
+    {
+        $this->institutionLinkService = $institutionLinkService;
     }
 }

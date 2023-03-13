@@ -2,27 +2,29 @@
 
 namespace Nordkirche\NkcAddress\Service;
 
+use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
 use Nordkirche\Ndk\Service\NapiService;
 use Nordkirche\NkcBase\Service\ApiService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class InstitutionLinkService implements \TYPO3\CMS\Core\SingletonInterface
+class InstitutionLinkService implements SingletonInterface
 {
 
     /**
-     * @var \Nordkirche\NkcAddress\Service\InstitutionRelationService
-     * @TYPO3\CMS\Extbase\Annotation\Inject
+     * @var InstitutionRelationService
      */
     protected $institutionRelationService;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+     * @var ConfigurationManagerInterface
      */
     protected $configurationManager;
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\InstitutionRepository
+     * @var InstitutionRepository
      */
     protected $institutionRepository;
 
@@ -34,11 +36,11 @@ class InstitutionLinkService implements \TYPO3\CMS\Core\SingletonInterface
     /**
      * Inject the configuration manager and get the settings
      */
-    public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $cm)
+    public function injectConfigurationManager(ConfigurationManagerInterface $cm)
     {
         $this->configurationManager = $cm;
         $this->settings = $this->configurationManager->getConfiguration(
-            \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
             'nkcaddress',
             'institution'
         );
@@ -52,7 +54,7 @@ class InstitutionLinkService implements \TYPO3\CMS\Core\SingletonInterface
     }
 
     /**
-     * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $targetInstitution
+     * @param Institution $targetInstitution
      *
      * @return bool
      */
@@ -116,5 +118,10 @@ class InstitutionLinkService implements \TYPO3\CMS\Core\SingletonInterface
         }
         // if we have no root institution id, fall back to internal linking
         return true;
+    }
+
+    public function injectInstitutionRelationService(InstitutionRelationService $institutionRelationService): void
+    {
+        $this->institutionRelationService = $institutionRelationService;
     }
 }

@@ -2,7 +2,9 @@
 
 namespace Nordkirche\NkcAddress\ViewHelpers;
 
-class InstitutionIconViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
+class InstitutionIconViewHelper extends AbstractViewHelper
 {
 
     /**
@@ -13,7 +15,7 @@ class InstitutionIconViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstra
     /**
      * Initialize arguments.
      *
-     * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
+     * @throws Exception
      */
     public function initializeArguments()
     {

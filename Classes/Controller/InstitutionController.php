@@ -2,6 +2,15 @@
 
 namespace Nordkirche\NkcAddress\Controller;
 
+use Nordkirche\NkcBase\Controller\BaseController;
+use TYPO3\CMS\Extbase\Domain\Repository\CategoryRepository;
+use Psr\Http\Message\ResponseInterface;
+use Nordkirche\Ndk\Domain\Query\InstitutionQuery;
+use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
+use Nordkirche\Ndk\Domain\Model\Institution\InstitutionType;
+use Nordkirche\Ndk\Domain\Model\Address;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Domain\Model\Category;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Model\Institution\OpeningHours;
 use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
@@ -19,27 +28,26 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
 
-class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseController
+class InstitutionController extends BaseController
 {
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\InstitutionRepository
+     * @var InstitutionRepository
      */
     protected $institutionRepository;
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\PersonRepository
+     * @var PersonRepository
      */
     protected $personRepository;
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\FunctionTypeRepository
+     * @var FunctionTypeRepository
      */
     protected $functionTypeRepository;
 
     /**
-     * @var \TYPO3\CMS\Extbase\Domain\Repository\CategoryRepository
-     * @TYPO3\CMS\Extbase\Annotation\Inject
+     * @var CategoryRepository
      */
     protected $categoryRepository;
 
@@ -66,11 +74,11 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
      * List action
      *
      * @param int $currentPage
-     * @param \Nordkirche\NkcAddress\Domain\Dto\SearchRequest $searchRequest
+     * @param SearchRequest $searchRequest
      */
-    public function listAction($currentPage = 1, $searchRequest = null)
+    public function listAction($currentPage = 1, $searchRequest = null): ResponseInterface
     {
-        $query = new \Nordkirche\Ndk\Domain\Query\InstitutionQuery();
+        $query = new InstitutionQuery();
 
         // Set Included objects
         $query->setInclude([Institution::RELATION_ADDRESS, Institution::RELATION_INSTITUTION_TYPE]);
@@ -119,12 +127,13 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
             'searchRequest' => $searchRequest
 
         ]);
+        return $this->htmlResponse();
     }
 
     /**
-     * @param \Nordkirche\NkcAddress\Domain\Dto\SearchRequest $searchRequest
+     * @param SearchRequest $searchRequest
      */
-    public function searchFormAction($searchRequest = null)
+    public function searchFormAction($searchRequest = null): ResponseInterface
     {
         if (!($searchRequest instanceof SearchRequest)) {
             $searchRequest = GeneralUtility::makeInstance(SearchRequest::class);
@@ -135,11 +144,12 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
             'filter' => $this->getFilterValues(),
             'searchRequest' => $searchRequest
         ]);
+        return $this->htmlResponse();
     }
 
     /**
-     * @param \Nordkirche\NkcAddress\Domain\Dto\SearchRequest $searchRequest
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @param SearchRequest $searchRequest
+     * @throws StopActionException
      */
     public function searchAction($searchRequest = null)
     {
@@ -156,7 +166,7 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
      * @param int $uid
      * @throws ImmediateResponseException
      */
-    public function showAction($uid = null)
+    public function showAction($uid = null): ResponseInterface
     {
         $includes = [
             Institution::RELATION_ADDRESS,
@@ -228,11 +238,12 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
             );
             throw new ImmediateResponseException($response);
         }
+        return $this->htmlResponse();
 
     }
 
     /**
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws StopActionException
      */
     public function redirectAction()
     {
@@ -248,7 +259,7 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
     /**
      * Create marker array
      *
-     * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $institution
+     * @param Institution $institution
      * @param boolean
      * @return array
      */
@@ -259,7 +270,7 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
         if ($institution->getMapVisibility() == true) {
             $this->createMarker($mapMarkers, $institution, $asyncInfo);
             if ($institution->getMapChildren()) {
-                /** @var \Nordkirche\Ndk\Domain\Model\Institution\Institution $childInstitution */
+                /** @var Institution $childInstitution */
                 foreach ($institution->getMapChildren() as $childInstitution) {
                     $this->createMarker($mapMarkers, $childInstitution, $asyncInfo);
                 }
@@ -270,7 +281,7 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
     }
 
     /**
-     * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $institution
+     * @param Institution $institution
      * @param string $template
      * @return string
      */
@@ -338,22 +349,22 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
      * Add a marker, when geo-coordinates are available
      *
      * @param array $mapMarkers
-     * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $institution
+     * @param Institution $institution
      * @param bool $asyncInfo
      */
     public function createMarker(&$mapMarkers, $institution, $asyncInfo = TRUE)
     {
 
         // Get type of institution
-        if ($institution->getInstitutionType() instanceof \Nordkirche\Ndk\Domain\Model\Institution\InstitutionType) {
+        if ($institution->getInstitutionType() instanceof InstitutionType) {
             $typeId = $institution->getInstitutionType()->getId();
         } else {
             $typeId = 0;
         }
 
-        /** @var \Nordkirche\Ndk\Domain\Model\Address $address */
+        /** @var Address $address */
         $address = $institution->getAddress();
-        if ($address instanceof \Nordkirche\Ndk\Domain\Model\Address) {
+        if ($address instanceof Address) {
             // Check geo coordinates
             if ($address->getLatitude() && $address->getLongitude()) {
                 $marker = [
@@ -383,7 +394,7 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
 
         $this->institutionRepository = $this->api->factory(InstitutionRepository::class);
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+        $this->configurationManager = $objectManager->get(ConfigurationManager::class);
 
         /** @var ContentObjectRenderer $contentObjectRenderer */
         $contentObjectRenderer = $objectManager->get(ContentObjectRenderer::class);
@@ -396,7 +407,7 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
 
         $this->settings['flexform'] = $this->settings['flexformDefault'];
 
-        $query = new \Nordkirche\Ndk\Domain\Query\InstitutionQuery();
+        $query = new InstitutionQuery();
 
         $query->setInclude([Institution::RELATION_ADDRESS, Institution::RELATION_INSTITUTION_TYPE]);
 
@@ -449,7 +460,7 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
     {
         $groupedChildInstitutions = [];
 
-        $query = new \Nordkirche\Ndk\Domain\Query\InstitutionQuery();
+        $query = new InstitutionQuery();
 
         $query->setParentInstitutions([$institution->getId()]);
 
@@ -475,8 +486,8 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
     }
 
     /**
-     * @param \Nordkirche\Ndk\Domain\Query\InstitutionQuery $query
-     * @param \Nordkirche\NkcAddress\Domain\Dto\SearchRequest $searchRequest
+     * @param InstitutionQuery $query
+     * @param SearchRequest $searchRequest
      */
     private function setUserFilters($query, $searchRequest)
     {
@@ -529,7 +540,7 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
             $categories = GeneralUtility::trimExplode(',', $this->settings['filter']['categoryCollection']);
             foreach ($categories as $categoryUid) {
                 $category = $this->categoryRepository->findByUid($categoryUid);
-                if ($category instanceof \TYPO3\CMS\Extbase\Domain\Model\Category) {
+                if ($category instanceof Category) {
                     $filter['categories'][] = [
                         'uid'   => $category->getUid(),
                         'label' => $category->getTitle()
@@ -602,6 +613,11 @@ class InstitutionController extends \Nordkirche\NkcBase\Controller\BaseControlle
     private function convertDate($date)
     {
         return implode('.', array_reverse(explode('-', $date)));
+    }
+
+    public function injectCategoryRepository(CategoryRepository $categoryRepository): void
+    {
+        $this->categoryRepository = $categoryRepository;
     }
 
 }

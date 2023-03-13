@@ -24,7 +24,7 @@
         <f:if condition="{settings.flexform.paginate.mode} > 1">
             <f:then>
                 <f:comment>
-                    <n:widget.paginate objects="{mapItems}" as="paginatedMapItems" configuration="{settings.flexform.paginate}">
+                    <n:paginate objects="{mapItems}" as="paginatedMapItems" configuration="{settings.flexform.paginate}">
                         <f:for each="{paginatedMapItems}" as="mapItem" key="id">
                             <f:switch expression="{mapItem->n:className()}">
                                 <f:case value="Institution">
@@ -38,7 +38,7 @@
                                 </f:defaultCase>
                             </f:switch>
                         </f:for>
-                    </n:widget.paginate>
+                    </n:paginate>
                 </f:comment>
             </f:then>
             <f:else>

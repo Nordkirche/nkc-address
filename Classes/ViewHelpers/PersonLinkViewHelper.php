@@ -2,6 +2,11 @@
 
 namespace Nordkirche\NkcAddress\ViewHelpers;
 
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use Nordkirche\NkcAddress\Service\InstitutionLinkService;
+use Nordkirche\NkcAddress\Service\InstitutionRelationService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Model\Person\Person;
 use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
@@ -20,29 +25,27 @@ class PersonLinkViewHelper extends AbstractTagBasedViewHelper
 {
 
     /**
-     * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+     * @var ConfigurationManagerInterface
      */
     protected $configurationManager;
 
     /**
-     * @var \Nordkirche\NkcAddress\Service\InstitutionLinkService
-     * @TYPO3\CMS\Extbase\Annotation\Inject
+     * @var InstitutionLinkService
      */
     protected $institutionLinkService;
 
     /**
-     * @var \Nordkirche\NkcAddress\Service\InstitutionRelationService
-     * @TYPO3\CMS\Extbase\Annotation\Inject
+     * @var InstitutionRelationService
      */
     protected $institutionRelations;
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\InstitutionRepository
+     * @var InstitutionRepository
      */
     protected $institutionRepository;
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\PersonRepository
+     * @var PersonRepository
      */
     protected $personRepository;
 
@@ -71,13 +74,13 @@ class PersonLinkViewHelper extends AbstractTagBasedViewHelper
     protected $settings = [];
 
     /**
-     * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $cm
+     * @param ConfigurationManagerInterface $cm
      */
-    public function injectConfigurationManager(\TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $cm)
+    public function injectConfigurationManager(ConfigurationManagerInterface $cm)
     {
         $this->configurationManager = $cm;
         $this->settings = $this->configurationManager->getConfiguration(
-            \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
             'nkaddress',
             'institutioncards'
         );
@@ -89,7 +92,7 @@ class PersonLinkViewHelper extends AbstractTagBasedViewHelper
     public function __construct()
     {
         parent::__construct();
-        $this->addressConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['nkc_address']);
+        $this->addressConfig = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('nkc_address');
         $this->api = ApiService::get();
         $this->napiService = $this->api->factory(NapiService::class);
         $this->institutionRepository = $this->api->factory(InstitutionRepository::class);
@@ -129,7 +132,7 @@ class PersonLinkViewHelper extends AbstractTagBasedViewHelper
         $targetPerson = $this->arguments['person'];
 
         if (!($targetPerson  instanceof Person)) {
-            /** @var \Nordkirche\Ndk\Domain\Model\Person\Person $targetPerson */
+            /** @var Person $targetPerson */
             $targetPerson = $this->personRepository->getById($this->arguments['institution'], $includes);
         }
 
@@ -178,5 +181,15 @@ class PersonLinkViewHelper extends AbstractTagBasedViewHelper
         $output = $this->tag->render();
 
         return $output;
+    }
+
+    public function injectInstitutionLinkService(InstitutionLinkService $institutionLinkService): void
+    {
+        $this->institutionLinkService = $institutionLinkService;
+    }
+
+    public function injectInstitutionRelations(InstitutionRelationService $institutionRelations): void
+    {
+        $this->institutionRelations = $institutionRelations;
     }
 }

@@ -5,7 +5,7 @@ Die Extension stellt PlugIns bereit, um Inhalte der Nordkirche API (Personen und
 * Personen
   * Listenansicht
   * Detailansicht (Visitenkarte)
-  * Suchformular 
+  * Suchformular
 
 * Institutionen
   * Listenansicht / Suchergebnis
@@ -16,16 +16,16 @@ Die Extension stellt PlugIns bereit, um Inhalte der Nordkirche API (Personen und
 * Kartdarstellung
   * mit Liste unter der Karte
   * alleinstehend ohne Liste
-    
-  
+
+
 ## Abhängigkeiten
 Diese Extension basiert auf
 
-    nordkirche/NDK ^1.7
-    nordkirche/nkc_base ^10.4
-    fluidtypo3/vhs ^6.0
-    TYPO3 ^10.4
-            
+    nordkirche/NDK ^2.0
+    nordkirche/nkc_base ^11.5
+    fluidtypo3/vhs ^6.1
+    TYPO3 ^11.5
+
 ## Installation
 Die Installation der Extension erfolgt über composer, da bei dieser Installation auch alle Abhängigkeiten mit installiert werden müssen.
 
@@ -37,20 +37,19 @@ Bitte binden Sie anschließend das statische Template der Extension in Ihr TypoS
 
 Bitte beachten Sie die Dokumentation von nordkirche/nkc-base, um Zugriffe auf die NAPI zu ermöglichen.
 
-Es gibt im statischen TypoScript umfangreiche Konfigurationen, die für die eigenen Bedürfnisse angepasst werden können und müssen (z.B. Pfade Icons für die Kartendarstellung) Für TYPO3 Integratoren sollten sich die meisten Dinge von selbst erklären. 
+Es gibt im statischen TypoScript umfangreiche Konfigurationen, die für die eigenen Bedürfnisse angepasst werden können und müssen (z.B. Pfade Icons für die Kartendarstellung) Für TYPO3 Integratoren sollten sich die meisten Dinge von selbst erklären.
 
 Grunsätzlich ist es so, dass Konfigurationen teilweise sowohl in TypoScript als auch in den Plug-Ins möglich sind. Hier zu beachten, dass Plug-In Konfigurationen TypoScript überschreiben, wenn sie einen Wert haben.
 
-Die Templates der Extension haben ein sehr rudimentäres Markup, um die Möglichkeiten der Extension zu zeigen. Die darzustellenen Inhalte sind so komplex, dass ein Standard-Layout wenig Sinn ergeben hätte.   
+Die Templates der Extension haben ein sehr rudimentäres Markup, um die Möglichkeiten der Extension zu zeigen. Die darzustellenen Inhalte sind so komplex, dass ein Standard-Layout wenig Sinn ergeben hätte.
 
 
 ## Wichtiger Hinweis
 Bitte stellen Sie sicher, dass in der TYPO3-Konfiguration die Debug Option deaktiviert ist:
- 
+
     $GLOBALS['TYPO3_CONF_VARS']['FE']['debug'] = 0;
 
 Andernfalls wird bei einer JSON Responses von TYPO3 ein Cache Hinweis angefügt und die Karten-Marker können nicht nachgeladen werden.
-
 
 ## Fehler gefunden?
 Bitte melden Sie Fehler via github

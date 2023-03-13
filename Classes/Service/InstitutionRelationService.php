@@ -2,6 +2,13 @@
 
 namespace Nordkirche\NkcAddress\Service;
 
+use TYPO3\CMS\Core\SingletonInterface;
+use Nordkirche\Ndk\Api;
+use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
+use Nordkirche\NkcBase\Exception\ApiException;
+use Nordkirche\Ndk\Domain\Model\Person\Person;
+use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
+use Nordkirche\Ndk\Domain\Query\InstitutionQuery;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
 use Nordkirche\Ndk\Service\NapiService;
@@ -12,7 +19,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * @author Anno v. Heimburg <avonheimburg@agenturwerft.de>, Agenturwerft GmbH
  */
-class InstitutionRelationService implements \TYPO3\CMS\Core\SingletonInterface
+class InstitutionRelationService implements SingletonInterface
 {
     const TYPE_MEMBER = 1;
 
@@ -29,39 +36,39 @@ class InstitutionRelationService implements \TYPO3\CMS\Core\SingletonInterface
     const NO_CHILDREN = 0;
 
     /**
-     * @var \TYPO3\CMS\Core\Cache\CacheManager the cache frontend
+     * @var CacheManager the cache frontend
      */
     protected $cache;
 
     /**
-     * @var \Nordkirche\Ndk\Api
+     * @var Api
      */
     protected $api;
 
     /**
-     * @var \Nordkirche\Ndk\Service\NapiService
+     * @var NapiService
      */
     protected $napiService;
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\InstitutionRepository
+     * @var InstitutionRepository
      */
     protected $institutionRepository;
 
     /**
-     * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
+     * @throws NoSuchCacheException
      */
     public function initializeObject()
     {
-        /** @var \TYPO3\CMS\Core\Cache\CacheManager $cacheManager */
+        /** @var CacheManager $cacheManager */
         $cacheManager = GeneralUtility::makeInstance(CacheManager::class);
         $this->cache = $cacheManager->getCache('cache_institution_relation');
     }
 
     /**
      * InstitutionRelationService constructor.
-     * @throws \TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException
-     * @throws \Nordkirche\NkcBase\Exception\ApiException
+     * @throws NoSuchCacheException
+     * @throws ApiException
      */
     public function __construct()
     {
@@ -76,12 +83,12 @@ class InstitutionRelationService implements \TYPO3\CMS\Core\SingletonInterface
      *
      * Includes the given institution's id.
      *
-     * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $institution
+     * @param Institution $institution
      * @param int $childType
      *
      * @return array
      */
-    public function getChildInstitutionIds(\Nordkirche\Ndk\Domain\Model\Institution\Institution $institution, $childType)
+    public function getChildInstitutionIds(Institution $institution, $childType)
     {
         $cacheKey = 'institution-' . $institution->getId() . '-' . $childType;
         $childUids = [];
@@ -114,20 +121,20 @@ class InstitutionRelationService implements \TYPO3\CMS\Core\SingletonInterface
     /**
      * Look up whether a given person is a member of an institution or the institutions below
      *
-     * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $institution
-     * @param \Nordkirche\Ndk\Domain\Model\Person\Person $person
+     * @param Institution $institution
+     * @param Person $person
      * @param int $childType
      *
      * @return bool
      */
-    public function isMember(\Nordkirche\Ndk\Domain\Model\Institution\Institution $institution, \Nordkirche\Ndk\Domain\Model\Person\Person $person, $childType = self::ALL_CHILDREN)
+    public function isMember(Institution $institution, Person $person, $childType = self::ALL_CHILDREN)
     {
         $institutionUids = $this->getChildInstitutionIds($institution, $childType);
 
         $isMember = false;
-        /** @var \Nordkirche\Ndk\Domain\Model\Person\PersonFunction $role */
+        /** @var PersonFunction $role */
         foreach ($person->getFunctions() as $role) {
-            if ($role->getInstitution() instanceof \Nordkirche\Ndk\Domain\Model\Institution\Institution) {
+            if ($role->getInstitution() instanceof Institution) {
                 $institutionUid = $role->getInstitution()->getId();
                 if (in_array($institutionUid, $institutionUids)) {
                     $isMember = true;
@@ -163,7 +170,7 @@ class InstitutionRelationService implements \TYPO3\CMS\Core\SingletonInterface
      */
     public function getChildInstitutions($institutionIds, &$institutions, $recursive = false)
     {
-        $query = new \Nordkirche\Ndk\Domain\Query\InstitutionQuery();
+        $query = new InstitutionQuery();
 
         $query->setParentInstitutions($institutionIds);
 

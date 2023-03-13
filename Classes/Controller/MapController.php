@@ -2,6 +2,11 @@
 
 namespace Nordkirche\NkcAddress\Controller;
 
+use Psr\Http\Message\ResponseInterface;
+use Nordkirche\Ndk\Domain\Query\InstitutionQuery;
+use Nordkirche\Ndk\Service\Result;
+use Nordkirche\Ndk\Domain\Query\PersonQuery;
+use Nordkirche\Ndk\Domain\Query\PageQuery;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Model\Person\Person;
 use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
@@ -22,44 +27,42 @@ class MapController extends BaseController
 {
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\InstitutionRepository
+     * @var InstitutionRepository
      */
     protected $institutionRepository;
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\InstitutionTypeRepository
+     * @var InstitutionTypeRepository
      */
     protected $institutionTypeRepository;
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\PersonRepository
+     * @var PersonRepository
      */
     protected $personRepository;
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\AvailableFunctionRepository
+     * @var AvailableFunctionRepository
      */
     protected $availableFunctionRepository;
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\FunctionTypeRepository
+     * @var FunctionTypeRepository
      */
     protected $functionTypeRepository;
 
     /**
-     * @var \Nordkirche\NkcAddress\Controller\InstitutionController
-     * @TYPO3\CMS\Extbase\Annotation\Inject
+     * @var InstitutionController
      */
     protected $institutionController;
 
     /**
-     * @var \Nordkirche\NkcAddress\Controller\PersonController
-     * @TYPO3\CMS\Extbase\Annotation\Inject
+     * @var PersonController
      */
     protected $personController;
 
     /**
-     * @var \Nordkirche\Ndk\Service\NapiService
+     * @var NapiService
      */
     protected $napiService;
 
@@ -90,9 +93,10 @@ class MapController extends BaseController
     /**
      * Show map action
      */
-    public function showAction()
+    public function showAction(): ResponseInterface
     {
         $this->createView();
+        return $this->htmlResponse();
     }
 
     /**
@@ -100,9 +104,10 @@ class MapController extends BaseController
      *
      * @param int $currentPage
      */
-    public function listAction($currentPage = 1)
+    public function listAction($currentPage = 1): ResponseInterface
     {
         $this->createView($currentPage);
+        return $this->htmlResponse();
     }
 
     /**
@@ -118,14 +123,14 @@ class MapController extends BaseController
      * @param int $forceReload
      * @return string
      */
-    public function dataAction($forceReload = 0)
+    public function dataAction($forceReload = 0): ResponseInterface
     {
         $this->view->setVariablesToRender(['json']);
 
         // Get current cObj
         $cObj = $this->configurationManager->getContentObject();
 
-        $cacheInstance = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('tx_nkgooglemaps');
+        $cacheInstance = GeneralUtility::makeInstance(CacheManager::class)->getCache('tx_nkgooglemaps');
 
         $mapMarkerJson = $cacheInstance->get($this->getCacheKey($cObj));
 
@@ -150,6 +155,7 @@ class MapController extends BaseController
         }
 
         $this->view->assignMultiple(['json' => json_decode($mapMarkerJson, TRUE)]);
+        return $this->htmlResponse();
     }
 
     /**
@@ -161,7 +167,7 @@ class MapController extends BaseController
         $cObj = new \StdClass();
         $cObj->data = $content;
 
-        $cacheInstance = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('tx_nkgooglemaps');
+        $cacheInstance = GeneralUtility::makeInstance(CacheManager::class)->getCache('tx_nkgooglemaps');
 
         $mapMarkerJson = $cacheInstance->get($this->getCacheKey($cObj));
 
@@ -209,10 +215,10 @@ class MapController extends BaseController
      * @param string $requestId
      * @return string
      */
-    public function paginatedDataAction($page = 1, $requestId = '')
+    public function paginatedDataAction($page = 1, $requestId = ''): ResponseInterface
     {
         if (!trim($requestId)) {
-            return '[]';
+            return $this->htmlResponse('[]');
         }
 
         $result = [];
@@ -225,7 +231,7 @@ class MapController extends BaseController
         // Get current cObj
         $cObj = $this->configurationManager->getContentObject();
 
-        $cacheInstance = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('tx_nkgooglemaps');
+        $cacheInstance = GeneralUtility::makeInstance(CacheManager::class)->getCache('tx_nkgooglemaps');
 
         $mapMarkerJson = $cacheInstance->get($this->getCacheKey($cObj));
 
@@ -260,6 +266,7 @@ class MapController extends BaseController
                 $this->view->assign('json', ['data' => $mapMarkers]);
             }
         }
+        return $this->htmlResponse();
     }
 
     /**
@@ -363,14 +370,14 @@ class MapController extends BaseController
             }
         } else {
             // Selected institutions
-            if ($settings['flexform']['institutionCollection']) {
+            if (isset($settings['flexform']['institutionCollection']) && $settings['flexform']['institutionCollection']) {
                 $query = $this->getInstitutionQuery($pageSize, $page);
 
                 // Filter institutions
                 $this->setInstitutionFilter(
                     $query,
                     $settings['flexform']['institutionCollection'],
-                    $settings['flexform']['selectInstitutionOption']
+                    isset($settings['flexform']['selectInstitutionOption']) ?: ''
                 );
 
                 // Add category filter
@@ -382,7 +389,7 @@ class MapController extends BaseController
             }
 
             // Institutions by type
-            if ($settings['flexform']['institutionType']) {
+            if (isset($settings['flexform']['institutionType']) && $settings['flexform']['institutionType']) {
                 $query = $this->getInstitutionQuery($pageSize, $page);
 
                 // Filter by type
@@ -508,9 +515,9 @@ class MapController extends BaseController
 
         $filters = $this->getNumberOfFilters($settings);
 
-        if ((int)$settings['flexform']['paginate']['mode'] > 0) {
+        if (isset($settings['flexform']['paginate']['mode']) && ((int)$settings['flexform']['paginate']['mode'] > 0)) {
             // Pagination is active: use page limit
-            $limit = $settings['flexform']['paginate']['itemsPerPage'] ?: $settings['paginate']['itemsPerPage'];
+            $limit = isset($settings['flexform']['paginate']['itemsPerPage']) ?: $settings['paginate']['itemsPerPage'];
             $pageSize = floor($limit / max($filters, 1));
 
             // Set page
@@ -521,7 +528,8 @@ class MapController extends BaseController
             }
         } else {
             // Pagination is inactive: use general limit
-            $limit = $settings['flexform']['maxItems'] ?: $settings['maxItems'];
+            if (!isset($settings['maxItems'])) $settings['maxItems'] = 20;
+            $limit = isset($settings['flexform']['maxItems']) ?: $settings['maxItems'];
             $pageSize = floor($limit / 4);
         }
 
@@ -543,11 +551,11 @@ class MapController extends BaseController
     /**
      * @param int $limit
      * @param int $page
-     * @return \Nordkirche\Ndk\Domain\Query\InstitutionQuery
+     * @return InstitutionQuery
      */
     private function getInstitutionQuery($limit, $page = 1)
     {
-        $query = new \Nordkirche\Ndk\Domain\Query\InstitutionQuery();
+        $query = new InstitutionQuery();
         if ($limit) {
             $query->setPageSize($limit);
         }
@@ -573,7 +581,7 @@ class MapController extends BaseController
             $result = $this->institutionRepository->get($query, [Institution::RELATION_ADDRESS, Institution::RELATION_INSTITUTION_TYPE]);
         }
 
-        if ($result instanceof \Nordkirche\Ndk\Service\Result) {
+        if ($result instanceof Result) {
             if ($result->getFacets()) {
                 $this->addFacets($result->getFacets());
             }
@@ -598,11 +606,11 @@ class MapController extends BaseController
     /**
      * @param int $limit
      * @param int $page
-     * @return \Nordkirche\Ndk\Domain\Query\PersonQuery
+     * @return PersonQuery
      */
     private function getPersonQuery($limit, $page = 1)
     {
-        $query = new \Nordkirche\Ndk\Domain\Query\PersonQuery();
+        $query = new PersonQuery();
 
         if ($limit) {
             $query->setPageSize($limit);
@@ -643,7 +651,7 @@ class MapController extends BaseController
             $result = $this->personRepository->get($query);
         }
 
-        if ($result instanceof \Nordkirche\Ndk\Service\Result) {
+        if ($result instanceof Result) {
             if ($result->getFacets()) {
                 $this->addFacets($result->getFacets());
             }
@@ -671,12 +679,12 @@ class MapController extends BaseController
     private function addFacets($facets)
     {
         foreach ($facets as $facetKey => $facetValues) {
-            if (is_array($this->facets[$facetKey])) {
+            if (isset($this->facets[$facetKey]) && is_array($this->facets[$facetKey])) {
                 foreach ($facetValues as $id) {
                     $added = false;
-                    list($newFacetType, $newFacetValue) = each($id);
+                    list($newFacetType, $newFacetValue) = [key($id), current($id)];
                     foreach ($this->facets[$facetKey] as $index => $facetValue) {
-                        list($facetValueType, $facetValueCount) = each($facetValue);
+                        list($facetValueType, $facetValueCount) = [key($facetValue), current($facetValue)];
                         if ($newFacetType == $facetValueType) {
                             $this->facets[$facetKey][$index][$newFacetType] += $newFacetValue;
                             $added = true;
@@ -704,12 +712,12 @@ class MapController extends BaseController
             if ($facet_type == 'institution_types') {
                 $objects = ApiService::getAllItems(
                     $this->institutionTypeRepository,
-                    new \Nordkirche\Ndk\Domain\Query\PageQuery()
+                    new PageQuery()
                 );
             } elseif ($facet_type == 'functions') {
                 $objects = ApiService::getAllItems(
                     $this->functionTypeRepository,
-                    new \Nordkirche\Ndk\Domain\Query\PageQuery()
+                    new PageQuery()
                 );
             } else {
                 $objects = [];
@@ -717,7 +725,7 @@ class MapController extends BaseController
 
             if (count($objects)) {
                 foreach ($facets as $facet) {
-                    list($id, $number) = each($facet);
+                    list($id, $number) = [key($facet), current($facet)];
                     foreach ($objects as $object) {
                         if ($object->getId() == $id) {
                             $facetsArray[$facet_type][$id] = $object->getLabel() . sprintf(' (%s)', $number);
@@ -740,7 +748,7 @@ class MapController extends BaseController
      * @param $numPages
      */
     private function cacheCleanGarbage($cacheKey, $requestId, $numPages) {
-        $cacheInstance = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->getCache('tx_nkgooglemaps');
+        $cacheInstance = GeneralUtility::makeInstance(CacheManager::class)->getCache('tx_nkgooglemaps');
         $markerArray = [];
         for($page=1; $page <= $numPages; $page++) {
             $mapMarkerJson = $cacheInstance->get($cacheKey.'-'.$requestId.'-'.$page);
@@ -767,5 +775,15 @@ class MapController extends BaseController
     {
         $key = 'tx_nkcaddress_map--dataAction--' . $cObj->data['tstamp'];
         return $cObj->data['uid'] . '--' . md5($key);
+    }
+
+    public function injectInstitutionController(InstitutionController $institutionController): void
+    {
+        $this->institutionController = $institutionController;
+    }
+
+    public function injectPersonController(PersonController $personController): void
+    {
+        $this->personController = $personController;
     }
 }

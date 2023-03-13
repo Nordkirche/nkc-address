@@ -1,11 +1,11 @@
 <?php
 
-defined('TYPO3_MODE') || die('Access denied.');
+defined('TYPO3') || die('Access denied.');
 
 call_user_func(
     function () {
         \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-            'Nordkirche.NkcAddress',
+            'NkcAddress',
             'Person',
             'Person(en) darstellen'
         );
@@ -15,7 +15,7 @@ call_user_func(
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue($pluginSignature, 'FILE:EXT:nkc_address/Configuration/FlexForms/flexform_person.xml');
 
         \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-            'Nordkirche.NkcAddress',
+            'NkcAddress',
             'Institution',
             'Institution(en) darstellen'
         );
@@ -25,7 +25,7 @@ call_user_func(
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue($pluginSignature, 'FILE:EXT:nkc_address/Configuration/FlexForms/flexform_institution.xml');
 
         \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-            'Nordkirche.NkcAddress',
+            'NkcAddress',
             'Map',
             'Karte mit Institutionen/Personen darstellen'
         );
