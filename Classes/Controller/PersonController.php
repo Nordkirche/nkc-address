@@ -113,7 +113,8 @@ class PersonController extends BaseController
             'content' => $cObj->data,
             'filter' => $this->getFilterValues(),
             'searchPid' => $GLOBALS['TSFE']->id,
-            'searchRequest' => $searchRequest
+            'searchRequest' => $searchRequest,
+            'pagination' => $this->getPagination($persons, $currentPage)
 
         ]);
         return $this->htmlResponse();

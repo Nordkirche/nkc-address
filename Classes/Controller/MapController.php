@@ -305,7 +305,7 @@ class MapController extends BaseController
             $this->view->assign('mapMarkers', $mapMarkers);
         }
 
-        list($currentPage, $pageSize) = $this->getPagination($currentPage, $this->settings);
+        list($currentPage, $pageSize) = $this->getPaginationData($currentPage, $this->settings);
 
         $numPages = ceil($recordCount / $pageSize);
 
@@ -359,7 +359,7 @@ class MapController extends BaseController
 
         $recordCount = 0;
 
-        list($page, $pageSize) = $this->getPagination($page, $settings);
+        list($page, $pageSize) = $this->getPaginationData($page, $settings);
 
         if ($settings['flexform']['allInstitutions'] == 1) {
             // All Institutions
@@ -509,7 +509,7 @@ class MapController extends BaseController
      * @param array $settings
      * @return array
      */
-    private function getPagination($currentPage = 1, $settings = [])
+    private function getPaginationData($currentPage = 1, $settings = [])
     {
         $pageNumber = $currentPage;
 

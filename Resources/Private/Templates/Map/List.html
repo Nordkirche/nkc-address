@@ -24,21 +24,20 @@
         <f:if condition="{settings.flexform.paginate.mode} > 1">
             <f:then>
                 <f:comment>
-                    <n:paginate objects="{mapItems}" as="paginatedMapItems" configuration="{settings.flexform.paginate}">
-                        <f:for each="{paginatedMapItems}" as="mapItem" key="id">
-                            <f:switch expression="{mapItem->n:className()}">
-                                <f:case value="Institution">
-                                    <f:render partial="Institution/Teaser.html" arguments="{institution: mapItem, settings: settings}" />
-                                </f:case>
-                                <f:case value="Person">
-                                    <f:render partial="Person/Teaser.html" arguments="{person: mapItem, settings: settings}" />
-                                </f:case>
-                                <f:defaultCase>
+					<f:for each="{paginatedMapItems}" as="mapItem" key="id">
+						<f:switch expression="{mapItem->n:className()}">
+							<f:case value="Institution">
+								<f:render partial="Institution/Teaser.html" arguments="{institution: mapItem, settings: settings}" />
+							</f:case>
+							<f:case value="Person">
+								<f:render partial="Person/Teaser.html" arguments="{person: mapItem, settings: settings}" />
+							</f:case>
+							<f:defaultCase>
 
-                                </f:defaultCase>
-                            </f:switch>
-                        </f:for>
-                    </n:paginate>
+							</f:defaultCase>
+						</f:switch>
+					</f:for>
+					<f:render partial="Pagination" arguments="{_all}"></f:render>
                 </f:comment>
             </f:then>
             <f:else>

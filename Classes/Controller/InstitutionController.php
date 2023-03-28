@@ -124,7 +124,8 @@ class InstitutionController extends BaseController
             'content' => $cObj->data,
             'filter' => $this->getFilterValues(),
             'searchPid' => $GLOBALS['TSFE']->id,
-            'searchRequest' => $searchRequest
+            'searchRequest' => $searchRequest,
+            'pagination' => $this->getPagination($institutions, $currentPage)
 
         ]);
         return $this->htmlResponse();
