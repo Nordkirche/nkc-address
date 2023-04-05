@@ -10,7 +10,7 @@
  * "version" and "dependencies" must not be touched!
  ***************************************************************/
 
-$EM_CONF[$_EXTKEY] = [
+$EM_CONF['nkc_address'] = [
     'title' => 'Nordkirche Address Client',
     'description' => 'TYPO3 Extension zur Darstellung von Personen und Institutionen aus der NAPI',
     'category' => 'plugin',
