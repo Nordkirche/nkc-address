@@ -294,7 +294,6 @@ class MapController extends BaseController
                 $this->uriBuilder->reset()
                     ->setTargetPageUid($GLOBALS['TSFE']->id)
                     ->setTargetPageType($this->settings['ajaxTypeNum'])
-                    ->setUseCacheHash(false)
                     ->setArguments(['tx_nkcaddress_map[action]' => 'paginatedData', 'uid' => $cObj->data['uid']]);
 
                 $this->view->assign('streamUri', $this->uriBuilder->build());
@@ -320,7 +319,7 @@ class MapController extends BaseController
                                         'nextPage'      => ($currentPage < $numPages) ? $currentPage + 1 : false
         ]);
 
-        if ($this->settings['flexform']['showFilter'] == 1) {
+        if (!empty($this->settings['flexform']['showFilter']) && ($this->settings['flexform']['showFilter'] == 1)) {
             $this->view->assign('facets', $this->getFacets());
         }
     }
@@ -361,7 +360,7 @@ class MapController extends BaseController
 
         list($page, $pageSize) = $this->getPaginationData($page, $settings);
 
-        if ($settings['flexform']['allInstitutions'] == 1) {
+        if (!empty($settings['flexform']['allInstitutions']) && ($settings['flexform']['allInstitutions'] == 1)) {
             // All Institutions
             $query = $this->getInstitutionQuery($pageSize, $page);
 
@@ -370,7 +369,7 @@ class MapController extends BaseController
             }
         } else {
             // Selected institutions
-            if (isset($settings['flexform']['institutionCollection']) && $settings['flexform']['institutionCollection']) {
+            if (!empty($settings['flexform']['institutionCollection'])) {
                 $query = $this->getInstitutionQuery($pageSize, $page);
 
                 // Filter institutions
@@ -386,25 +385,29 @@ class MapController extends BaseController
                 if ($this->getInstitutionsByQuery($query, $allItems, $pageSize, $mapItems, $recordCount) === false) {
                     $limitExceeded = true;
                 }
+            } else {
+                $settings['flexform']['institutionCollection'] = null;
             }
 
             // Institutions by type
-            if (isset($settings['flexform']['institutionType']) && $settings['flexform']['institutionType']) {
+            if (!empty($settings['flexform']['institutionType'])) {
                 $query = $this->getInstitutionQuery($pageSize, $page);
 
                 // Filter by type
                 $this->setInstitutionTypeFilter($query, $settings['flexform']['institutionType']);
 
                 // Add category filter
-                $this->setCategoryFilter($query, $settings['flexform']['categories']);
+                $this->setCategoryFilter($query, !empty($settings['flexform']['categories']) ?: '');
 
                 if ($this->getInstitutionsByQuery($query, $allItems, $pageSize, $mapItems, $recordCount) === false) {
                     $limitExceeded = true;
                 }
+            } else {
+                $settings['flexform']['institutionType'] = null;
             }
 
             // Institutions by category
-            if ($settings['flexform']['categories'] &&
+            if (!empty($settings['flexform']['categories']) &&
                 (!$settings['flexform']['institutionType'] && !$settings['flexform']['institutionCollection'])
             ) {
                 $query = $this->getInstitutionQuery($pageSize, $page);
@@ -418,7 +421,7 @@ class MapController extends BaseController
             }
         }
 
-        if ($settings['flexform']['allPersons'] == 1) {
+        if (!empty($settings['flexform']['allPersons']) && ($settings['flexform']['allPersons'] == 1)) {
             // All people
             $query = $this->getPersonQuery($pageSize, $page);
 
@@ -428,7 +431,7 @@ class MapController extends BaseController
         } else {
 
             // People by function type
-            if ($settings['flexform']['functionType']) {
+            if (!empty($settings['flexform']['functionType'])) {
                 $query = $this->getPersonQuery($pageSize, $page);
 
                 // Filter by type
@@ -440,7 +443,7 @@ class MapController extends BaseController
             }
 
             // People by available function
-            if ($settings['flexform']['availableFunction']) {
+            if (!empty($settings['flexform']['availableFunction'])) {
                 $query = $this->getPersonQuery($pageSize, $page);
 
                 // Filter by available function
@@ -452,7 +455,7 @@ class MapController extends BaseController
             }
 
             // Selected people
-            if ($settings['flexform']['personCollection']) {
+            if (!empty($settings['flexform']['personCollection'])) {
                 $query = $this->getPersonQuery($pageSize, $page);
 
                 // Filter by type
@@ -475,29 +478,33 @@ class MapController extends BaseController
     {
         $filter = 0;
 
-        if ($settings['flexform']['allInstitutions']) {
+        if (!empty($settings['flexform']['allInstitutions'])) {
             $filter++;
         } else {
-            if ($settings['flexform']['institutionCollection']) {
+            if (!empty($settings['flexform']['institutionCollection'])) {
                 $filter++;
+            } else {
+                $settings['flexform']['institutionCollection'] = null;
             }
-            if ($settings['flexform']['institutionCollection']) {
+            if (!empty($settings['flexform']['institutionCollection'])) {
                 $filter++;
+            } else {
+                $settings['flexform']['institutionCollection'] = null;
             }
-            if ($settings['flexform']['categories'] && (!$settings['flexform']['institutionType'] && !$settings['flexform']['institutionCollection'])) {
+            if (!empty($settings['flexform']['categories']) && (!$settings['flexform']['institutionType'] && !$settings['flexform']['institutionCollection'])) {
                 $filter++;
             }
         }
-        if ($settings['flexform']['allPersons'] == 1) {
+        if (!empty($settings['flexform']['allPersons']) && ($settings['flexform']['allPersons'] == 1)) {
             $filter++;
         } else {
-            if ($settings['flexform']['functionType']) {
+            if (!empty($settings['flexform']['functionType'])) {
                 $filter++;
             }
-            if ($settings['flexform']['availableFunction']) {
+            if (!empty($settings['flexform']['availableFunction'])) {
                 $filter++;
             }
-            if ($settings['flexform']['personCollection']) {
+            if (!empty($settings['flexform']['personCollection'])) {
                 $filter++;
             }
         }
@@ -528,7 +535,7 @@ class MapController extends BaseController
             }
         } else {
             // Pagination is inactive: use general limit
-            if (!isset($settings['maxItems'])) $settings['maxItems'] = 20;
+            if (empty($settings['maxItems'])) $settings['maxItems'] = 20;
             $limit = isset($settings['flexform']['maxItems']) ?: $settings['maxItems'];
             $pageSize = floor($limit / 4);
         }
