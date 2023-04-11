@@ -491,7 +491,7 @@ class MapController extends BaseController
             } else {
                 $settings['flexform']['institutionCollection'] = null;
             }
-            if (!empty($settings['flexform']['categories']) && (!$settings['flexform']['institutionType'] && !$settings['flexform']['institutionCollection'])) {
+            if (!empty($settings['flexform']['categories']) && (empty($settings['flexform']['institutionType']) && empty($settings['flexform']['institutionCollection']))) {
                 $filter++;
             }
         }

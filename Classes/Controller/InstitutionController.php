@@ -182,7 +182,7 @@ class InstitutionController extends BaseController
             ]
         ];
 
-        if ($this->settings['flexform']['singleInstitution']) {
+        if (!empty($this->settings['flexform']['singleInstitution'])) {
             // Institution is selected in flexform
             try {
                 /** @var Institution $institution */
@@ -215,7 +215,7 @@ class InstitutionController extends BaseController
             $mapMarkers = $this->getMapMarkers($institution, FALSE);
 
             // Parse opening hours table
-            if ($this->settings['flexform']['openingHours']) {
+            if (!empty($this->settings['flexform']['openingHours'])) {
                 $openingHours = $this->prepareOpeningHours($institution);
             }
 
@@ -433,7 +433,7 @@ class InstitutionController extends BaseController
      */
     public function mapInstitutionTypeToKeyword($id)
     {
-        return $this->settings['mapping']['institutionIcon'][$id] ? $this->settings['mapping']['institutionIcon'][$id] : 'default';
+        return !empty($this->settings['mapping']['institutionIcon'][$id]) ? $this->settings['mapping']['institutionIcon'][$id] : 'default';
     }
 
     /**
