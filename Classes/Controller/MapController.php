@@ -281,7 +281,7 @@ class MapController extends BaseController
 
             $cObj = $this->configurationManager->getContentObject();
 
-            if (!$this->settings['flexform']['stream']) {
+            if (empty($this->settings['flexform']['stream'])) {
                 // In einem Rutsch nachladen
                 $this->uriBuilder->reset()
                     ->setTargetPageUid($GLOBALS['TSFE']->id)
