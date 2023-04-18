@@ -97,7 +97,7 @@ class PersonController extends BaseController
         }
 
         // Sorting
-        if ($this->settings['flexform']['sortOption']) {
+        if (!empty($this->settings['flexform']['sortOption'])) {
             $query->setSort($this->settings['flexform']['sortOption']);
         }
 
@@ -186,7 +186,7 @@ class PersonController extends BaseController
 
         try {
 
-            if ($this->settings['flexform']['singlePerson']) {
+            if (!empty($this->settings['flexform']['singlePerson'])) {
                 // Personis selected in flexform
                 $person = $this->napiService->resolveUrl($this->settings['flexform']['singlePerson'], $includes);
             } elseif ((int)$uid) {
@@ -508,7 +508,7 @@ class PersonController extends BaseController
     {
         $filter = [];
 
-        if ($this->settings['filter']['cityCollection']) {
+        if (!empty($this->settings['filter']['cityCollection'])) {
             $cities = GeneralUtility::trimExplode(',', $this->settings['filter']['cityCollection']);
 
             $index = 0;

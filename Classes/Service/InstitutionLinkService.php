@@ -94,7 +94,7 @@ class InstitutionLinkService implements SingletonInterface
                     break;
             }
 
-            if ($this->settings['linkSpecificInstitutionsInternal'] != '') {
+            if (!empty($this->settings['linkSpecificInstitutionsInternal'])) {
                 $manualInstitutionUids = GeneralUtility::intExplode(',', $this->settings['linkSpecificInstitutionsInternal'], true);
                 $institutionUids = array_merge($institutionUids, $manualInstitutionUids);
             }

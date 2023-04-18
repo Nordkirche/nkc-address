@@ -108,7 +108,7 @@ class InstitutionController extends BaseController
         }
 
         // Sorting
-        if ($this->settings['flexform']['sortOption']) {
+        if (!empty($this->settings['flexform']['sortOption'])) {
             $query->setSort($this->settings['flexform']['sortOption']);
         }
 
@@ -524,7 +524,7 @@ class InstitutionController extends BaseController
     {
         $filter = [];
 
-        if ($this->settings['filter']['cityCollection']) {
+        if (!empty($this->settings['filter']['cityCollection'])) {
             $cities = GeneralUtility::trimExplode(',', $this->settings['filter']['cityCollection']);
 
             $index = 0;
@@ -537,7 +537,7 @@ class InstitutionController extends BaseController
             }
         }
 
-        if ($this->settings['filter']['categoryCollection']) {
+        if (!empty($this->settings['filter']['categoryCollection'])) {
             $categories = GeneralUtility::trimExplode(',', $this->settings['filter']['categoryCollection']);
             foreach ($categories as $categoryUid) {
                 $category = $this->categoryRepository->findByUid($categoryUid);
