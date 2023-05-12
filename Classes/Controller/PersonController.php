@@ -70,25 +70,36 @@ class PersonController extends BaseController
         $this->setPagination($query, $currentPage);
 
         // Filter by person
-        $this->setPersonFilter($query, $this->settings['flexform']['personCollection']);
+	    if (!empty($this->settings['flexform']['personCollection'])) {
+	        $this->setPersonFilter($query, $this->settings['flexform']['personCollection']);
+	    }
+
 
         // Filter by type
-        $this->setFunctionTypeFilter($query, $this->settings['flexform']['functionType']);
+        if (!empty($this->settings['flexform']['functionType'])) {
+			$this->setFunctionTypeFilter($query, $this->settings['flexform']['functionType']);
+        }
 
         // Filter by available function
-        $this->setAvailableFunctionFilter($query, $this->settings['flexform']['availableFunction']);
+        if (!empty($this->settings['flexform']['availableFunction'])) {
+			$this->setAvailableFunctionFilter($query, $this->settings['flexform']['availableFunction']);
+        }
 
         // Filter by Institution
-        $this->setPersonInstitutionFilter($query, $this->settings['flexform']['institutionCollection']);
+        if (!empty($this->settings['flexform']['institutionCollection'])) {
+			$this->setPersonInstitutionFilter($query, $this->settings['flexform']['institutionCollection']);
+        }
 
         // Filter by geoposition
-        $this->setGeoFilter(
-            $query,
-            $this->settings['flexform']['geosearch'],
-            $this->settings['flexform']['latitude'],
-            $this->settings['flexform']['longitude'],
-            $this->settings['flexform']['radius']
-        );
+        if (!empty($this->settings['flexform']['geosearch'])) {
+	        $this->setGeoFilter(
+		        $query,
+		        $this->settings['flexform']['geosearch'],
+		        $this->settings['flexform']['latitude'],
+		        $this->settings['flexform']['longitude'],
+		        $this->settings['flexform']['radius']
+	        );
+        }
 
         if ($searchRequest instanceof SearchRequest) {
             $this->setUserFilters($query, $searchRequest);
