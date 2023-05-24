@@ -20,7 +20,7 @@
 
                 <f:if condition="{settings.flexform.paginate.mode} > 1">
                     <f:then>
-						<f:for each="{paginatedPersons}" as="person">
+						<f:for each="{persons}" as="person">
 							<f:render partial="Person/Teaser" arguments="{person: person}" />
 						</f:for>
 						<f:render partial="Pagination" arguments="{_all}"></f:render>

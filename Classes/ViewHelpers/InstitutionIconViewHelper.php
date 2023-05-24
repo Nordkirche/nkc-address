@@ -38,7 +38,7 @@ class InstitutionIconViewHelper extends AbstractViewHelper
             $type = $this->renderChildren();
         }
 
-        $iconName = $mapping[$type] ? $mapping[$type] : 'default';
+        $iconName = !empty($mapping[$type]) ? $mapping[$type] : 'default';
 
         return $baseName ? sprintf($baseName, $iconName) : $iconName;
     }

@@ -24,7 +24,7 @@
         <f:if condition="{settings.flexform.paginate.mode} > 1">
             <f:then>
                 <f:comment>
-					<f:for each="{paginatedMapItems}" as="mapItem" key="id">
+					<f:for each="{mapItems}" as="mapItem" key="id">
 						<f:switch expression="{mapItem->n:className()}">
 							<f:case value="Institution">
 								<f:render partial="Institution/Teaser.html" arguments="{institution: mapItem, settings: settings}" />
