@@ -2,7 +2,9 @@
 
 namespace Nordkirche\NkcAddress\ViewHelpers;
 
-class InstitutionIconViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
+class InstitutionIconViewHelper extends AbstractViewHelper
 {
 
     /**
@@ -13,7 +15,7 @@ class InstitutionIconViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstra
     /**
      * Initialize arguments.
      *
-     * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
+     * @throws Exception
      */
     public function initializeArguments()
     {
@@ -36,7 +38,7 @@ class InstitutionIconViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\Abstra
             $type = $this->renderChildren();
         }
 
-        $iconName = $mapping[$type] ? $mapping[$type] : 'default';
+        $iconName = !empty($mapping[$type]) ? $mapping[$type] : 'default';
 
         return $baseName ? sprintf($baseName, $iconName) : $iconName;
     }

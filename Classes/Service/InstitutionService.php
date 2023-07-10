@@ -2,6 +2,7 @@
 
 namespace Nordkirche\NkcAddress\Service;
 
+use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Model\Person\Person;
 
@@ -23,7 +24,7 @@ class InstitutionService
         foreach ($functionTypes as $genFunctionType) {
             /** @var Person $person */
             foreach ($persons as $person) {
-                /** @var \Nordkirche\Ndk\Domain\Model\Person\PersonFunction $personFunction */
+                /** @var PersonFunction $personFunction */
                 foreach ($person->getFunctions() as $personFunction) {
                     // is this function linked to institution?
                     $functionInstitution = $personFunction->getInstitution();

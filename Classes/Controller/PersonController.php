@@ -2,6 +2,13 @@
 
 namespace Nordkirche\NkcAddress\Controller;
 
+use Nordkirche\NkcBase\Controller\BaseController;
+use Psr\Http\Message\ResponseInterface;
+use Nordkirche\Ndk\Domain\Query\PersonQuery;
+use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
+use Nordkirche\Ndk\Domain\Model\Institution\InstitutionType;
+use Nordkirche\Ndk\Domain\Model\Address;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Model\Person\Person;
 use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
@@ -18,16 +25,16 @@ use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
-class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
+class PersonController extends BaseController
 {
 
     /**
-     * @var \Nordkirche\Ndk\Domain\Repository\PersonRepository
+     * @var PersonRepository
      */
     protected $personRepository;
 
     /**
-     * @var \Nordkirche\Ndk\Service\NapiService
+     * @var NapiService
      */
     protected $napiService;
 
@@ -53,35 +60,46 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
      * List action
      *
      * @param int $currentPage
-     * @param \Nordkirche\NkcAddress\Domain\Dto\SearchRequest $searchRequest
+     * @param SearchRequest $searchRequest
      */
-    public function listAction($currentPage = 1, $searchRequest = null)
+    public function listAction($currentPage = 1, $searchRequest = null): ResponseInterface
     {
-        $query = new \Nordkirche\Ndk\Domain\Query\PersonQuery();
+        $query = new PersonQuery();
 
         // Set pagination parameters
         $this->setPagination($query, $currentPage);
 
         // Filter by person
-        $this->setPersonFilter($query, $this->settings['flexform']['personCollection']);
+	    if (!empty($this->settings['flexform']['personCollection'])) {
+	        $this->setPersonFilter($query, $this->settings['flexform']['personCollection']);
+	    }
+
 
         // Filter by type
-        $this->setFunctionTypeFilter($query, $this->settings['flexform']['functionType']);
+        if (!empty($this->settings['flexform']['functionType'])) {
+			$this->setFunctionTypeFilter($query, $this->settings['flexform']['functionType']);
+        }
 
         // Filter by available function
-        $this->setAvailableFunctionFilter($query, $this->settings['flexform']['availableFunction']);
+        if (!empty($this->settings['flexform']['availableFunction'])) {
+			$this->setAvailableFunctionFilter($query, $this->settings['flexform']['availableFunction']);
+        }
 
         // Filter by Institution
-        $this->setPersonInstitutionFilter($query, $this->settings['flexform']['institutionCollection']);
+        if (!empty($this->settings['flexform']['institutionCollection'])) {
+			$this->setPersonInstitutionFilter($query, $this->settings['flexform']['institutionCollection']);
+        }
 
         // Filter by geoposition
-        $this->setGeoFilter(
-            $query,
-            $this->settings['flexform']['geosearch'],
-            $this->settings['flexform']['latitude'],
-            $this->settings['flexform']['longitude'],
-            $this->settings['flexform']['radius']
-        );
+        if (!empty($this->settings['flexform']['geosearch'])) {
+	        $this->setGeoFilter(
+		        $query,
+		        $this->settings['flexform']['geosearch'],
+		        $this->settings['flexform']['latitude'],
+		        $this->settings['flexform']['longitude'],
+		        $this->settings['flexform']['radius']
+	        );
+        }
 
         if ($searchRequest instanceof SearchRequest) {
             $this->setUserFilters($query, $searchRequest);
@@ -90,7 +108,7 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
         }
 
         // Sorting
-        if ($this->settings['flexform']['sortOption']) {
+        if (!empty($this->settings['flexform']['sortOption'])) {
             $query->setSort($this->settings['flexform']['sortOption']);
         }
 
@@ -106,15 +124,17 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
             'content' => $cObj->data,
             'filter' => $this->getFilterValues(),
             'searchPid' => $GLOBALS['TSFE']->id,
-            'searchRequest' => $searchRequest
+            'searchRequest' => $searchRequest,
+            'pagination' => $this->getPagination($persons, $currentPage)
 
         ]);
+        return $this->htmlResponse();
     }
 
     /**
-     * @param \Nordkirche\NkcAddress\Domain\Dto\SearchRequest $searchRequest
+     * @param SearchRequest $searchRequest
      */
-    public function searchFormAction($searchRequest = null)
+    public function searchFormAction($searchRequest = null): ResponseInterface
     {
         if (!($searchRequest instanceof SearchRequest)) {
             $searchRequest = GeneralUtility::makeInstance(SearchRequest::class);
@@ -125,11 +145,12 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
             'filter' => $this->getFilterValues(),
             'searchRequest' => $searchRequest
         ]);
+        return $this->htmlResponse();
     }
 
     /**
-     * @param \Nordkirche\NkcAddress\Domain\Dto\SearchRequest $searchRequest
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @param SearchRequest $searchRequest
+     * @throws StopActionException
      */
     public function searchAction($searchRequest = null)
     {
@@ -143,7 +164,7 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
     }
 
     /**
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws StopActionException
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function redirectAction()
@@ -162,7 +183,7 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
      * @param int $uid
      * @throws ImmediateResponseException
      */
-    public function showAction($uid = null)
+    public function showAction($uid = null): ResponseInterface
     {
         $includes = [   Person::RELATION_FUNCTIONS => [
                             PersonFunction::RELATION_ADDRESS,
@@ -176,7 +197,7 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
 
         try {
 
-            if ($this->settings['flexform']['singlePerson']) {
+            if (!empty($this->settings['flexform']['singlePerson'])) {
                 // Personis selected in flexform
                 $person = $this->napiService->resolveUrl($this->settings['flexform']['singlePerson'], $includes);
             } elseif ((int)$uid) {
@@ -209,12 +230,13 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
             );
             throw new ImmediateResponseException($response);
         }
+        return $this->htmlResponse();
     }
 
     /**
      * Create marker array
      *
-     * @param \Nordkirche\Ndk\Domain\Model\Person\Person $person
+     * @param Person $person
      * @return array
      */
     private function getMapMarkers($person)
@@ -237,21 +259,21 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
      *
      * @param array $mapMarkers
      * @param int $functionId
-     * @param \Nordkirche\Ndk\Domain\Model\Person\Person $person
-     * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $institution
+     * @param Person $person
+     * @param Institution $institution
      * @param \Nordkirche\Ndk\Domain\Model\Address
      */
     private function createMarker(&$mapMarkers, $functionId, $person, $institution, $address)
     {
 
         // Get type of institution
-        if ($institution->getInstitutionType() instanceof \Nordkirche\Ndk\Domain\Model\Institution\InstitutionType) {
+        if ($institution->getInstitutionType() instanceof InstitutionType) {
             $type = $institution->getInstitutionType()->getName();
         } else {
             $type = 'default';
         }
 
-        if ($address instanceof \Nordkirche\Ndk\Domain\Model\Address) {
+        if ($address instanceof Address) {
             // Check geo coordinates
             if ($address->getLatitude() && $address->getLongitude()) {
                 $marker = [
@@ -273,7 +295,7 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
     /**
      * Add a marker
      *
-     * @param \Nordkirche\Ndk\Domain\Model\Person\Person $person
+     * @param Person $person
      * @param boolean $asyncInfo
      * @return array
      */
@@ -300,11 +322,11 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
             }
         }
 
-        if (!($address instanceof \Nordkirche\Ndk\Domain\Model\Address)) {
+        if (!($address instanceof Address)) {
             $address = $person->getAddress();
         }
 
-        if ($address instanceof \Nordkirche\Ndk\Domain\Model\Address) {
+        if ($address instanceof Address) {
             // Check geo coordinates
             if ($address->getLatitude() && $address->getLongitude()) {
                 $marker = [
@@ -324,8 +346,8 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
     }
 
     /**
-     * @param \Nordkirche\Ndk\Domain\Model\Person\Person $person
-     * @param \Nordkirche\Ndk\Domain\Model\Institution\Institution $institution
+     * @param Person $person
+     * @param Institution $institution
      * @param \Nordkirche\Ndk\Domain\Model\Address
      * @param string $template
      * @return string
@@ -403,7 +425,7 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
 
         $this->personRepository = $this->api->factory(PersonRepository::class);
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->configurationManager = $objectManager->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager');
+        $this->configurationManager = $objectManager->get(ConfigurationManager::class);
 
         /** @var ContentObjectRenderer $contentObjectRenderer */
         $contentObjectRenderer = $objectManager->get(ContentObjectRenderer::class);
@@ -416,7 +438,7 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
 
         $this->settings['flexform'] = $this->settings['flexformDefault'];
 
-        $query = new \Nordkirche\Ndk\Domain\Query\PersonQuery();
+        $query = new PersonQuery();
 
         $query->setInclude(
             [
@@ -456,11 +478,11 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
                 }
             }
 
-            if (!($address instanceof \Nordkirche\Ndk\Domain\Model\Address)) {
+            if (!($address instanceof Address)) {
                 $address = $person->getAddress();
             }
 
-            if ($address instanceof \Nordkirche\Ndk\Domain\Model\Address) {
+            if ($address instanceof Address) {
                 $result .= $this->renderMapInfo($person, $institution, $address, 'Person/AsyncMapInfo');
             }
         }
@@ -469,8 +491,8 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
     }
 
     /**
-     * @param \Nordkirche\Ndk\Domain\Query\PersonQuery $query
-     * @param \Nordkirche\NkcAddress\Domain\Dto\SearchRequest $searchRequest
+     * @param PersonQuery $query
+     * @param SearchRequest $searchRequest
      */
     private function setUserFilters($query, $searchRequest)
     {
@@ -497,7 +519,7 @@ class PersonController extends \Nordkirche\NkcBase\Controller\BaseController
     {
         $filter = [];
 
-        if ($this->settings['filter']['cityCollection']) {
+        if (!empty($this->settings['filter']['cityCollection'])) {
             $cities = GeneralUtility::trimExplode(',', $this->settings['filter']['cityCollection']);
 
             $index = 0;

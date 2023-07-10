@@ -1,6 +1,8 @@
 <?php
 namespace  Nordkirche\NkcAddress\ViewHelpers;
 
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 use Nordkirche\Ndk\Domain\Model\Address;
 use Nordkirche\Ndk\Domain\Model\ContactItem;
 use Nordkirche\Ndk\Domain\Model\File\Image;
@@ -8,7 +10,7 @@ use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Model\Person\Person;
 use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
 
-class JsonViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper
+class JsonViewHelper extends AbstractViewHelper
 {
 
     /**
@@ -19,7 +21,7 @@ class JsonViewHelper extends \TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelpe
     /**
      * Initialize arguments.
      *
-     * @throws \TYPO3Fluid\Fluid\Core\ViewHelper\Exception
+     * @throws Exception
      */
     public function initializeArguments()
     {
