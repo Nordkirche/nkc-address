@@ -223,12 +223,22 @@ class PersonController extends BaseController
 
         } catch (\Exception $e) {
             // Page not found
-            $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
-                $GLOBALS['TYPO3_REQUEST'],
-                'Person konnte nicht gefunden werden',
-                ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
-            );
-            throw new ImmediateResponseException($response);
+            if (!empty($this->settings['flexform']['showTemplate']) && ($this->settings['flexform']['showTemplate'] == 'MiniVCard')) {
+                // Ignore error
+                $this->view->assignMultiple([
+                    'person' => false,
+                    'mapMarkers' => [],
+                    'content' => ''
+                ]);
+            } else {
+                // Throw exception
+                $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
+                    $GLOBALS['TYPO3_REQUEST'],
+                    'Person konnte nicht gefunden werden',
+                    ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
+                );
+                throw new ImmediateResponseException($response);
+            }
         }
         return $this->htmlResponse();
     }
