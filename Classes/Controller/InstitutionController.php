@@ -3,6 +3,13 @@
 namespace Nordkirche\NkcAddress\Controller;
 
 use Nordkirche\NkcBase\Controller\BaseController;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Http\Uri;
+use TYPO3\CMS\Core\Routing\PageArguments;
+use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\Entity\SiteInterface;
+use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Extbase\Domain\Repository\CategoryRepository;
 use Psr\Http\Message\ResponseInterface;
 use Nordkirche\Ndk\Domain\Query\InstitutionQuery;
@@ -22,10 +29,12 @@ use Nordkirche\Ndk\Domain\Model\Institution\Team;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
 
 class InstitutionController extends BaseController
@@ -294,7 +303,7 @@ class InstitutionController extends BaseController
             $config = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 
             $absTemplatePaths = [];
-            if (is_array($config['view']['templateRootPaths'])) {
+            if (!empty($config['view']['templateRootPaths']) && is_array($config['view']['templateRootPaths'])) {
                 foreach ($config['view']['templateRootPaths'] as $path) {
                     $absTemplatePaths[] = GeneralUtility::getFileAbsFileName($path);
                 }
@@ -304,7 +313,7 @@ class InstitutionController extends BaseController
             }
 
             $absLayoutPaths = [];
-            if (is_array($config['view']['layoutRootPaths'])) {
+            if (!empty($config['view']['layoutRootPaths']) && is_array($config['view']['layoutRootPaths'])) {
                 foreach ($config['view']['layoutRootPaths'] as $path) {
                     $absLayoutPaths[] = GeneralUtility::getFileAbsFileName($path);
                 }
@@ -315,7 +324,7 @@ class InstitutionController extends BaseController
             }
 
             $absPartialPaths = [];
-            if (is_array($config['view']['partialRootPaths'])) {
+            if (!empty($config['view']['partialRootPaths']) && is_array($config['view']['partialRootPaths'])) {
                 foreach ($config['view']['partialRootPaths'] as $path) {
                     $absPartialPaths[] = GeneralUtility::getFileAbsFileName($path);
                 }
@@ -394,14 +403,17 @@ class InstitutionController extends BaseController
         parent::initializeAction();
 
         $this->institutionRepository = $this->api->factory(InstitutionRepository::class);
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->configurationManager = $objectManager->get(ConfigurationManager::class);
+        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
 
         /** @var ContentObjectRenderer $contentObjectRenderer */
-        $contentObjectRenderer = $objectManager->get(ContentObjectRenderer::class);
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $this->configurationManager->setContentObject($contentObjectRenderer);
 
-        // Required for link.email viewhelper
+        if (empty($GLOBALS['TSFE'])) {
+            // We need this for f:link.email viewhelper
+            $GLOBALS['TSFE'] = $this->getTSFE();
+        }
+
         $GLOBALS['TSFE']->cObj = $contentObjectRenderer;
 
         $this->settings = $config['plugin']['tx_nkcaddress_institution']['settings'];
@@ -559,12 +571,6 @@ class InstitutionController extends BaseController
      * @param Institution $institution
      * @return array
      */
-    /**
-     * Prepare opening hours for output
-     *
-     * @param Institution $institution
-     * @return array
-     */
     private function prepareOpeningHours($institution)
     {
         $openingHoursTable = [];
@@ -616,9 +622,31 @@ class InstitutionController extends BaseController
         return implode('.', array_reverse(explode('-', $date)));
     }
 
+    /**
+     * Instantiate TSFE (for link viewhelper)
+     *
+     * @return mixed|\Psr\Log\LoggerAwareInterface|\TYPO3\CMS\Core\SingletonInterface|TypoScriptFrontendController
+     */
+    private function getTSFE()
+    {
+        $context = GeneralUtility::makeInstance(Context::class, []);
+        $sites = GeneralUtility::makeInstance(SiteFinder::class)->getAllSites();
+        $firstSite = array_key_first($sites);
+        $siteLanguages = $sites[$firstSite]->getAllLanguages();
+        $pageArguments = GeneralUtility::makeInstance(PageArguments::class, $sites[$firstSite]->getRootPageId(), 0, []);
+        $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
+        return GeneralUtility::makeInstance(TypoScriptFrontendController::class, $context, $sites[$firstSite], $siteLanguages[0], $pageArguments, $frontendUser);
+    }
+
+    /**
+     * @param CategoryRepository $categoryRepository
+     * @return void
+     */
     public function injectCategoryRepository(CategoryRepository $categoryRepository): void
     {
         $this->categoryRepository = $categoryRepository;
     }
+
+
 
 }

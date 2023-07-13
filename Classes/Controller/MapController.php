@@ -376,7 +376,7 @@ class MapController extends BaseController
                 $this->setInstitutionFilter(
                     $query,
                     $settings['flexform']['institutionCollection'],
-                    isset($settings['flexform']['selectInstitutionOption']) ?: ''
+                    !empty($settings['flexform']['selectInstitutionOption']) ? $settings['flexform']['selectInstitutionOption']: ''
                 );
 
                 // Add category filter
@@ -397,7 +397,7 @@ class MapController extends BaseController
                 $this->setInstitutionTypeFilter($query, $settings['flexform']['institutionType']);
 
                 // Add category filter
-                $this->setCategoryFilter($query, !empty($settings['flexform']['categories']) ?: '');
+                $this->setCategoryFilter($query, !empty($settings['flexform']['categories']) ? $settings['flexform']['categories'] : '');
 
                 if ($this->getInstitutionsByQuery($query, $allItems, $pageSize, $mapItems, $recordCount) === false) {
                     $limitExceeded = true;
@@ -524,7 +524,7 @@ class MapController extends BaseController
 
         if (isset($settings['flexform']['paginate']['mode']) && ((int)$settings['flexform']['paginate']['mode'] > 0)) {
             // Pagination is active: use page limit
-            $limit = isset($settings['flexform']['paginate']['itemsPerPage']) ?: $settings['paginate']['itemsPerPage'];
+            $limit = !empty($settings['flexform']['paginate']['itemsPerPage']) ? $settings['flexform']['paginate']['itemsPerPage'] : $settings['paginate']['itemsPerPage'];
             $pageSize = floor($limit / max($filters, 1));
 
             // Set page
@@ -536,7 +536,7 @@ class MapController extends BaseController
         } else {
             // Pagination is inactive: use general limit
             if (empty($settings['maxItems'])) $settings['maxItems'] = 20;
-            $limit = isset($settings['flexform']['maxItems']) ?: $settings['maxItems'];
+            $limit = !empty($settings['flexform']['maxItems']) ? $settings['flexform']['maxItems'] : $settings['maxItems'];
             $pageSize = floor($limit / 4);
         }
 
