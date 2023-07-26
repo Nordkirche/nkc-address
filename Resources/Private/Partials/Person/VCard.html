@@ -47,7 +47,7 @@
 
                     <f:for each="{mapMarkers}" key="id" as="marker">
                         <f:if condition="{id} == {function.id}">
-                            <nkg:widget.googleMap markers="{0: marker}" configuration="" />
+                            <nkg:googleMap markers="{0: marker}" configuration="" />
                         </f:if>
                     </f:for>
                 </f:if>
@@ -68,7 +68,7 @@
 
                     <f:for each="{mapMarkers}" key="id" as="marker">
                         <f:if condition="{id} == {function.id}">
-                            <nkg:widget.googleMap markers="{0: marker}" configuration="" fitOnClick=".folding-section__title" />
+                            <nkg:googleMap markers="{0: marker}" configuration="" fitOnClick=".folding-section__title" />
                         </f:if>
                     </f:for>
                 </f:if>

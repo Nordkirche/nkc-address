@@ -82,7 +82,7 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
                 $content .= '<p>Layout: ' . ($layoutKey == 'MiniVCard' ? 'Mini-Visitenkarte' : 'Visitenkarte') . '</p>';
 
                 $content .= $this->renderInstitutionSingleView();
-            } elseif ($action == 'searchForm') {
+            } elseif (($action == 'searchForm') || ($action == 'redirect')) {
                 $content .= '';
             } else {
                 $content .= $this->renderInstitutionListView();
@@ -110,7 +110,7 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
                 $content .= '<p>Layout: ' . ($layoutKey == 'MiniVCard' ? 'Mini-Visitenkarte' : 'Visitenkarte') . '</p>';
 
                 $content .= $this->renderPersonSingleView();
-            } elseif ($action == 'searchForm') {
+            } elseif (($action == 'searchForm') || ($action == 'redirect')) {
                 $content .= '';
             } else {
                 $content .= $this->renderPersonListView();
@@ -354,9 +354,9 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
     {
         $flexform = $this->flexformData;
 
-        if (isset($flexform['data'])) {
+        if (!empty($flexform['data'])) {
             $flexform = $flexform['data'];
-            if (is_array($flexform) && is_array($flexform[$sheet]) && is_array($flexform[$sheet]['lDEF'])
+            if (is_array($flexform) && !empty($flexform[$sheet]) && is_array($flexform[$sheet]) && is_array($flexform[$sheet]['lDEF'])
                 && isset($flexform[$sheet]['lDEF'][$key]) && is_array($flexform[$sheet]['lDEF'][$key]) && isset($flexform[$sheet]['lDEF'][$key]['vDEF'])
             ) {
                 return $flexform[$sheet]['lDEF'][$key]['vDEF'];

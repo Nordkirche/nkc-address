@@ -37,7 +37,7 @@
     </f:if>
 
     <f:if condition="{institution.address.latitude} && {institution.address.longitude} && {institution.mapVisibility}">
-        <nkg:widget.googleMap markers="{mapMarkers}" configuration="" />
+        <nkg:googleMap markers="{mapMarkers}" configuration="" />
     </f:if>
 
     <f:render partial="Institution/OpeningHours" arguments="{institution: institution, settings: settings}" />
