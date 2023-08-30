@@ -185,7 +185,9 @@ class InstitutionController extends BaseController
             Institution::RELATION_PARENT_INSTITUTIONS,
             Institution::RELATION_TEAMS => [
                 Team::RELATION_FUNCTIONS => [
-                    PersonFunction::RELATION_PERSON
+                    PersonFunction::RELATION_PERSON,
+                    PersonFunction::RELATION_FUNCTION_TYPE,
+                    PersonFunction::RELATION_AVAILABLE_FUNCTION
                 ],
                 Team::RELATION_FUNCTION_TYPE,
             ]
