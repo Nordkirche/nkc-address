@@ -370,7 +370,7 @@ class PersonController extends BaseController
             $config = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 
             $absTemplatePaths = [];
-            if (is_array($config['view']['templateRootPaths'])) {
+            if (!empty($config['view']) && is_array($config['view']['templateRootPaths'])) {
                 foreach ($config['view']['templateRootPaths'] as $path) {
                     $absTemplatePaths[] = GeneralUtility::getFileAbsFileName($path);
                 }
@@ -380,7 +380,7 @@ class PersonController extends BaseController
             }
 
             $absLayoutPaths = [];
-            if (is_array($config['view']['layoutRootPaths'])) {
+            if (!empty($config['view']) && is_array($config['view']['layoutRootPaths'])) {
                 foreach ($config['view']['layoutRootPaths'] as $path) {
                     $absLayoutPaths[] = GeneralUtility::getFileAbsFileName($path);
                 }
@@ -390,7 +390,7 @@ class PersonController extends BaseController
             }
 
             $absPartialPaths = [];
-            if (is_array($config['view']['partialRootPaths'])) {
+            if (!empty($config['view']) && is_array($config['view']['partialRootPaths'])) {
                 foreach ($config['view']['partialRootPaths'] as $path) {
                     $absPartialPaths[] = GeneralUtility::getFileAbsFileName($path);
                 }
@@ -442,6 +442,8 @@ class PersonController extends BaseController
         $this->configurationManager->setContentObject($contentObjectRenderer);
 
         // Required for link.email viewhelper
+        if (empty($GLOBALS['TSFE'])) $GLOBALS['TSFE'] = new \stdClass();
+
         $GLOBALS['TSFE']->cObj = $contentObjectRenderer;
 
         $this->settings = $config['plugin']['tx_nkcaddress_person']['settings'];

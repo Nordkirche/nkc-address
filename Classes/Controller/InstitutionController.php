@@ -242,13 +242,24 @@ class InstitutionController extends BaseController
             ]);
 
         } else {
-            // Page not found
-            $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
-                $GLOBALS['TYPO3_REQUEST'],
-                'Einrichtung konnte nicht gefunden werden',
-                ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
-            );
-            throw new ImmediateResponseException($response);
+            if (!empty($this->settings['flexform']['showTemplate']) && ($this->settings['flexform']['showTemplate'] == 'MiniVCard')) {
+                // Ignore error
+                $this->view->assignMultiple([
+                    'institution' => false,
+                    'childInstitutions' => [],
+                    'mapMarkers' => [],
+                    'openingHours' => [],
+                    'content' => ''
+                ]);
+            } else {
+                // Page not found
+                $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
+                    $GLOBALS['TYPO3_REQUEST'],
+                    'Einrichtung konnte nicht gefunden werden',
+                    ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
+                );
+                throw new ImmediateResponseException($response);
+            }
         }
         return $this->htmlResponse();
 
