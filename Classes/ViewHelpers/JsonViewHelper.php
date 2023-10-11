@@ -69,7 +69,7 @@ class JsonViewHelper extends AbstractViewHelper
                 '@context' => 'https://schema.org',
                 '@type' => 'Person',
                 'affiliation' => (($function instanceof PersonFunction) && ($function->getInstitution() instanceof Institution)) ? $this->getInstitutionData($function->getInstitution()) : '',
-                'email' => $this->getContactItem($function, 'E-Mail'),
+                'email' => ($function instanceof PersonFunction) ? $this->getContactItem($function, 'E-Mail') : '',
                 'image' => $image,
                 'jobTitle' =>  ($function instanceof PersonFunction) ? $function->getTitle() : '',
                 'name' => $person->getName()->getFormatted(),
