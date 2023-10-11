@@ -104,7 +104,7 @@ class JsonViewHelper extends AbstractViewHelper
         if ($institution->getLogo() instanceof Image) {
             $image = $institution->getLogo()->render(600);
         } elseif ($institution->getPicture() instanceof Image) {
-            $institution->getPicture()->render(600);
+            $image = $institution->getPicture()->render(600);
         } else {
             $image = '';
         }
