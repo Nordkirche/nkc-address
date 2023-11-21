@@ -380,7 +380,9 @@ class MapController extends BaseController
                 );
 
                 // Add category filter
-                $this->setCategoryFilter($query, $settings['flexform']['categories']);
+                if (!empty($settings['flexform']['categories'])) {
+                    $this->setCategoryFilter($query, $settings['flexform']['categories']);
+                }
 
                 if ($this->getInstitutionsByQuery($query, $allItems, $pageSize, $mapItems, $recordCount) === false) {
                     $limitExceeded = true;

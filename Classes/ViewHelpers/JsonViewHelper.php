@@ -68,13 +68,13 @@ class JsonViewHelper extends AbstractViewHelper
             $result = [
                 '@context' => 'https://schema.org',
                 '@type' => 'Person',
-                'affiliation' => (($function instanceof PersonFunction) && ($function->getInstitution() instanceof Institution)) ? $this->getInstitutionData($function->getInstitution()) : '',
-                'email' => ($function instanceof PersonFunction) ? $this->getContactItem($function, 'E-Mail') : '',
+                'affiliation' => ((!empty($function) && $function instanceof PersonFunction) && ($function->getInstitution() instanceof Institution)) ? $this->getInstitutionData($function->getInstitution()) : '',
+                'email' => (!empty($function) && $function instanceof PersonFunction) ? $this->getContactItem($function, 'E-Mail') : '',
                 'image' => $image,
-                'jobTitle' =>  ($function instanceof PersonFunction) ? $function->getTitle() : '',
+                'jobTitle' =>  (!empty($function) && $function instanceof PersonFunction) ? $function->getTitle() : '',
                 'name' => $person->getName()->getFormatted(),
-                'telephone' =>  ($function instanceof PersonFunction) ? $this->getContactItem($function, 'Telefon') : '',
-                'url' =>  ($function instanceof PersonFunction) ? $this->getContactItem($function, 'Website') : '',
+                'telephone' =>  (!empty($function) && $function instanceof PersonFunction) ? $this->getContactItem($function, 'Telefon') : '',
+                'url' =>  (!empty($function) && $function instanceof PersonFunction) ? $this->getContactItem($function, 'Website') : '',
             ];
 
             if ($address instanceof Address) {
