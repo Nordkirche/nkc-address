@@ -2,6 +2,8 @@
 
 namespace Nordkirche\NkcAddress\Controller;
 
+use Nordkirche\NkcAddress\Event\ModifyAssignedListValuesForPersonEvent;
+use Nordkirche\NkcAddress\Event\ModifyAssignedValuesForPersonEvent;
 use Nordkirche\NkcBase\Controller\BaseController;
 use Psr\Http\Message\ResponseInterface;
 use Nordkirche\Ndk\Domain\Query\PersonQuery;
@@ -118,7 +120,7 @@ class PersonController extends BaseController
         // Get current cObj
         $cObj = $this->configurationManager->getContentObject();
 
-        $this->view->assignMultiple([
+        $assignedListValues = [
             'query' => $query,
             'persons' => $persons,
             'content' => $cObj->data,
@@ -127,7 +129,17 @@ class PersonController extends BaseController
             'searchRequest' => $searchRequest,
             'pagination' => $this->getPagination($persons, $currentPage)
 
-        ]);
+        ];
+
+        /** @var ModifyAssignedListValuesForPersonEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ModifyAssignedListValuesForPersonEvent($this, $assignedListValues, $this->request)
+        );
+
+        $assignedListValues = $event->getAssignedListValues();
+
+        $this->view->assignMultiple($assignedListValues);
+
         return $this->htmlResponse();
     }
 
@@ -165,7 +177,6 @@ class PersonController extends BaseController
 
     /**
      * @throws StopActionException
-     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function redirectAction()
     {
@@ -215,21 +226,21 @@ class PersonController extends BaseController
             // Get current cObj
             $cObj = $this->configurationManager->getContentObject();
 
-            $this->view->assignMultiple([
+            $assignedValues = [
                 'person' => $person,
                 'mapMarkers' => $mapMarkers,
                 'content' => $cObj->data
-            ]);
+            ];
 
         } catch (\Exception $e) {
             // Page not found
             if (!empty($this->settings['flexform']['showTemplate']) && ($this->settings['flexform']['showTemplate'] == 'MiniVCard')) {
                 // Ignore error
-                $this->view->assignMultiple([
+                $assignedValues = [
                     'person' => false,
                     'mapMarkers' => [],
                     'content' => ''
-                ]);
+                ];
             } else {
                 // Throw exception
                 $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
@@ -240,6 +251,15 @@ class PersonController extends BaseController
                 throw new ImmediateResponseException($response);
             }
         }
+
+        /** @var ModifyAssignedValuesForPersonEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ModifyAssignedValuesForPersonEvent($this, $assignedValues, $this->request)
+        );
+        $assignedValues = $event->getAssignedValues();
+
+        $this->view->assignMultiple($assignedValues);
+
         return $this->htmlResponse();
     }
 

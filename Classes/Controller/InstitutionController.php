@@ -2,7 +2,10 @@
 
 namespace Nordkirche\NkcAddress\Controller;
 
+use Nordkirche\NkcAddress\Event\ModifyAssignedListValuesForInstitutionEvent;
+use Nordkirche\NkcAddress\Event\ModifyAssignedValuesForInstitutionEvent;
 use Nordkirche\NkcBase\Controller\BaseController;
+use Nordkirche\NkcEvent\Event\ModifyInstitutionQueryEvent;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Routing\PageArguments;
@@ -121,13 +124,19 @@ class InstitutionController extends BaseController
             $query->setSort($this->settings['flexform']['sortOption']);
         }
 
+        /** @var ModifyInstitutionQueryEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ModifyInstitutionQueryEvent($this, $query, $this->request)
+        );
+        $query = $event->getInstitutionQuery();
+
         // Get institutions
         $institutions = $this->institutionRepository->get($query);
 
         // Get current cObj
         $cObj = $this->configurationManager->getContentObject();
 
-        $this->view->assignMultiple([
+        $assignedListValues = [
             'query' => $query,
             'institutions' => $institutions,
             'content' => $cObj->data,
@@ -136,7 +145,17 @@ class InstitutionController extends BaseController
             'searchRequest' => $searchRequest,
             'pagination' => $this->getPagination($institutions, $currentPage)
 
-        ]);
+        ];
+
+        /** @var ModifyAssignedListValuesForInstitutionEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ModifyAssignedListValuesForInstitutionEvent($this, $assignedListValues, $this->request)
+        );
+
+        $assignedListValues = $event->getAssignedListValues();
+
+        $this->view->assignMultiple($assignedListValues);
+
         return $this->htmlResponse();
     }
 
@@ -233,24 +252,24 @@ class InstitutionController extends BaseController
             // Get current cObj
             $cObj = $this->configurationManager->getContentObject();
 
-            $this->view->assignMultiple([
+            $assignedValues = [
                 'institution' => $institution,
                 'childInstitutions' => $childInstitutions,
                 'mapMarkers' => $mapMarkers,
                 'openingHours' => $openingHours,
                 'content' => $cObj->data
-            ]);
+            ];
 
         } else {
             if (!empty($this->settings['flexform']['showTemplate']) && ($this->settings['flexform']['showTemplate'] == 'MiniVCard')) {
                 // Ignore error
-                $this->view->assignMultiple([
+                $assignedValues = [
                     'institution' => false,
                     'childInstitutions' => [],
                     'mapMarkers' => [],
                     'openingHours' => [],
                     'content' => ''
-                ]);
+                ];
             } else {
                 // Page not found
                 $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
@@ -261,6 +280,16 @@ class InstitutionController extends BaseController
                 throw new ImmediateResponseException($response);
             }
         }
+
+        /** @var ModifyAssignedValuesForInstitutionEvent $event */
+        $event = $this->eventDispatcher->dispatch(
+            new ModifyAssignedValuesForInstitutionEvent($this, $assignedValues, $this->request)
+        );
+        $assignedValues = $event->getAssignedValues();
+
+
+        $this->view->assignMultiple($assignedValues);
+
         return $this->htmlResponse();
 
     }

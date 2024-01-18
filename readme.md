@@ -21,7 +21,6 @@ Die Extension stellt PlugIns bereit, um Inhalte der Nordkirche API (Personen und
 ## Abhängigkeiten
 Diese Extension basiert auf
 
-    nordkirche/NDK ^2.0
     nordkirche/nkc_base ^11.5
     fluidtypo3/vhs ^6.1
     TYPO3 ^11.5
@@ -42,6 +41,18 @@ Es gibt im statischen TypoScript umfangreiche Konfigurationen, die für die eige
 Grunsätzlich ist es so, dass Konfigurationen teilweise sowohl in TypoScript als auch in den Plug-Ins möglich sind. Hier zu beachten, dass Plug-In Konfigurationen TypoScript überschreiben, wenn sie einen Wert haben.
 
 Die Templates der Extension haben ein sehr rudimentäres Markup, um die Möglichkeiten der Extension zu zeigen. Die darzustellenen Inhalte sind so komplex, dass ein Standard-Layout wenig Sinn ergeben hätte.
+
+## PSR-14 Events
+Es gibt PSR-14 Events, um die NAPI Queries und die Ausgabe der Daten anzupassen:
+
+| Controller            | Action      | Event                                       | Daten holen             | Daten überschreiben     |
+|-----------------------|-------------|---------------------------------------------|-------------------------|-------------------------|
+| InstitutionController | listAction  | ModifyAssignedListValuesForInstitutionEvent | getAssignedListValues() | setAssignedListValues() |
+| InstitutionController | listAction  | ModifyInstitutionQueryEvent                 | getInstitutionQuery()   | setInstitutionQuery()   |
+| InstitutionController | showAction  | ModifyAssignedValuesForInstitutionEvent     | getAssignedValues()     | setAssignedValues()     |
+| PersonController      | listAction  | ModifyAssignedListValuesForPersonEvent      | getAssignedListValues() | setAssignedListValues() |
+| PersonController      | listAction  | ModifyPersonQueryEvent                      | getPersonQuery()        | setPersonQuery()        |
+| PersonController      | showAction  | ModifyAssignedValuesForPersonEvent          | getAssignedValues()     | setAssignedValues()     |
 
 
 ## Wichtiger Hinweis
