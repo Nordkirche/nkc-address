@@ -5,12 +5,13 @@ namespace Nordkirche\NkcAddress\Event;
 
 use Nordkirche\Ndk\Domain\Query\InstitutionQuery;
 use Nordkirche\NkcAddress\Controller\EventController;
+use Nordkirche\NkcAddress\Controller\InstitutionController;
 use TYPO3\CMS\Extbase\Mvc\Request;
 
 final class ModifyInstitutionQueryEvent
 {
     public function __construct(
-        private readonly EventController $controller,
+        private readonly InstitutionController $controller,
         private InstitutionQuery $institutionQuery,
         private readonly Request $request
     ) {
@@ -26,7 +27,7 @@ final class ModifyInstitutionQueryEvent
         $this->institutionQuery = $institutionQuery;
     }
 
-    public function getController(): EventController
+    public function getController(): InstitutionController
     {
         return $this->controller;
     }
