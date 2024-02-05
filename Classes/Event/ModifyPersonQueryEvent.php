@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Nordkirche\NkcEvent\Event;
+namespace Nordkirche\NkcAddress\Event;
 
 use Nordkirche\Ndk\Domain\Query\PersonQuery;
-use Nordkirche\NkcEvent\Controller\EventController;
+use Nordkirche\NkcAddress\Controller\EventController;
 use TYPO3\CMS\Extbase\Mvc\Request;
 
 final class ModifyPersonQueryEvent

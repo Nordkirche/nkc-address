@@ -11,7 +11,7 @@ final class ModifyAssignedListValuesForInstitutionEvent
     public function __construct(
         private readonly InstitutionController $controller,
         private array $assignedListValues,
-        private readonly Request $request,
+        private readonly Request $request
     ) {
     }
 
