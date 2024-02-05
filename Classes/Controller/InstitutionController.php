@@ -5,7 +5,7 @@ namespace Nordkirche\NkcAddress\Controller;
 use Nordkirche\NkcAddress\Event\ModifyAssignedListValuesForInstitutionEvent;
 use Nordkirche\NkcAddress\Event\ModifyAssignedValuesForInstitutionEvent;
 use Nordkirche\NkcBase\Controller\BaseController;
-use Nordkirche\NkcEvent\Event\ModifyInstitutionQueryEvent;
+use Nordkirche\NkcAddress\Event\ModifyInstitutionQueryEvent;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Routing\PageArguments;
