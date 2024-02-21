@@ -99,10 +99,14 @@ class InstitutionController extends BaseController
         $this->setPagination($query, $currentPage);
 
         // Filter institutions
-        $this->setInstitutionFilter($query, $this->settings['flexform']['institutionCollection'], $this->settings['flexform']['selectOption']);
+        if (!empty($this->settings['flexform']['institutionCollection'])) {
+            $this->setInstitutionFilter($query, $this->settings['flexform']['institutionCollection'], $this->settings['flexform']['selectOption']);    
+        }
 
         // Filter by type
-        $this->setInstitutionTypeFilter($query, $this->settings['flexform']['institutionType']);
+        if (!empty($this->settings['flexform']['institutionType'])) {
+            $this->setInstitutionTypeFilter($query, $this->settings['flexform']['institutionType']);
+        }
 
         // Filter by geoposition
         if (!empty($this->settings['flexform']['geosearch'])) {
