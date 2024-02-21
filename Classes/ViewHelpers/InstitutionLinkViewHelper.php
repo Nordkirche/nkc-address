@@ -128,7 +128,7 @@ class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
             } else {
                 $uri = $targetInstitution->getVcardLink();
             }
-        } elseif ((int)($this->settings['institutionUid']) > 0) {
+        } elseif (!empty($this->settings['institutionUid']) && ((int)$this->settings['institutionUid'] > 0)) {
 
             // check if institution should be displayed on nordkirche.de (external) or on the local website (internal)
             $renderInternalLink = $forceInternalLink || $this->institutionLinkService->isInternalLink($targetInstitution);

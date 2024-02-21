@@ -105,13 +105,15 @@ class InstitutionController extends BaseController
         $this->setInstitutionTypeFilter($query, $this->settings['flexform']['institutionType']);
 
         // Filter by geoposition
-        $this->setGeoFilter(
-            $query,
-            $this->settings['flexform']['geosearch'],
-            $this->settings['flexform']['latitude'],
-            $this->settings['flexform']['longitude'],
-            $this->settings['flexform']['radius']
-        );
+        if (!empty($this->settings['flexform']['geosearch'])) {
+            $this->setGeoFilter(
+                $query,
+                $this->settings['flexform']['geosearch'],
+                $this->settings['flexform']['latitude'],
+                $this->settings['flexform']['longitude'],
+                $this->settings['flexform']['radius']
+            );
+        }
 
         if ($searchRequest instanceof SearchRequest) {
             $this->setUserFilters($query, $searchRequest);
