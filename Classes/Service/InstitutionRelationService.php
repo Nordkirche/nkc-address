@@ -2,18 +2,19 @@
 
 namespace Nordkirche\NkcAddress\Service;
 
-use TYPO3\CMS\Core\SingletonInterface;
 use Nordkirche\Ndk\Api;
-use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
-use Nordkirche\NkcBase\Exception\ApiException;
+use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Model\Person\Person;
 use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
 use Nordkirche\Ndk\Domain\Query\InstitutionQuery;
-use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
 use Nordkirche\Ndk\Service\NapiService;
+use Nordkirche\NkcBase\Exception\ApiException;
 use Nordkirche\NkcBase\Service\ApiService;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
+use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -21,22 +22,22 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class InstitutionRelationService implements SingletonInterface
 {
-    const TYPE_MEMBER = 1;
+    public const TYPE_MEMBER = 1;
 
-    const TYPE_PARTNER = 2;
+    public const TYPE_PARTNER = 2;
 
-    const TYPE_SUPERIOR_INSTITUTION = 3;
+    public const TYPE_SUPERIOR_INSTITUTION = 3;
 
-    const TYPE_EQUAL_INSTITUTION = 4;
+    public const TYPE_EQUAL_INSTITUTION = 4;
 
-    const DIRECT_CHILDREN = 1;
+    public const DIRECT_CHILDREN = 1;
 
-    const ALL_CHILDREN = 2;
+    public const ALL_CHILDREN = 2;
 
-    const NO_CHILDREN = 0;
+    public const NO_CHILDREN = 0;
 
     /**
-     * @var CacheManager the cache frontend
+     * @var FrontendInterface
      */
     protected $cache;
 
@@ -113,7 +114,7 @@ class InstitutionRelationService implements SingletonInterface
             // always include self
             $childUids[] = $institution->getId();
 
-            $this->cache->set($cacheKey, $childUids, [], 60*60*24*30);
+            $this->cache->set($cacheKey, $childUids, [], 60 * 60 * 24 * 30);
         }
         return $childUids;
     }

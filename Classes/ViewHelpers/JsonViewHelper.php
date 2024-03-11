@@ -1,18 +1,18 @@
 <?php
+
 namespace  Nordkirche\NkcAddress\ViewHelpers;
 
-use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 use Nordkirche\Ndk\Domain\Model\Address;
 use Nordkirche\Ndk\Domain\Model\ContactItem;
 use Nordkirche\Ndk\Domain\Model\File\Image;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Model\Person\Person;
 use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 
 class JsonViewHelper extends AbstractViewHelper
 {
-
     /**
      * @var bool
      */
@@ -26,7 +26,7 @@ class JsonViewHelper extends AbstractViewHelper
     public function initializeArguments()
     {
         parent::initializeArguments();
-        $this->registerArgument('object', 'object', 'Address object', FALSE);
+        $this->registerArgument('object', 'object', 'Address object', false);
     }
 
     /**
@@ -34,7 +34,6 @@ class JsonViewHelper extends AbstractViewHelper
      */
     public function render()
     {
-
         $object = $this->arguments['object'];
 
         if ($object === null) {
@@ -47,13 +46,13 @@ class JsonViewHelper extends AbstractViewHelper
             /** @var Person $person */
             $person = $object;
 
-            $address = NULL;
+            $address = null;
 
             /** @var PersonFunction $function */
-            foreach($person->getFunctions() as $function) {
+            foreach ($person->getFunctions() as $function) {
                 if ($function->getAddress() instanceof Address) {
                     $address = $function->getAddress();
-                } elseif($function->getInstitution() instanceof Institution) {
+                } elseif ($function->getInstitution() instanceof Institution) {
                     $address = $function->getInstitution()->getAddress();
                 }
                 break;
@@ -82,17 +81,17 @@ class JsonViewHelper extends AbstractViewHelper
                     '@type' => 'PostalAddress',
                     'addressLocality' => $address->getCity(),
                     'postalCode' => $address->getZipCode(),
-                    'streetAddress' => $address->getStreet()
+                    'streetAddress' => $address->getStreet(),
                 ];
             }
 
             return json_encode($result);
-        } elseif ($object instanceof Institution) {
+        }
+        if ($object instanceof Institution) {
             // Render institution
             return json_encode($this->getInstitutionData($object));
-        } else {
-            return json_encode([]);
         }
+        return json_encode([]);
     }
 
     /**
@@ -124,12 +123,11 @@ class JsonViewHelper extends AbstractViewHelper
                 '@type' => 'PostalAddress',
                 'addressLocality' => $institution->getAddress()->getCity(),
                 'postalCode' => $institution->getAddress()->getZipCode(),
-                'streetAddress' => $institution->getAddress()->getStreet()
+                'streetAddress' => $institution->getAddress()->getStreet(),
             ];
         }
         return $result;
     }
-
 
     /**
      * @param $object
@@ -140,12 +138,11 @@ class JsonViewHelper extends AbstractViewHelper
     {
         /** @var ContactItem $contactItem */
         if ($object) {
-            foreach($object->getContactItems() as $contactItem) {
+            foreach ($object->getContactItems() as $contactItem) {
                 if ($contactItem->getType() == $type) {
                     return $contactItem->getValue();
                 }
             }
         }
     }
-
 }

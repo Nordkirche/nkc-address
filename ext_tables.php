@@ -1,39 +1,85 @@
 <?php
 
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+
 defined('TYPO3') || die('Access denied.');
 
 call_user_func(
     function () {
-        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+        ExtensionUtility::registerPlugin(
+            'NkcAddress',
+            'PersonList',
+            'Person(en): Listenansicht'
+        );
+
+        ExtensionUtility::registerPlugin(
+            'NkcAddress',
+            'PersonSearch',
+            'Person(en): Suchergebnis'
+        );
+
+        ExtensionUtility::registerPlugin(
+            'NkcAddress',
+            'PersonSearchForm',
+            'Person(en): Suchformular'
+        );
+
+        ExtensionUtility::registerPlugin(
             'NkcAddress',
             'Person',
-            'Person(en) darstellen'
+            'Person(en): Visitenkarte'
         );
 
-        $pluginSignature = str_replace('_', '', 'nkc_address') . '_person';
-        $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$pluginSignature] = 'pi_flexform';
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue($pluginSignature, 'FILE:EXT:nkc_address/Configuration/FlexForms/flexform_person.xml');
+        ExtensionUtility::registerPlugin(
+            'NkcAddress',
+            'PersonRedirect',
+            'Person(en): Umleitung auf sprechende Url'
+        );
 
-        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+        ExtensionUtility::registerPlugin(
+            'NkcAddress',
+            'InstitutionList',
+            'Institution: Listenansicht'
+        );
+
+        ExtensionUtility::registerPlugin(
+            'NkcAddress',
+            'InstitutionSearch',
+            'Institution: Suchergebnis'
+        );
+
+        ExtensionUtility::registerPlugin(
+            'NkcAddress',
+            'InstitutionSearchForm',
+            'Institution: Suchformular'
+        );
+
+        ExtensionUtility::registerPlugin(
             'NkcAddress',
             'Institution',
-            'Institution(en) darstellen'
+            'Institution: Visitenkarte'
         );
 
-        $pluginSignature = str_replace('_', '', 'nkc_address') . '_institution';
-        $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$pluginSignature] = 'pi_flexform';
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue($pluginSignature, 'FILE:EXT:nkc_address/Configuration/FlexForms/flexform_institution.xml');
+        ExtensionUtility::registerPlugin(
+            'NkcAddress',
+            'InstitutionRedirect',
+            'Institution: Umleitung auf sprechende Url'
+        );
 
-        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+        ExtensionUtility::registerPlugin(
             'NkcAddress',
             'Map',
             'Karte mit Institutionen/Personen darstellen'
         );
 
-        $pluginSignature = str_replace('_', '', 'nkc_address') . '_map';
-        $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$pluginSignature] = 'pi_flexform';
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue($pluginSignature, 'FILE:EXT:nkc_address/Configuration/FlexForms/flexform_map.xml');
+        ExtensionUtility::registerPlugin(
+            'NkcAddress',
+            'MapList',
+            'Karte und Liste mit Institutionen/Personen darstellen'
+        );
 
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile('nkc_address', 'Configuration/TypoScript', 'Nordkirche Address Client');
+
+        ExtensionManagementUtility::addStaticFile('nkc_address', 'Configuration/TypoScript', 'Nordkirche Address Client');
     }
 );

@@ -3,12 +3,13 @@
 namespace Nordkirche\NkcAddress\ViewHelpers;
 
 use Nordkirche\Ndk\Api;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use Nordkirche\NkcAddress\Service\InstitutionLinkService;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
 use Nordkirche\Ndk\Service\NapiService;
+use Nordkirche\NkcAddress\Service\InstitutionLinkService;
 use Nordkirche\NkcBase\Service\ApiService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
 
@@ -19,7 +20,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
  */
 class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
 {
-
     /**
      * @var Api
      */
@@ -60,14 +60,17 @@ class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
     /**
      * @param ConfigurationManagerInterface $cm
      */
-    public function injectConfigurationManager(ConfigurationManagerInterface $cm)
+    public function injectConfigurationManager(ConfigurationManagerInterface $cm): void
     {
         $this->configurationManager = $cm;
-        $this->settings = $this->configurationManager->getConfiguration(
-            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
-            'nkcaddress',
-            'institution'
-        );
+    }
+
+    /**
+     * @param InstitutionLinkService $institutionLinkService
+     */
+    public function injectInstitutionLinkService(InstitutionLinkService $institutionLinkService): void
+    {
+        $this->institutionLinkService = $institutionLinkService;
     }
 
     /**
@@ -79,6 +82,11 @@ class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
         $this->api = ApiService::get();
         $this->napiService = $this->api->factory(NapiService::class);
         $this->institutionRepository = $this->api->factory(InstitutionRepository::class);
+        $this->settings = $this->configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            'nkcaddress',
+            'institution'
+        );
     }
 
     /**
@@ -97,9 +105,7 @@ class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
 
     /**
      * render the link
-     *
-     *
-     * @return string
+s     * @return string
      */
     public function render()
     {
@@ -119,8 +125,9 @@ class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
         $detailPid = false;
 
         $renderInternalLink = true;
+
         /** @var UriBuilder $uriBuilder */
-        $uriBuilder = $this->renderingContext->getControllerContext()->getUriBuilder();
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
 
         if ($checkSpecialVcards && $targetInstitution->getVcardType() == 1) {
             if (is_numeric($targetInstitution->getVcardLink())) {
@@ -129,7 +136,6 @@ class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
                 $uri = $targetInstitution->getVcardLink();
             }
         } elseif (!empty($this->settings['institutionUid']) && ((int)$this->settings['institutionUid'] > 0)) {
-
             // check if institution should be displayed on nordkirche.de (external) or on the local website (internal)
             $renderInternalLink = $forceInternalLink || $this->institutionLinkService->isInternalLink($targetInstitution);
 
@@ -181,10 +187,5 @@ class InstitutionLinkViewHelper extends AbstractTagBasedViewHelper
         $output = $this->tag->render();
 
         return $output;
-    }
-
-    public function injectInstitutionLinkService(InstitutionLinkService $institutionLinkService): void
-    {
-        $this->institutionLinkService = $institutionLinkService;
     }
 }

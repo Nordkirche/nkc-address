@@ -19,7 +19,7 @@
                 <img src="{n:uri.image(image:childInstitution.logo)}" width="320" />
             </f:if>
 
-            <f:link.action action="show" pageUid="{settings.flexform.pidSingle}" arguments="{uid: childInstitution.id}"><f:render partial="Institution/Name" arguments="{institution: childInstitution}" /></f:link.action>
+            <h3><f:link.action action="show" pageUid="{settings.flexform.pidSingle}" arguments="{uid: childInstitution.id}"><f:render partial="Institution/Name" arguments="{institution: childInstitution}" /></f:link.action></h3>
 
             <f:render partial="Institution/Address" arguments="{institution: childInstitution}" />
 

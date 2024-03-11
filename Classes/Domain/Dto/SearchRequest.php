@@ -4,7 +4,6 @@ namespace Nordkirche\NkcAddress\Domain\Dto;
 
 class SearchRequest
 {
-
     /**
      * @var string
      */
@@ -98,4 +97,21 @@ class SearchRequest
     {
         return $this->toArray();
     }
+
+    /**
+     * @param array|null $data
+     * @return void
+     */
+    public function decorate($data):void
+    {
+        if (is_array($data)) {
+            foreach(['search', 'category', 'city'] as $property) {
+                if (!empty($data[$property])) {
+                    $setterName = 'set'.ucfirst($property);
+                    $this->$setterName($data[$property]);
+                }
+            }
+        }
+    }
+
 }

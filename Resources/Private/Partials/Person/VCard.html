@@ -26,9 +26,6 @@
 
                 <img alt="{person.name.formatted}" title="{person.name.formatted}" src="{n:uri.image(image: person.picture, width: '373c', height: '223c')}" />
 
-                <f:if condition="{person.name.formatted}">
-                    {person.name.formatted}
-                </f:if>
                 <f:if condition="{person.picture.details.copyright}">
                     &copy; {person.picture.details.copyright}
                 </f:if>

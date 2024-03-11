@@ -2,17 +2,16 @@
 
 namespace Nordkirche\NkcAddress\Service;
 
-use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
 use Nordkirche\Ndk\Service\NapiService;
 use Nordkirche\NkcBase\Service\ApiService;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 class InstitutionLinkService implements SingletonInterface
 {
-
     /**
      * @var InstitutionRelationService
      */
@@ -34,7 +33,8 @@ class InstitutionLinkService implements SingletonInterface
     protected $settings = [];
 
     /**
-     * Inject the configuration manager and get the settings
+     * @param ConfigurationManagerInterface $cm
+     * @return void
      */
     public function injectConfigurationManager(ConfigurationManagerInterface $cm)
     {
@@ -46,6 +46,18 @@ class InstitutionLinkService implements SingletonInterface
         );
     }
 
+    /**
+     * @param InstitutionRelationService $institutionRelationService
+     * @return void
+     */
+    public function injectInstitutionRelationService(InstitutionRelationService $institutionRelationService): void
+    {
+        $this->institutionRelationService = $institutionRelationService;
+    }
+
+    /**
+     * @throws \Nordkirche\NkcBase\Exception\ApiException
+     */
     public function __construct()
     {
         $this->api = ApiService::get();
@@ -60,7 +72,6 @@ class InstitutionLinkService implements SingletonInterface
      */
     public function isInternalLink($targetInstitution)
     {
-
         if ($targetInstitution->getId() == $this->settings['institutionUid']) {
             return true;
         }
@@ -120,8 +131,4 @@ class InstitutionLinkService implements SingletonInterface
         return true;
     }
 
-    public function injectInstitutionRelationService(InstitutionRelationService $institutionRelationService): void
-    {
-        $this->institutionRelationService = $institutionRelationService;
-    }
 }

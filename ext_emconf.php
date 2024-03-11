@@ -17,13 +17,13 @@ $EM_CONF['nkc_address'] = [
     'author' => 'netzleuchten GmbH',
     'author_email' => 'hallo@netzleuchten.com',
     'state' => 'stable',
-    'version' => '11.5.0',
+    'version' => '12.4.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '11.5.0-11.5.99',
+            'typo3' => '12.4.0-12.4.99',
             'nkc_base' => '*',
             'nk_google_map' => '*',
-            'vhs' => '6.1.0-6.1.99'
+            'vhs' => '6.1.0-7.0.99',
         ],
         'conflicts' => [],
         'suggests' => [],

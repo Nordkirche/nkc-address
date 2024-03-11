@@ -10,12 +10,26 @@
                 <source>Frei konfigurierbare Listen und Detail-Ansicht von Personen</source>
             </trans-unit>
 
-            <trans-unit id="tx_nkc_address_domain_model_institution">
-                <source>Ausgabe von Institutionen</source>
-            </trans-unit>
-            <trans-unit id="tx_nkc_address_domain_model_institution.description">
-                <source>Frei konfigurierbare Listen und Detail-Ansicht von Institutionen</source>
-            </trans-unit>
+			<trans-unit id="wizard.address_person_list">
+				<source>Nordkirche Personen Liste / Sucher</source>
+			</trans-unit>
+			<trans-unit id="wizard.address_person_list.description">
+				<source>Frei konfigurierbare Listenansicht von Personen</source>
+			</trans-unit>
+
+			<trans-unit id="wizard.address_person_searchform">
+				<source>Nordkirche Personen Suchformular</source>
+			</trans-unit>
+			<trans-unit id="wizard.address_person_searchform.description">
+				<source>Formular für die Suche nach Personen</source>
+			</trans-unit>
+
+			<trans-unit id="wizard.address_person">
+				<source>Nordkirche Personen Visitenkarte</source>
+			</trans-unit>
+			<trans-unit id="wizard.address_person.description">
+				<source>Detailansicht einer Person</source>
+			</trans-unit>
 
             <trans-unit id="tx_nkc_address_map">
                 <source>Kartendarstellung von Adressen</source>
@@ -23,6 +37,37 @@
             <trans-unit id="tx_nkc_address_map.description">
                 <source>Frei konfigurierbare Google Karte für Personen und Institutionen</source>
             </trans-unit>
+
+
+			<trans-unit id="tx_nkc_address_maplist">
+				<source>Karten- und Listendarstellung von Adressen</source>
+			</trans-unit>
+			<trans-unit id="tx_nkc_address_maplist.description">
+				<source>Frei konfigurierbare Google Karte mit Liste für Personen und Institutionen</source>
+			</trans-unit>
+
+
+            <trans-unit id="wizard.address_institution_list">
+                <source>Nordkirche Institutionen Liste / Suchergebnis</source>
+            </trans-unit>
+            <trans-unit id="wizard.address_institution_list.description">
+                <source>Frei konfigurierbare Listenansicht von Institutionen</source>
+            </trans-unit>
+
+            <trans-unit id="wizard.address_institution_searchform">
+                <source>Nordkirche Institutionen Suchformular</source>
+            </trans-unit>
+            <trans-unit id="wizard.address_institution_searchform.description">
+                <source>Formular für die Suche nach Institutionen</source>
+            </trans-unit>
+
+            <trans-unit id="wizard.address_institution">
+                <source>Nordkirche Institutionen Visitenkarte</source>
+            </trans-unit>
+            <trans-unit id="wizard.address_institution.description">
+                <source>Detailansicht einer Institution</source>
+            </trans-unit>
+
         </body>
     </file>
 </xliff>

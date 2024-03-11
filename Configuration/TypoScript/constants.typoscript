@@ -61,16 +61,14 @@ plugin.tx_nkcaddress_map {
         layoutRootPath = EXT:nkc_address/Resources/Private/Layouts/
     }
     persistence {
-        # cat=plugin.tx_nkcaddress_map//a; type=string; label=Default storage PID
+        # cat=plugin.tx_nkcaddress_map//storagePid; type=string; label=Default storage PID
         storagePid =
     }    
     
-    # cat=plugin.tx_nkcaddress_map//a; type=string; label=AJAX page type
+    # cat=plugin.tx_nkcaddress_map//ajaxTypeNum; type=string; label=AJAX page type
     ajaxTypeNum = 737882
 
-    # cat=plugin.tx_nkcaddress_map//a; type=string; label=GMaps API key
+    # cat=plugin.tx_nkcaddress_map//apiKey; type=string; label=GMaps API key
     apiKey =
 
-    # cat=plugin.tx_nkcaddress_map//a; type=string; label=Your website domain for gmaps markers (example: https://www.meine-kirche.de)
-    iconDomain =
 }

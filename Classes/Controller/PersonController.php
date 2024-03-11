@@ -2,34 +2,30 @@
 
 namespace Nordkirche\NkcAddress\Controller;
 
+use Nordkirche\Ndk\Domain\Model\Address;
+use Nordkirche\Ndk\Domain\Model\Institution\Institution;
+use Nordkirche\Ndk\Domain\Model\Institution\InstitutionType;
+use Nordkirche\Ndk\Domain\Model\Person\Person;
+use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
+use Nordkirche\Ndk\Domain\Query\PersonQuery;
+use Nordkirche\Ndk\Domain\Repository\PersonRepository;
+use Nordkirche\Ndk\Service\NapiService;
+use Nordkirche\NkcAddress\Domain\Dto\SearchRequest;
 use Nordkirche\NkcAddress\Event\ModifyAssignedListValuesForPersonEvent;
 use Nordkirche\NkcAddress\Event\ModifyAssignedValuesForPersonEvent;
 use Nordkirche\NkcBase\Controller\BaseController;
 use Psr\Http\Message\ResponseInterface;
-use Nordkirche\Ndk\Domain\Query\PersonQuery;
-use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
-use Nordkirche\Ndk\Domain\Model\Institution\InstitutionType;
-use Nordkirche\Ndk\Domain\Model\Address;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
-use Nordkirche\Ndk\Domain\Model\Institution\Institution;
-use Nordkirche\Ndk\Domain\Model\Person\Person;
-use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
-use Nordkirche\Ndk\Domain\Repository\PersonRepository;
-use Nordkirche\Ndk\Service\NapiService;
-use Nordkirche\NkcAddress\Domain\Dto\SearchRequest;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Extbase\Http\ForwardResponse;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class PersonController extends BaseController
 {
-
     /**
      * @var PersonRepository
      */
@@ -45,6 +41,10 @@ class PersonController extends BaseController
      */
     protected $standaloneView = false;
 
+    /**
+     * @return void
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException
+     */
     public function initializeAction()
     {
         parent::initializeAction();
@@ -63,45 +63,17 @@ class PersonController extends BaseController
      *
      * @param int $currentPage
      * @param SearchRequest $searchRequest
+     * @return ResponseInterface
      */
-    public function listAction($currentPage = 1, $searchRequest = null): ResponseInterface
+    public function listAction(int $currentPage = 1, SearchRequest $searchRequest = null): ResponseInterface
     {
         $query = new PersonQuery();
 
         // Set pagination parameters
         $this->setPagination($query, $currentPage);
 
-        // Filter by person
-	    if (!empty($this->settings['flexform']['personCollection'])) {
-	        $this->setPersonFilter($query, $this->settings['flexform']['personCollection']);
-	    }
-
-
-        // Filter by type
-        if (!empty($this->settings['flexform']['functionType'])) {
-			$this->setFunctionTypeFilter($query, $this->settings['flexform']['functionType']);
-        }
-
-        // Filter by available function
-        if (!empty($this->settings['flexform']['availableFunction'])) {
-			$this->setAvailableFunctionFilter($query, $this->settings['flexform']['availableFunction']);
-        }
-
-        // Filter by Institution
-        if (!empty($this->settings['flexform']['institutionCollection'])) {
-			$this->setPersonInstitutionFilter($query, $this->settings['flexform']['institutionCollection']);
-        }
-
-        // Filter by geoposition
-        if (!empty($this->settings['flexform']['geosearch'])) {
-	        $this->setGeoFilter(
-		        $query,
-		        $this->settings['flexform']['geosearch'],
-		        $this->settings['flexform']['latitude'],
-		        $this->settings['flexform']['longitude'],
-		        $this->settings['flexform']['radius']
-	        );
-        }
+        // Apply flexform filters
+        $this->setFilters($query);
 
         if ($searchRequest instanceof SearchRequest) {
             $this->setUserFilters($query, $searchRequest);
@@ -109,16 +81,11 @@ class PersonController extends BaseController
             $searchRequest = new SearchRequest();
         }
 
-        // Sorting
-        if (!empty($this->settings['flexform']['sortOption'])) {
-            $query->setSort($this->settings['flexform']['sortOption']);
-        }
-
         // Get persons
         $persons = $this->personRepository->get($query);
 
         // Get current cObj
-        $cObj = $this->configurationManager->getContentObject();
+        $cObj = $this->request->getAttribute('currentContentObject');
 
         $assignedListValues = [
             'query' => $query,
@@ -127,7 +94,7 @@ class PersonController extends BaseController
             'filter' => $this->getFilterValues(),
             'searchPid' => $GLOBALS['TSFE']->id,
             'searchRequest' => $searchRequest,
-            'pagination' => $this->getPagination($persons, $currentPage)
+            'pagination' => $this->getPagination($persons, $currentPage),
 
         ];
 
@@ -145,49 +112,51 @@ class PersonController extends BaseController
 
     /**
      * @param SearchRequest $searchRequest
+     * @return ResponseInterface
      */
-    public function searchFormAction($searchRequest = null): ResponseInterface
+    public function searchFormAction(SearchRequest $searchRequest = null): ResponseInterface
     {
         if (!($searchRequest instanceof SearchRequest)) {
             $searchRequest = GeneralUtility::makeInstance(SearchRequest::class);
+            $searchRequest->decorate($this->request->getParsedBody()['tx_nkcaddress_personlist']['searchRequest'] ?? $this->request->getQueryParams()['tx_nkcaddress_personlist']['searchRequest'] ?? null);
         }
 
         $this->view->assignMultiple([
-            'searchPid' => $this->settings['flexform']['pidList'] ? $this->settings['flexform']['pidList'] : $GLOBALS['TSFE']->id,
+            'searchPid' => $this->settings['flexform']['pidList'] ?: $GLOBALS['TSFE']->id,
             'filter' => $this->getFilterValues(),
-            'searchRequest' => $searchRequest
+            'searchRequest' => $searchRequest,
         ]);
         return $this->htmlResponse();
     }
 
     /**
      * @param SearchRequest $searchRequest
-     * @throws StopActionException
+     * @return ResponseInterface
      */
-    public function searchAction($searchRequest = null)
+    public function searchAction(SearchRequest $searchRequest = null): ResponseInterface
     {
         if (!($searchRequest instanceof SearchRequest)) {
             $searchRequest = GeneralUtility::makeInstance(SearchRequest::class);
         }
 
-        $this->uriBuilder->setRequest($this->request);
-        $uri = $this->uriBuilder->uriFor('list', ['searchRequest' => $searchRequest->toArray()]);
-        $this->redirectToURI($uri);
+        // Forward to list view
+        $response = new ForwardResponse('list');
+        return $response->withArguments(['searchRequest' => $searchRequest->toArray()]);
+
     }
 
     /**
-     * @throws StopActionException
+     * * @return ResponseInterface
      */
-    public function redirectAction()
+    public function redirectAction():ResponseInterface
     {
-        if ($nkcp = intval(GeneralUtility::_GP('nkcp'))) {
-
+        if ($nkcp = (int)(GeneralUtility::_GP('nkcp'))) {
             $this->uriBuilder->reset()->setTargetPageUid($this->settings['flexform']['pidSingle']);
             $uri = $this->uriBuilder->uriFor('show', ['uid' => $nkcp]);
-            $this->redirectToURI($uri);
-        }  else {
-            $this->redirectToURI('/');
+        } else {
+            $uri = '/';
         }
+        return $this->redirectToURI($uri);
     }
 
     /**
@@ -196,24 +165,14 @@ class PersonController extends BaseController
      */
     public function showAction($uid = null): ResponseInterface
     {
-        $includes = [   Person::RELATION_FUNCTIONS => [
-                            PersonFunction::RELATION_ADDRESS,
-                            PersonFunction::RELATION_AVAILABLE_FUNCTION,
-                            PersonFunction::RELATION_INSTITUTION => [
-                                Institution::RELATION_ADDRESS,
-                                Institution::RELATION_INSTITUTION_TYPE
-                            ]
-                        ]
-        ];
 
         try {
-
             if (!empty($this->settings['flexform']['singlePerson'])) {
-                // Personis selected in flexform
-                $person = $this->napiService->resolveUrl($this->settings['flexform']['singlePerson'], $includes);
+                // Person is selected in flexform
+                $person = $this->napiService->resolveUrl($this->settings['flexform']['singlePerson'], $this->getDetailIncludes());
             } elseif ((int)$uid) {
                 // Find by uid
-                $person = $this->personRepository->getById($uid, $includes);
+                $person = $this->personRepository->getById($uid, $this->getDetailIncludes());
             } else {
                 $person = false;
             }
@@ -224,14 +183,13 @@ class PersonController extends BaseController
             $mapMarkers = $person ? $this->getMapMarkers($person) : [];
 
             // Get current cObj
-            $cObj = $this->configurationManager->getContentObject();
+            $cObj = $this->request->getAttribute('currentContentObject');
 
             $assignedValues = [
                 'person' => $person,
                 'mapMarkers' => $mapMarkers,
-                'content' => $cObj->data
+                'content' => $cObj->data,
             ];
-
         } catch (\Exception $e) {
             // Page not found
             if (!empty($this->settings['flexform']['showTemplate']) && ($this->settings['flexform']['showTemplate'] == 'MiniVCard')) {
@@ -239,12 +197,12 @@ class PersonController extends BaseController
                 $assignedValues = [
                     'person' => false,
                     'mapMarkers' => [],
-                    'content' => ''
+                    'content' => '',
                 ];
             } else {
                 // Throw exception
                 $response = GeneralUtility::makeInstance(ErrorController::class)->pageNotFoundAction(
-                    $GLOBALS['TYPO3_REQUEST'],
+                    $this->request,
                     'Person konnte nicht gefunden werden',
                     ['code' => PageAccessFailureReasons::PAGE_NOT_FOUND]
                 );
@@ -261,6 +219,68 @@ class PersonController extends BaseController
         $this->view->assignMultiple($assignedValues);
 
         return $this->htmlResponse();
+    }
+
+    /**
+     * @param $query
+     * @return void
+     */
+    private function setFilters($query)
+    {
+        // Filter by person
+        if (!empty($this->settings['flexform']['personCollection'])) {
+            $this->setPersonFilter($query, $this->settings['flexform']['personCollection']);
+        }
+
+        // Filter by type
+        if (!empty($this->settings['flexform']['functionType'])) {
+            $this->setFunctionTypeFilter($query, $this->settings['flexform']['functionType']);
+        }
+
+        // Filter by available function
+        if (!empty($this->settings['flexform']['availableFunction'])) {
+            $this->setAvailableFunctionFilter($query, $this->settings['flexform']['availableFunction']);
+        }
+
+        // Filter by Institution
+        if (!empty($this->settings['flexform']['institutionCollection'])) {
+            $this->setPersonInstitutionFilter($query, $this->settings['flexform']['institutionCollection']);
+        }
+
+        // Filter by geoposition
+        if (!empty($this->settings['flexform']['geosearch'])) {
+            $this->setGeoFilter(
+                $query,
+                $this->settings['flexform']['geosearch'],
+                $this->settings['flexform']['latitude'],
+                $this->settings['flexform']['longitude'],
+                $this->settings['flexform']['radius']
+            );
+        }
+
+        // Sorting
+        if (!empty($this->settings['flexform']['sortOption'])) {
+            $query->setSort($this->settings['flexform']['sortOption']);
+        }
+
+    }
+
+    /**
+     * Returns the NAPU includes for detail view
+     * @return string[]
+     */
+    private function getDetailIncludes():array
+    {
+        return [
+            Person::RELATION_FUNCTIONS => [
+                PersonFunction::RELATION_ADDRESS,
+                PersonFunction::RELATION_AVAILABLE_FUNCTION,
+                PersonFunction::RELATION_INSTITUTION => [
+                    Institution::RELATION_ADDRESS,
+                    Institution::RELATION_INSTITUTION_TYPE,
+                ],
+            ],
+        ];
     }
 
     /**
@@ -295,7 +315,6 @@ class PersonController extends BaseController
      */
     private function createMarker(&$mapMarkers, $functionId, $person, $institution, $address)
     {
-
         // Get type of institution
         if ($institution->getInstitutionType() instanceof InstitutionType) {
             $type = $institution->getInstitutionType()->getName();
@@ -304,6 +323,7 @@ class PersonController extends BaseController
         }
 
         if ($address instanceof Address) {
+
             // Check geo coordinates
             if ($address->getLatitude() && $address->getLongitude()) {
                 $marker = [
@@ -312,9 +332,9 @@ class PersonController extends BaseController
                     'lon' 	=> $address->getLongitude(),
                     'info' 	=> $this->renderMapInfo($person, $institution, $address),
                     'type'  => $type,
-                    'icon' 	=> $this->settings['personIconName'],
+                    'icon' 	=> PathUtility::getPublicResourceWebPath($this->settings['personIconName']),
                     'object' => 'p',
-                    'id'    => $person->getId()
+                    'id'    => $person->getId(),
 
                 ];
                 $mapMarkers[$functionId] = $marker;
@@ -326,11 +346,10 @@ class PersonController extends BaseController
      * Add a marker
      *
      * @param Person $person
-     * @param boolean $asyncInfo
+     * @param bool $asyncInfo
      * @return array
      */
-    public function createSingleMarker($person, $asyncInfo = TRUE)
-
+    public function createSingleMarker($person, $asyncInfo = true)
     {
         $address = false;
         $institution = false;
@@ -364,10 +383,10 @@ class PersonController extends BaseController
                     'lat' 	=> $address->getLatitude(),
                     'lon' 	=> $address->getLongitude(),
                     'info' 	=> $asyncInfo ? '' : $this->renderMapInfo($person, $institution, $address),
-                    'icon' 	=> $this->settings['personIconName'],
+                    'icon' 	=> PathUtility::getPublicResourceWebPath($this->settings['personIconName']),
                     'type'  => $type,
                     'object' => 'p',
-                    'id'    => $person->getId()
+                    'id'    => $person->getId(),
                 ];
                 return $marker;
             }
@@ -386,49 +405,18 @@ class PersonController extends BaseController
     {
         if ($this->standaloneView == false) {
             // Init standalone view
-
             $config = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
-
-            $absTemplatePaths = [];
-            if (!empty($config['view']) && is_array($config['view']['templateRootPaths'])) {
-                foreach ($config['view']['templateRootPaths'] as $path) {
-                    $absTemplatePaths[] = GeneralUtility::getFileAbsFileName($path);
-                }
-            }
-            if (count($absTemplatePaths) == 0) {
-                $absTemplatePaths[] =  GeneralUtility::getFileAbsFileName('EXT:nkc_address/Resources/Private/Templates/');
-            }
-
-            $absLayoutPaths = [];
-            if (!empty($config['view']) && is_array($config['view']['layoutRootPaths'])) {
-                foreach ($config['view']['layoutRootPaths'] as $path) {
-                    $absLayoutPaths[] = GeneralUtility::getFileAbsFileName($path);
-                }
-            }
-            if (count($absLayoutPaths) == 0) {
-                $absLayoutPaths[] = GeneralUtility::getFileAbsFileName('EXT:nkc_address/Resources/Private/Layouts/');
-            }
-
-            $absPartialPaths = [];
-            if (!empty($config['view']) && is_array($config['view']['partialRootPaths'])) {
-                foreach ($config['view']['partialRootPaths'] as $path) {
-                    $absPartialPaths[] = GeneralUtility::getFileAbsFileName($path);
-                }
-            }
-            if (count($absPartialPaths) == 0) {
-                $absPartialPaths[] = GeneralUtility::getFileAbsFileName('EXT:nkc_address/Resources/Private/Partials/');
-            }
 
             $this->standaloneView = GeneralUtility::makeInstance(StandaloneView::class);
 
             $this->standaloneView->setLayoutRootPaths(
-                $absLayoutPaths
+                $this->getPath($config, 'layout', 'nkc_address')
             );
             $this->standaloneView->setPartialRootPaths(
-                $absPartialPaths
+                $this->getPath($config, 'partial', 'nkc_address')
             );
             $this->standaloneView->setTemplateRootPaths(
-                $absTemplatePaths
+                $this->getPath($config, 'template', 'nkc_address')
             );
 
             $this->standaloneView->setTemplate($template);
@@ -442,29 +430,17 @@ class PersonController extends BaseController
         return $this->standaloneView->render();
     }
 
-
     /**
      * @param array $personList
      * @param array $config
      * @return string
      * @return array|mixed
      */
-    public function retrieveMarkerInfo($personList, $config) {
-
+    public function retrieveMarkerInfo($personList, $config)
+    {
         parent::initializeAction();
 
         $this->personRepository = $this->api->factory(PersonRepository::class);
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->configurationManager = $objectManager->get(ConfigurationManager::class);
-
-        /** @var ContentObjectRenderer $contentObjectRenderer */
-        $contentObjectRenderer = $objectManager->get(ContentObjectRenderer::class);
-        $this->configurationManager->setContentObject($contentObjectRenderer);
-
-        // Required for link.email viewhelper
-        if (empty($GLOBALS['TSFE'])) $GLOBALS['TSFE'] = new \stdClass();
-
-        $GLOBALS['TSFE']->cObj = $contentObjectRenderer;
 
         $this->settings = $config['plugin']['tx_nkcaddress_person']['settings'];
 
@@ -472,17 +448,7 @@ class PersonController extends BaseController
 
         $query = new PersonQuery();
 
-        $query->setInclude(
-            [
-                Person::RELATION_FUNCTIONS => [
-                    PersonFunction::RELATION_ADDRESS,
-                    PersonFunction::RELATION_AVAILABLE_FUNCTION,
-                    PersonFunction::RELATION_INSTITUTION => [
-                        Institution::RELATION_ADDRESS,
-                        Institution::RELATION_INSTITUTION_TYPE
-                    ]
-                ]
-            ]);
+        $query->setInclude($this->getDetailIncludes());
 
         $query->setPersons($personList);
 
@@ -492,12 +458,11 @@ class PersonController extends BaseController
 
         $result = '';
 
-        foreach($persons as $person) {
+        foreach ($persons as $person) {
+            $address = false;
+            $institution = false;
 
-            $address = FALSE;
-            $institution = FALSE;
-
-            foreach($person->getFunctions() as $function) {
+            foreach ($person->getFunctions() as $function) {
                 if ($function instanceof PersonFunction) {
                     if (!$address) {
                         if ($function->getInstitution() && $function->getInstitution()->getAddress()) {
@@ -532,16 +497,13 @@ class PersonController extends BaseController
             $query->setQuery($searchRequest->getSearch());
         }
 
-        if (($searchRequest->getCity() != '') && (strlen($searchRequest->getCity()) > 2)) {
-            if (($searchRequest->getCity() != '') && (strlen($searchRequest->getCity()) > 2)) {
-                if (is_numeric($searchRequest->getCity())) {
-                    $query->setZipCodes([$searchRequest->getCity()]);
-                } else {
-                    $query->setCities(GeneralUtility::trimExplode(',', $searchRequest->getCity()));
-                }
+        if (strlen($searchRequest->getCity()) > 2) {
+            if (is_numeric($searchRequest->getCity())) {
+                $query->setZipCodes([$searchRequest->getCity()]);
+            } else {
+                $query->setCities(GeneralUtility::trimExplode(',', $searchRequest->getCity()));
             }
         }
-
     }
 
     /**

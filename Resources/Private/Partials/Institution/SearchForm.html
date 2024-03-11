@@ -12,10 +12,8 @@
         </f:else>
     </f:if>
 
-    <form method="get">
-        <input type="hidden" name="tx_nkcaddress_institution[action]" value="search" />
-        <input type="hidden" name="id" value="{searchPid}" />
-        <input type="hidden" name="no_cache" value="1" />
+    <f:form controller="Institution" pluginName="institutionList" action="search" pageUid="{searchPid}" name="searchRequest"  object="{searchRequest}" method="get">
+
         <f:if condition="{filter.cities}">
             <label>Orte</label>
             <ul>
@@ -26,15 +24,15 @@
                     </li>
                 </f:for>
                 <li>
-                    <input name="tx_nkcaddress_institution[searchRequest][city]" type="text" placeholder="PLZ &#x2F; Orte" value="{searchRequest.city}" />
-                    <button type="submit"></button>
+                    <f:form.textfield property="city" placeholder="PLZ / Ort" />
+                    <f:form.button type="submit">Suchen</f:form.button>
                 </li>
             </ul>
         </f:if>
 
         <f:if condition="{filter.categories}">
             <label>Rubrik</label>
-            <input name="tx_nkcaddress_institution[searchRequest][category]" type="hidden" value="{searchRequest.category}" />
+            <f:form.hidden property="category" />
             <ul>
                 <li data-caption="Rubrik" data-value="">Rubrik</li>
                 <f:for each="{filter.categories}" as="category">
@@ -45,10 +43,10 @@
             </ul>
         </f:if>
 
-        <input name="tx_nkcaddress_institution[searchRequest][search]" type="text" placeholder="Suchbegriff" value="{searchRequest.search}" />
+        <f:form.textfield property="search" placeholder="Suchbegriff" />
 
-        <button type="submit"></button>
+        <f:form.button type="submit">Suchen</f:form.button>
 
-    </form>
+    </f:form>
 
 </html>

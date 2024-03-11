@@ -4,9 +4,9 @@ namespace Nordkirche\NkcAddress\ViewHelpers;
 
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
+
 class InstitutionIconViewHelper extends AbstractViewHelper
 {
-
     /**
      * @var bool
      */

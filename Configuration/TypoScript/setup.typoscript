@@ -16,9 +16,9 @@ plugin.tx_nkcaddress_person {
     settings {
         maxItems = 50
 
-        personIconName = /typo3conf/ext/nkc_base/Resources/Public/MapIcons/person.svg
+        personIconName = EXT:nkc_base/Resources/Public/MapIcons/person.svg
 
-        personTypeIconName = /typo3conf/ext/nkc_base/Resources/Public/Icons/type_person.svg
+        personTypeIconName = EXT:nkc_base/Resources/Public/Icons/type_person.svg
 
         # Der Kurzlink wird für Links von außen verwendet.
         # Unter diesem Pfad sollte das Plugin mit der Action redirect liegen.
@@ -54,6 +54,11 @@ plugin.tx_nkcaddress_person {
     }
 }
 
+plugin.tx_nkcaddress_personlist < plugin.tx_nkcaddress_person
+plugin.tx_nkcaddress_personsearchform < plugin.tx_nkcaddress_person
+plugin.tx_nkcaddress_personshow < plugin.tx_nkcaddress_person
+plugin.tx_nkcaddress_personredirect < plugin.tx_nkcaddress_person
+
 plugin.tx_nkcaddress_institution {
     view {
         templateRootPaths.0 = EXT:nkc_address/Resources/Private/Templates/
@@ -75,10 +80,10 @@ plugin.tx_nkcaddress_institution {
     }
     settings {
 
-        institutionIconName = /typo3conf/ext/nkc_base/Resources/Public/MapIcons/inst_%s.svg
-        institutionTypeIconName =  /typo3conf/ext/nkc_base/Resources/Public/Icons/type_kirche.svg
+        institutionIconName = EXT:nkc_base/Resources/Public/MapIcons/inst_%s.svg
+        institutionTypeIconName =  EXT:nkc_base/Resources/Public/Icons/type_kirche.svg
 
-        institutionIconPngName = {$plugin.tx_nkcaddress_map.iconDomain}/typo3conf/ext/nkc_base/Resources/Public/MapIcons/inst_%s.png
+        institutionIconPngName = EXT:nkc_base/Resources/Public/MapIcons/inst_%s.png
 
         maxItems = 50
 
@@ -236,6 +241,11 @@ plugin.tx_nkcaddress_institution {
     }
 }
 
+plugin.tx_nkcaddress_institutionlist < plugin.tx_nkcaddress_institution
+plugin.tx_nkcaddress_institutionsearchform < plugin.tx_nkcaddress_institution
+plugin.tx_nkcaddress_institutionshow < plugin.tx_nkcaddress_institution
+plugin.tx_nkcaddress_institutionredirect < plugin.tx_nkcaddress_institution
+
 plugin.tx_nkcaddress_map {
     view {
         templateRootPaths.0 = EXT:nkc_address/Resources/Private/Templates/
@@ -257,17 +267,17 @@ plugin.tx_nkcaddress_map {
     }
     settings {
 
-        institutionIconName = /typo3conf/ext/nkc_base/Resources/Public/MapIcons/inst_%s.svg
+        institutionIconName = EXT:nkc_base/Resources/Public/MapIcons/inst_%s.svg
 
-        institutionIconPngName = {$plugin.tx_nkcaddress_map.iconDomain}/typo3conf/ext/nkc_base/Resources/Public/MapIcons/inst_%s.png
+        institutionIconPngName = EXT:nkc_base/Resources/Public/MapIcons/inst_%s.png
 
-        institutionTypeIconName =  /typo3conf/ext/nkc_base/Resources/Public/Icons/type_kirche.svg
-        personTypeIconName = /typo3conf/ext/nkc_base/Resources/Public/Icons/type_person.svg
+        institutionTypeIconName =  EXT:nkc_base/Resources/Public/Icons/type_kirche.svg
+        personTypeIconName = EXT:nkc_base/Resources/Public/Icons/type_person.svg
 
 
         mapping < plugin.tx_nkcaddress_institution.settings.mapping
 
-        personIconName = /typo3conf/ext/nkc_base/Resources/Public/MapIcons/person.svg
+        personIconName = EXT:nkc_base/Resources/Public/MapIcons/person.svg
 
         staticMapStyle < plugin.tx_nkcaddress_institution.settings.staticMapStyle
 
@@ -304,16 +314,17 @@ plugin.tx_nkcaddress_map {
     }
 }
 
+plugin.tx_nkcaddress_maplist < plugin.tx_nkcaddress_map
 
-[getTSFE().type == {$plugin.tx_nkcaddress_person.ajaxTypeNum}]
+[getTSFE() && getTSFE().type == {$plugin.tx_nkcaddress_person.ajaxTypeNum}]
   lib.contentElement.settings.additionalConfig.plainResult = 1
 [global]
 
-[getTSFE().type == {$plugin.tx_nkcaddress_institution.ajaxTypeNum}]
+[getTSFE() && getTSFE().type == {$plugin.tx_nkcaddress_institution.ajaxTypeNum}]
     lib.contentElement.settings.additionalConfig.plainResult = 1
 [global]
 
-[getTSFE().type == {$plugin.tx_nkcaddress_map.ajaxTypeNum}]
+[getTSFE() && getTSFE().type == {$plugin.tx_nkcaddress_map.ajaxTypeNum}]
     lib.contentElement.settings.additionalConfig.plainResult = 1
 [global]
 
@@ -333,7 +344,7 @@ mapAddressData {
       }
     }
   }
-  
+
   10 = CONTENT
   10 {
     table = tt_content

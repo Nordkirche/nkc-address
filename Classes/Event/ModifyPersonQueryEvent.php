@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Nordkirche\NkcAddress\Event;
@@ -13,8 +14,7 @@ final class ModifyPersonQueryEvent
         private readonly EventController $controller,
         private PersonQuery $personQuery,
         private readonly Request $request,
-    ) {
-    }
+    ) {}
 
     public function getPersonQuery(): PersonQuery
     {

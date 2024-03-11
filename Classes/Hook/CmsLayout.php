@@ -8,31 +8,29 @@ namespace Nordkirche\NkcAddress\Hook;
  * For the full copyright and license information, please read the
  * LICENSE.txt file that was distributed with this source code.
  */
-use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Backend\View\PageLayoutView;
-use Nordkirche\NkcBase\Exception\ApiException;
-use TYPO3\CMS\Extbase\Object\Exception;
-use Nordkirche\Ndk\Domain\Query\InstitutionQuery;
-use Nordkirche\Ndk\Domain\Query\PersonQuery;
 use Nordkirche\Ndk\Api;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
+use Nordkirche\Ndk\Domain\Query\InstitutionQuery;
+use Nordkirche\Ndk\Domain\Query\PersonQuery;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
 use Nordkirche\Ndk\Domain\Repository\PersonRepository;
 use Nordkirche\Ndk\Service\NapiService;
 use Nordkirche\Ndk\Service\Result;
 use Nordkirche\NkcAddress\Controller\MapController;
 use Nordkirche\NkcBase\Controller\BaseController;
+use Nordkirche\NkcBase\Exception\ApiException;
 use Nordkirche\NkcBase\Service\ApiService;
+use TYPO3\CMS\Backend\View\PageLayoutView;
+use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Extbase\Object\Exception;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Hook to display verbose information about the plugin
  */
 class CmsLayout implements PageLayoutViewDrawItemHookInterface
 {
-
     /**
      * @var Api
      */
@@ -150,8 +148,8 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
                 'categories' => $this->getFieldFromFlexform('settings.flexform.categories', 'sMarker'),
                 'functionType' => $this->getFieldFromFlexform('settings.flexform.functionType', 'sMarker'),
                 'availableFunction' => $this->getFieldFromFlexform('settings.flexform.availableFunction', 'sMarker'),
-                'personCollection' => $this->getFieldFromFlexform('settings.flexform.personCollection', 'sMarker')
-                ]
+                'personCollection' => $this->getFieldFromFlexform('settings.flexform.personCollection', 'sMarker'),
+                ],
         ];
 
         $mapController = $this->objectManager->get(MapController::class);
@@ -165,7 +163,7 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
         foreach ($records as $record) {
             $content .= '<li>';
             $content .= htmlentities($record->getLabel());
-            $content .= ' [' . intval($record->getId()) . ']';
+            $content .= ' [' . (int)($record->getId()) . ']';
             $content .= '</li>';
         }
 
@@ -217,7 +215,7 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
             foreach ($institutions as $institution) {
                 $content .= '<li>';
                 $content .= htmlentities($institution->getName());
-                $content .= ' [' . intval($institution->getId()) . ']';
+                $content .= ' [' . (int)($institution->getId()) . ']';
                 $content .= '</li>';
             }
 
@@ -246,7 +244,7 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
             $institution = $napiService->resolveUrl($institutionResource);
             if ($institution instanceof Institution) {
                 $content .= htmlentities($institution->getName());
-                $content .= ' [' . intval($institution->getId()) . ']';
+                $content .= ' [' . (int)($institution->getId()) . ']';
             } else {
                 $content .= '[nicht gefunden]';
             }
@@ -303,7 +301,7 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
             foreach ($persons as $person) {
                 $content .= '<li>';
                 $content .= htmlentities($person->getName()->getFormatted());
-                $content .= ' [' . intval($person->getId()) . ']';
+                $content .= ' [' . (int)($person->getId()) . ']';
                 $content .= '</li>';
             }
             $content .= '</ul></p>';
@@ -331,7 +329,7 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
             $person = $napiService->resolveUrl($personResource);
             if ($person instanceof Person) {
                 $content .= htmlentities($person->getName()->getFormatted());
-                $content .= ' [' . intval($person->getId()) . ']';
+                $content .= ' [' . (int)($person->getId()) . ']';
             } else {
                 $content .= '[nicht gefunden]';
             }

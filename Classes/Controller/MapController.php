@@ -2,30 +2,29 @@
 
 namespace Nordkirche\NkcAddress\Controller;
 
-use Psr\Http\Message\ResponseInterface;
-use Nordkirche\Ndk\Domain\Query\InstitutionQuery;
-use Nordkirche\Ndk\Service\Result;
-use Nordkirche\Ndk\Domain\Query\PersonQuery;
-use Nordkirche\Ndk\Domain\Query\PageQuery;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Model\Person\Person;
 use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
+use Nordkirche\Ndk\Domain\Query\InstitutionQuery;
+use Nordkirche\Ndk\Domain\Query\PageQuery;
+use Nordkirche\Ndk\Domain\Query\PersonQuery;
 use Nordkirche\Ndk\Domain\Repository\AvailableFunctionRepository;
 use Nordkirche\Ndk\Domain\Repository\FunctionTypeRepository;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
 use Nordkirche\Ndk\Domain\Repository\InstitutionTypeRepository;
 use Nordkirche\Ndk\Domain\Repository\PersonRepository;
 use Nordkirche\Ndk\Service\NapiService;
+use Nordkirche\Ndk\Service\Result;
 use Nordkirche\NkcBase\Controller\BaseController;
 use Nordkirche\NkcBase\Service\ApiService;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\View\JsonView;
-use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 
 class MapController extends BaseController
 {
-
     /**
      * @var InstitutionRepository
      */
@@ -118,7 +117,6 @@ class MapController extends BaseController
         $this->defaultViewObjectName = JsonView::class;
     }
 
-
     /**
      * @param int $forceReload
      * @return string
@@ -128,7 +126,7 @@ class MapController extends BaseController
         $this->view->setVariablesToRender(['json']);
 
         // Get current cObj
-        $cObj = $this->configurationManager->getContentObject();
+        $cObj = $this->request->getAttribute('currentContentObject');
 
         $cacheInstance = GeneralUtility::makeInstance(CacheManager::class)->getCache('tx_nkgooglemaps');
 
@@ -154,7 +152,7 @@ class MapController extends BaseController
             $cacheInstance->set($this->getCacheKey($cObj), $mapMarkerJson);
         }
 
-        $this->view->assignMultiple(['json' => json_decode($mapMarkerJson, TRUE)]);
+        $this->view->assignMultiple(['json' => json_decode($mapMarkerJson, true)]);
         return $this->htmlResponse();
     }
 
@@ -184,7 +182,6 @@ class MapController extends BaseController
         }
 
         if (!trim($mapMarkerJson) || $forceReload) {
-
             // Get TS Config and add to local settings
             $tsConfig = $this->getTypoScriptConfiguration();
             $this->settings['institutionIconName'] = $tsConfig['plugin']['tx_nkcaddress_map']['settings']['institutionIconName'];
@@ -238,24 +235,24 @@ class MapController extends BaseController
         $markerCounter = 0;
 
         if (trim($mapMarkerJson)) {
-            $result = json_decode($mapMarkerJson, TRUE);
-            $markerCounter = sizeof($result['data']);
+            $result = json_decode($mapMarkerJson, true);
+            $markerCounter = count($result['data']);
         }
         if ($markerCounter > 0) {
             $this->view->assign('json', $result);
-         } else {
+        } else {
             // Try to get paginated cache
-            $mapMarkerJson = $cacheInstance->get($this->getCacheKey($cObj).'-'.$requestId.'-'.$page);
+            $mapMarkerJson = $cacheInstance->get($this->getCacheKey($cObj) . '-' . $requestId . '-' . $page);
 
             if (trim($mapMarkerJson)) {
-                $result = json_decode($mapMarkerJson, TRUE);
+                $result = json_decode($mapMarkerJson, true);
                 $this->view->assign('json', $result);
             } else {
                 list($limit, $mapItems, $recordCount) = $this->getMapItems($this->settings, false, $page, 50);
 
                 $mapMarkers = $this->createMarkers($mapItems);
 
-                if (sizeof($mapMarkers) == 0) {
+                if (count($mapMarkers) == 0) {
                     $this->cacheCleanGarbage($this->getCacheKey($cObj), $requestId, $page);
                 }
 
@@ -316,7 +313,7 @@ class MapController extends BaseController
                                         'currentPage'   => $currentPage,
                                         'numPages'      => $numPages,
                                         'recordCount'   => $recordCount,
-                                        'nextPage'      => ($currentPage < $numPages) ? $currentPage + 1 : false
+                                        'nextPage'      => ($currentPage < $numPages) ? $currentPage + 1 : false,
         ]);
 
         if (!empty($this->settings['flexform']['showFilter']) && ($this->settings['flexform']['showFilter'] == 1)) {
@@ -376,7 +373,7 @@ class MapController extends BaseController
                 $this->setInstitutionFilter(
                     $query,
                     $settings['flexform']['institutionCollection'],
-                    !empty($settings['flexform']['selectInstitutionOption']) ? $settings['flexform']['selectInstitutionOption']: ''
+                    !empty($settings['flexform']['selectInstitutionOption']) ? $settings['flexform']['selectInstitutionOption'] : ''
                 );
 
                 // Add category filter
@@ -431,7 +428,6 @@ class MapController extends BaseController
                 $limitExceeded = true;
             }
         } else {
-
             // People by function type
             if (!empty($settings['flexform']['functionType'])) {
                 $query = $this->getPersonQuery($pageSize, $page);
@@ -537,7 +533,9 @@ class MapController extends BaseController
             }
         } else {
             // Pagination is inactive: use general limit
-            if (empty($settings['maxItems'])) $settings['maxItems'] = 20;
+            if (empty($settings['maxItems'])) {
+                $settings['maxItems'] = 20;
+            }
             $limit = !empty($settings['flexform']['maxItems']) ? $settings['flexform']['maxItems'] : $settings['maxItems'];
             $pageSize = floor($limit / 4);
         }
@@ -631,12 +629,12 @@ class MapController extends BaseController
                             Person::RELATION_FUNCTIONS => [
                                 PersonFunction::RELATION_INSTITUTION => [
                                     Institution::RELATION_ADDRESS,
-                                    Institution::RELATION_INSTITUTION_TYPE
+                                    Institution::RELATION_INSTITUTION_TYPE,
                                 ],
                                 PersonFunction::RELATION_AVAILABLE_FUNCTION,
                                 PersonFunction::RELATION_FUNCTION_TYPE,
                                 PersonFunction::RELATION_INSTITUTION,
-                                PersonFunction::RELATION_ADDRESS]
+                                PersonFunction::RELATION_ADDRESS],
                             ]);
 
         $query->setFacets([Person::FACET_FUNCTION_TYPE]);
@@ -745,7 +743,6 @@ class MapController extends BaseController
             if (is_array($facetsArray[$facet_type])) {
                 asort($facetsArray[$facet_type]);
             }
-
         }
 
         return $facetsArray;
@@ -756,26 +753,26 @@ class MapController extends BaseController
      * @param $requestId
      * @param $numPages
      */
-    private function cacheCleanGarbage($cacheKey, $requestId, $numPages) {
+    private function cacheCleanGarbage($cacheKey, $requestId, $numPages)
+    {
         $cacheInstance = GeneralUtility::makeInstance(CacheManager::class)->getCache('tx_nkgooglemaps');
         $markerArray = [];
-        for($page=1; $page <= $numPages; $page++) {
-            $mapMarkerJson = $cacheInstance->get($cacheKey.'-'.$requestId.'-'.$page);
+        for ($page = 1; $page <= $numPages; $page++) {
+            $mapMarkerJson = $cacheInstance->get($cacheKey . '-' . $requestId . '-' . $page);
             if ($mapMarkerJson) {
-                $mapMarkers = json_decode($mapMarkerJson, TRUE);
-                if (sizeof($mapMarkers)) {
+                $mapMarkers = json_decode($mapMarkerJson, true);
+                if (count($mapMarkers)) {
                     $markerArray = array_merge($markerArray, $mapMarkers['data']);
-                    $cacheInstance->set($cacheKey.'-'.$requestId.'-'.$page, '');
+                    $cacheInstance->set($cacheKey . '-' . $requestId . '-' . $page, '');
                 }
             }
         }
 
-        if (sizeof($markerArray)) {
+        if (count($markerArray)) {
             $mapMarkerJson = json_encode(['crdate' => time(), 'data' => $markerArray]);
             $cacheInstance->set($cacheKey, $mapMarkerJson);
         }
     }
-
 
     /**
      * @return string

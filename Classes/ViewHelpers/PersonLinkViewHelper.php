@@ -2,18 +2,19 @@
 
 namespace Nordkirche\NkcAddress\ViewHelpers;
 
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use Nordkirche\NkcAddress\Service\InstitutionLinkService;
-use Nordkirche\NkcAddress\Service\InstitutionRelationService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
 use Nordkirche\Ndk\Domain\Model\Person\Person;
 use Nordkirche\Ndk\Domain\Model\Person\PersonFunction;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
 use Nordkirche\Ndk\Domain\Repository\PersonRepository;
 use Nordkirche\Ndk\Service\NapiService;
+use Nordkirche\NkcAddress\Service\InstitutionLinkService;
+use Nordkirche\NkcAddress\Service\InstitutionRelationService;
 use Nordkirche\NkcBase\Service\ApiService;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
 
 /**
@@ -23,7 +24,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
  */
 class PersonLinkViewHelper extends AbstractTagBasedViewHelper
 {
-
     /**
      * @var ConfigurationManagerInterface
      */
@@ -113,7 +113,6 @@ class PersonLinkViewHelper extends AbstractTagBasedViewHelper
     /**
      * render the link
      *
-     *
      * @return string
      */
     public function render()
@@ -124,9 +123,9 @@ class PersonLinkViewHelper extends AbstractTagBasedViewHelper
                 PersonFunction::RELATION_AVAILABLE_FUNCTION,
                 PersonFunction::RELATION_INSTITUTION => [
                     Institution::RELATION_ADDRESS,
-                    Institution::RELATION_INSTITUTION_TYPE
-                ]
-            ]
+                    Institution::RELATION_INSTITUTION_TYPE,
+                ],
+            ],
         ];
         /** @var Person */
         $targetPerson = $this->arguments['person'];
@@ -155,7 +154,7 @@ class PersonLinkViewHelper extends AbstractTagBasedViewHelper
         }
 
         // target link path
-        $uriBuilder = $this->renderingContext->getControllerContext()->getUriBuilder();
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
         $uri = $uriBuilder->reset()->setTargetPageUid($detailPid)->uriFor('show', ['person' => $targetPerson->getId()], 'Person', 'nkaddress', 'PersonCards');
         $this->tag->addAttribute('href', $this->basePath . $uri);
 
@@ -183,11 +182,19 @@ class PersonLinkViewHelper extends AbstractTagBasedViewHelper
         return $output;
     }
 
+    /**
+     * @param InstitutionLinkService $institutionLinkService
+     * @return void
+     */
     public function injectInstitutionLinkService(InstitutionLinkService $institutionLinkService): void
     {
         $this->institutionLinkService = $institutionLinkService;
     }
 
+    /**
+     * @param InstitutionRelationService $institutionRelations
+     * @return void
+     */
     public function injectInstitutionRelations(InstitutionRelationService $institutionRelations): void
     {
         $this->institutionRelations = $institutionRelations;

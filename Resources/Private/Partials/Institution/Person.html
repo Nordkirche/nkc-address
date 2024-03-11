@@ -8,7 +8,7 @@
         <img src="{n:uri.image(image: person.picture, width: '320c', height: '200c')}" />
     </f:if>
 
-    <f:link.action action="show" controller="Person" pageUid="{settings.flexform.pidPersonSingle}" arguments="{uid: person.id}">{person.name.formatted}</f:link.action>
+    <h4><f:link.action action="show" controller="Person" pageUid="{settings.flexform.pidPersonSingle}" arguments="{uid: person.id}">{person.name.formatted}</f:link.action></h4>
 
     <p>{function.responsibilities}</p>
 

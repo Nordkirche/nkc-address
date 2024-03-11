@@ -6,7 +6,8 @@ Die Extension stellt PlugIns bereit, um Inhalte der Nordkirche API (Personen und
   * Listenansicht
   * Detailansicht (Visitenkarte)
   * Suchformular
-
+  * Helper: Weiterleitung per ID auf die Visitenkarte
+  * 
 * Institutionen
   * Listenansicht / Suchergebnis
   * Detailansicht (Visitenkarte)
@@ -21,9 +22,9 @@ Die Extension stellt PlugIns bereit, um Inhalte der Nordkirche API (Personen und
 ## Abhängigkeiten
 Diese Extension basiert auf
 
-    nordkirche/nkc_base ^11.5
-    fluidtypo3/vhs ^6.1
-    TYPO3 ^11.5
+    nordkirche/nkc_base ^12.4
+    fluidtypo3/vhs ^6.1 || ^7.0
+    TYPO3 ^12.4
 
 ## Installation
 Die Installation der Extension erfolgt über composer, da bei dieser Installation auch alle Abhängigkeiten mit installiert werden müssen.
@@ -55,12 +56,18 @@ Es gibt PSR-14 Events, um die NAPI Queries und die Ausgabe der Daten anzupassen:
 | PersonController      | showAction  | ModifyAssignedValuesForPersonEvent          | getAssignedValues()     | setAssignedValues()     |
 
 
-## Wichtiger Hinweis
+## Wichtige Hinweise
 Bitte stellen Sie sicher, dass in der TYPO3-Konfiguration die Debug Option deaktiviert ist:
 
     $GLOBALS['TYPO3_CONF_VARS']['FE']['debug'] = 0;
 
 Andernfalls wird bei einer JSON Responses von TYPO3 ein Cache Hinweis angefügt und die Karten-Marker können nicht nachgeladen werden.
+
+Wenn statische Google Karten in der Listenansicht generiert werden sollen, muss in TYPO3 folgende TypoScript-Konfiguration vorliegen:
+
+    config.forceAbsoluteUrls = 1
+
+Damit wird sichergestellt, dass die Icons, die bei EXT:nkc_base mitgeliefert werden, über den Asset Ordner verknüpft werden.  
 
 ## Fehler gefunden?
 Bitte melden Sie Fehler via github

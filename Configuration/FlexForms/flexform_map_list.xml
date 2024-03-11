@@ -1,25 +1,25 @@
 <T3DataStructure>
 	<sheets>
-		<sDEF>
-			<ROOT>
-				<sheetTitle>Funktion</sheetTitle>
-				<type>array</type>
-				<el>
-					<settings.flexform.showFilter>
-						<label>Nutzer sollen die Ausgabe filtern können</label>
+        <sDEF>
+            <ROOT>
+                <sheetTitle>Funktion</sheetTitle>
+                <type>array</type>
+                <el>
+                    <settings.flexform.showFilter>
+                        <label>Nutzer sollen die Ausgabe filtern können</label>
                         <onChange>reload</onChange>
                         <config>
                             <type>check</type>
                         </config>
-					</settings.flexform.showFilter>
-					<settings.flexform.stream>
-						<label>Marker sukzessive nachladen</label>
+                    </settings.flexform.showFilter>
+                    <settings.flexform.stream>
+                        <label>Marker sukzessive nachladen</label>
                         <config>
                             <type>check</type>
                         </config>
-					</settings.flexform.stream>
-					<settings.flexform.center>
-						<label>Zentrum der Karte </label>
+                    </settings.flexform.stream>
+                    <settings.flexform.center>
+                        <label>Zentrum der Karte </label>
                         <onChange>reload</onChange>
                         <config>
                             <type>radio</type>
@@ -39,42 +39,42 @@
                                 </numIndex>
                             </items>
                         </config>
-					</settings.flexform.center>
-					<settings.flexform.latitude>
-						<label>Breitengrad</label>
+                    </settings.flexform.center>
+                    <settings.flexform.latitude>
+                        <label>Breitengrad</label>
                         <config>
                             <type>input</type>
                             <size>5</size>
                             <default></default>
                         </config>
                         <displayCond>FIELD:settings.flexform.center:=:1</displayCond>
-					</settings.flexform.latitude>
-					<settings.flexform.longitude>
-						<label>Längengrad</label>
+                    </settings.flexform.latitude>
+                    <settings.flexform.longitude>
+                        <label>Längengrad</label>
                         <config>
                             <type>input</type>
                             <size>5</size>
                             <default></default>
                         </config>
                         <displayCond>FIELD:settings.flexform.center:=:1</displayCond>
-					</settings.flexform.longitude>
-				</el>
-			</ROOT>
-		</sDEF>
-		<sMarker>
-			<ROOT>
-				<sheetTitle>Marker</sheetTitle>
-				<type>array</type>
-				<el>
-					<settings.flexform.allInstitutions>
+                    </settings.flexform.longitude>
+                </el>
+            </ROOT>
+        </sDEF>
+        <sMarker>
+            <ROOT>
+                <sheetTitle>Marker</sheetTitle>
+                <type>array</type>
+                <el>
+                    <settings.flexform.allInstitutions>
                         <label>Alle Institutionen zeigen</label>
-						<onChange>reload</onChange>
+                        <onChange>reload</onChange>
                         <config>
                             <type>check</type>
                         </config>
-					</settings.flexform.allInstitutions>
-					<settings.flexform.institutionCollection>
-						<label>Diese Institutionen darstellen</label>
+                    </settings.flexform.allInstitutions>
+                    <settings.flexform.institutionCollection>
+                        <label>Diese Institutionen darstellen</label>
                         <config>
                             <type>user</type>
                             <renderType>napiItemSelector</renderType>
@@ -84,9 +84,9 @@
                             <size>10</size>
                         </config>
                         <displayCond>FIELD:settings.flexform.allInstitutions:!=:1</displayCond>
-					</settings.flexform.institutionCollection>
-					<settings.flexform.selectInstitutionOption>
-						<label>Welche Institutionen sollen dargestellt werden?</label>
+                    </settings.flexform.institutionCollection>
+                    <settings.flexform.selectInstitutionOption>
+                        <label>Welche Institutionen sollen dargestellt werden?</label>
                         <config>
                             <type>select</type>
                             <renderType>selectSingle</renderType>
@@ -114,9 +114,9 @@
                             </items>
                         </config>
                         <displayCond>FIELD:settings.flexform.allInstitutions:!=:1</displayCond>
-					</settings.flexform.selectInstitutionOption>
-					<settings.flexform.institutionType>
-						<label>Alle Institutionen dieses Typs darstellen</label>
+                    </settings.flexform.selectInstitutionOption>
+                    <settings.flexform.institutionType>
+                        <label>Alle Institutionen dieses Typs darstellen</label>
                         <config>
                             <type>select</type>
                             <renderType>selectMultipleSideBySide</renderType>
@@ -124,9 +124,9 @@
                             <allowed>institutionType</allowed>
                         </config>
                         <displayCond>FIELD:settings.flexform.allInstitutions:!=:1</displayCond>
-					</settings.flexform.institutionType>
-					<settings.flexform.categories>
-						<label>Institutionen mit diesen Kategorien darstellen</label>
+                    </settings.flexform.institutionType>
+                    <settings.flexform.categories>
+                        <label>Institutionen mit diesen Kategorien darstellen</label>
                         <exclude>1</exclude>
                         <config>
                             <type>select</type>
@@ -148,15 +148,15 @@
                             <maxitems>20</maxitems>
                         </config>
                         <displayCond>FIELD:settings.flexform.allInstitutions:!=:1</displayCond>
-					</settings.flexform.categories>
-					<settings.flexform.allPersons>
-						<onChange>reload</onChange><label>Alle Personen zeigen</label>
+                    </settings.flexform.categories>
+                    <settings.flexform.allPersons>
+                        <onChange>reload</onChange><label>Alle Personen zeigen</label>
                         <config>
                             <type>check</type>
                         </config>
-					</settings.flexform.allPersons>
-					<settings.flexform.personCollection>
-						<label>Diese Personen darstellen</label>
+                    </settings.flexform.allPersons>
+                    <settings.flexform.personCollection>
+                        <label>Diese Personen darstellen</label>
                         <config>
                             <type>user</type>
                             <renderType>napiItemSelector</renderType>
@@ -166,9 +166,9 @@
                             <size>10</size>
                         </config>
                         <displayCond>FIELD:settings.flexform.allPersons:!=:1</displayCond>
-					</settings.flexform.personCollection>
-					<settings.flexform.functionType>
-						<label>Alle Personen mit diesem Funktionstyp darstellen</label>
+                    </settings.flexform.personCollection>
+                    <settings.flexform.functionType>
+                        <label>Alle Personen mit diesem Funktionstyp darstellen</label>
                         <config>
                             <type>select</type>
                             <renderType>selectMultipleSideBySide</renderType>
@@ -176,9 +176,9 @@
                             <allowed>functionType</allowed>
                         </config>
                         <displayCond>FIELD:settings.flexform.allPersons:!=:1</displayCond>
-					</settings.flexform.functionType>
-					<settings.flexform.availableFunction>
-						<label>Alle Personen mit dieser Funktion darstellen</label>
+                    </settings.flexform.functionType>
+                    <settings.flexform.availableFunction>
+                        <label>Alle Personen mit dieser Funktion darstellen</label>
                         <config>
                             <type>select</type>
                             <renderType>selectMultipleSideBySide</renderType>
@@ -186,10 +186,10 @@
                             <allowed>availableFunction</allowed>
                         </config>
                         <displayCond>FIELD:settings.flexform.allPersons:!=:1</displayCond>
-					</settings.flexform.availableFunction>
-				</el>
-			</ROOT>
-		</sMarker>
+                    </settings.flexform.availableFunction>
+                </el>
+            </ROOT>
+        </sMarker>
 		<sTemplate>
 			<ROOT>
 				<sheetTitle>Ausgabe</sheetTitle>
@@ -203,7 +203,7 @@
                             <default></default>
                         </config>
                         <displayCond>FIELD:sDEF.settings.flexform.showFilter:=:1</displayCond>
-					</settings.flexform.header>
+                    </settings.flexform.header>
 					<settings.flexform.header_layout>
 						<label>Layout</label>
                         <config>
@@ -227,16 +227,80 @@
                         </config>
                         <displayCond>FIELD:sDEF.settings.flexform.showFilter:=:1</displayCond>
 					</settings.flexform.header_layout>
+					<settings.flexform.maxItems>
+						<label>Maximale Anzahl</label>
+                        <config>
+                            <type>input</type>
+                            <size>5</size>
+                            <default></default>
+                        </config>
+					</settings.flexform.maxItems>
+					<settings.flexform.paginate.mode>
+						<label>Art der Paginierung</label>
+                        <onChange>reload</onChange>
+                        <config>
+                            <type>select</type>
+                            <renderType>selectSingle</renderType>
+                            <items>
+                                <numIndex index="0">
+                                    <label>Keine Paginierung</label>
+                                    <value>0</value>
+                                </numIndex>
+                                <numIndex index="1">
+                                    <label>Button zum Laden weiterer Elemente</label>
+                                    <value>1</value>
+                                </numIndex>
+                                <numIndex index="2">
+                                    <label>Blätternavigation einblenden</label>
+                                    <value>2</value>
+                                </numIndex>
+                            </items>
+                        </config>
+					</settings.flexform.paginate.mode>
+					<settings.flexform.paginate.itemsPerPage>
+						<label>Anzahl Elemente pro Seite</label>
+                        <config>
+                            <type>input</type>
+                            <size>5</size>
+                            <default>25</default>
+                        </config>
+                        <displayCond>FIELD:settings.flexform.paginate.mode:!=:0</displayCond>
+					</settings.flexform.paginate.itemsPerPage>
+					<settings.flexform.paginate.insertAbove>
+						<label>Paginierung über der Liste anzeigen</label>
+                        <config>
+                            <type>check</type>
+                            <default>0</default>
+                        </config>
+                        <displayCond>FIELD:settings.flexform.paginate.mode:=:2</displayCond>
+					</settings.flexform.paginate.insertAbove>
+					<settings.flexform.paginate.insertBelow>
+						<label>Paginierung unter der Liste anzeigen</label>
+                        <config>
+                            <type>check</type>
+                            <default>1</default>
+                        </config>
+                        <displayCond>FIELD:settings.flexform.paginate.mode:=:2</displayCond>
+					</settings.flexform.paginate.insertBelow>
+					<settings.flexform.paginate.maximumNumberOfLinks>
+						<label>Anzahl Links in Paginierung</label>
+                        <config>
+                            <type>input</type>
+                            <size>5</size>
+                            <default>5</default>
+                        </config>
+                        <displayCond>FIELD:settings.flexform.paginate.mode:=:2</displayCond>
+					</settings.flexform.paginate.maximumNumberOfLinks>
 				</el>
 			</ROOT>
 		</sTemplate>
-		<sPages>
-			<ROOT>
-				<sheetTitle>Seiten</sheetTitle>
-				<type>array</type>
-				<el>
-					<settings.flexform.pidInstitutionSingle>
-						<label>Seite für Einzelansicht von Institutionen</label>
+        <sPages>
+            <ROOT>
+                <sheetTitle>Seiten</sheetTitle>
+                <type>array</type>
+                <el>
+                    <settings.flexform.pidInstitutionSingle>
+                        <label>Seite für Einzelansicht von Institutionen</label>
                         <config>
                             <type>group</type>
                             <allowed>pages</allowed>
@@ -253,9 +317,9 @@
                                 </suggest>
                             </wizards>
                         </config>
-					</settings.flexform.pidInstitutionSingle>
-					<settings.flexform.pidPersonSingle>
-						<label>Seite für Einzelansicht von Personen</label>
+                    </settings.flexform.pidInstitutionSingle>
+                    <settings.flexform.pidPersonSingle>
+                        <label>Seite für Einzelansicht von Personen</label>
                         <config>
                             <type>group</type>
                             <allowed>pages</allowed>
@@ -272,9 +336,9 @@
                                 </suggest>
                             </wizards>
                         </config>
-					</settings.flexform.pidPersonSingle>
-				</el>
-			</ROOT>
-		</sPages>
+                    </settings.flexform.pidPersonSingle>
+                </el>
+            </ROOT>
+        </sPages>
 	</sheets>
 </T3DataStructure>

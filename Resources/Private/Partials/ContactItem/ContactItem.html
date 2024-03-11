@@ -20,7 +20,8 @@
     </f:case>
     <f:case value="E-Mail">
         <li>
-			<f:link.email email="{contactItem.value}" />
+			<f:comment><f:link.email email="{contactItem.value}" /></f:comment>
+            <a href="mailto:{contactItem.value}">{contactItem.value}</a>
         </li>
     </f:case>
     <f:case value="Website">

@@ -17,11 +17,11 @@
     <h1><f:render partial="Institution/Name" arguments="{institution: institution}" /></h1>
 
     <f:if condition="{institution.picture}">
-        <img alt="" src="{n:uri.image(image: institution.picture, width: '768c', height: '480c')}" />
+        <img alt="{institution.name}" src="{n:uri.image(image: institution.picture, width: '768c', height: '480c')}" />
     </f:if>
 
     <f:if condition="{institution.logo}">
-        <img alt="" src="{n:uri.image(image: institution.logo, width: '320')}"
+        <img alt="Logo {institution.name}" src="{n:uri.image(image: institution.logo, width: '320')}"
     </f:if>
 
     <f:render partial="Institution/Address" arguments="{institution: institution}" />
@@ -41,6 +41,7 @@
     </f:if>
 
     <f:render partial="Institution/OpeningHours" arguments="{institution: institution, settings: settings}" />
+
 
     <nke:findEvents institution="{institution.id}">
         <f:if condition="{events->f:count()}">
