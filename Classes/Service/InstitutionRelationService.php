@@ -17,9 +17,6 @@ use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * @author Anno v. Heimburg <avonheimburg@agenturwerft.de>, Agenturwerft GmbH
- */
 class InstitutionRelationService implements SingletonInterface
 {
     public const TYPE_MEMBER = 1;

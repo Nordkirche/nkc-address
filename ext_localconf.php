@@ -127,32 +127,23 @@ call_user_func(
         // wizards
         ExtensionManagementUtility::addPageTSConfig(
             'mod {
-                wizards.newContentElement.wizardItems.nordkirche {
-                    header = Nordkirche
+                wizards.newContentElement.wizardItems.nordkirche_address {
+                    header = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.header
                     elements {
 
                         address_person_list {
                             iconIdentifier = content-plugin
-                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_person_list
-                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_person_list.description
+                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_personlist
+                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_personlist.description
                             tt_content_defValues {
                                 CType = list
                                 list_type = nkcaddress_personlist
                             }
                         }
-                        address_person_search {
-                            iconIdentifier = content-plugin
-                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_person_search
-                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_person_search.description
-                            tt_content_defValues {
-                                CType = list
-                                list_type = nkcaddress_personsearch
-                            }
-                        }
                         address_person_searchform {
                             iconIdentifier = content-plugin
-                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_person_searchform
-                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_person_searchform.description
+                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_personsearchform
+                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_personsearchform.description
                             tt_content_defValues {
                                 CType = list
                                 list_type = nkcaddress_personsearchform
@@ -160,8 +151,8 @@ call_user_func(
                         }
                         address_person {
                             iconIdentifier = content-plugin
-                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_person
-                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_person.description
+                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_person
+                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_person.description
                             tt_content_defValues {
                                 CType = list
                                 list_type = nkcaddress_person
@@ -170,26 +161,17 @@ call_user_func(
 
                         address_institution_list {
                             iconIdentifier = content-plugin
-                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_institution_list
-                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_institution_list.description
+                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_institutionlist
+                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_institutionlist.description
                             tt_content_defValues {
                                 CType = list
                                 list_type = nkcaddress_institutionlist
                             }
                         }
-                        address_institution_search {
-                            iconIdentifier = content-plugin
-                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_institution_search
-                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_institution_search.description
-                            tt_content_defValues {
-                                CType = list
-                                list_type = nkcaddress_institutionsearch
-                            }
-                        }
                         address_institution_searchform {
                             iconIdentifier = content-plugin
-                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_institution_searchform
-                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_institution_searchform.description
+                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_institutionsearchform
+                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_institutionsearchform.description
                             tt_content_defValues {
                                 CType = list
                                 list_type = nkcaddress_institutionsearchform
@@ -197,8 +179,8 @@ call_user_func(
                         }
                         address_institution {
                             iconIdentifier = content-plugin
-                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_institution
-                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.address_institution.description
+                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_institution
+                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_institution.description
                             tt_content_defValues {
                                 CType = list
                                 list_type = nkcaddress_institution
@@ -207,8 +189,8 @@ call_user_func(
 
                         address_map {
                             iconIdentifier = content-plugin
-                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:tx_nkc_address_map
-                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:tx_nkc_address_map.description
+                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_map
+                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_map.description
                             tt_content_defValues {
                                 CType = list
                                 list_type = nkcaddress_map
@@ -216,8 +198,8 @@ call_user_func(
                         }
                         address_maplist {
                             iconIdentifier = content-plugin
-                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:tx_nkc_address_maplist
-                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:tx_nkc_address_maplist.description
+                            title = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard,nkcaddress_maplist
+                            description = LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.nkcaddress_maplist.description
                             tt_content_defValues {
                                 CType = list
                                 list_type = nkcaddress_maplist
@@ -229,10 +211,6 @@ call_user_func(
                 }
            }'
         );
-
-        // Page module hook
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['nkc_address'] =
-            CmsLayout::class;
 
         // Cache
         if (empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['cache_institution_relation'])) {

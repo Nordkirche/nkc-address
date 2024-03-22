@@ -3,18 +3,18 @@
 Die Extension stellt PlugIns bereit, um Inhalte der Nordkirche API (Personen und Institutionen) auf einer Website darzustellen.
 
 * Personen
-  * Listenansicht
+  * Listenansicht / Suchergebnis
   * Detailansicht (Visitenkarte)
   * Suchformular
   * Helper: Weiterleitung per ID auf die Visitenkarte
-  * 
+
 * Institutionen
   * Listenansicht / Suchergebnis
   * Detailansicht (Visitenkarte)
   * Suchformular
   * Helper: Weiterleitung per ID auf die Visitenkarte
 
-* Kartdarstellung
+* Kartendarstellung
   * mit Liste unter der Karte
   * alleinstehend ohne Liste
 
@@ -22,7 +22,8 @@ Die Extension stellt PlugIns bereit, um Inhalte der Nordkirche API (Personen und
 ## Abhängigkeiten
 Diese Extension basiert auf
 
-    nordkirche/nkc_base ^12.4
+    nordkirche/nkc-base ^12.4
+    nordkirche/nk-google-map ^12.4
     fluidtypo3/vhs ^6.1 || ^7.0
     TYPO3 ^12.4
 
@@ -67,7 +68,12 @@ Wenn statische Google Karten in der Listenansicht generiert werden sollen, muss 
 
     config.forceAbsoluteUrls = 1
 
-Damit wird sichergestellt, dass die Icons, die bei EXT:nkc_base mitgeliefert werden, über den Asset Ordner verknüpft werden.  
+Damit wird sichergestellt, dass die Icons, die bei EXT:nkc_base mitgeliefert werden, über den Asset Ordner verknüpft werden.
+
+### Breaking Changes
+Mit Version 12.4 gibt es für alle Actions eigene Plug-in Instanzen, weil TYPO3 keine Switchable Controller Actions mehr unterstützt. Für die Migration gibt es einen Upgrade Wizard.
+
+Das Template Markup für Suchformulare hat sich geändert, da nun Fluid Form Elemente in Suchformularen eingesetzt werden, um cHash Fehler und Cash-Probleme zu vermeiden
 
 ## Fehler gefunden?
 Bitte melden Sie Fehler via github

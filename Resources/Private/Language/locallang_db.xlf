@@ -3,68 +3,65 @@
     <file source-language="en" datatype="plaintext" original="messages" product-name="nkc_address" date="2017-06-06T15:08:27+02:00">
         <header/>
         <body>
-            <trans-unit id="tx_nkc_address_domain_model_person">
-                <source>Ausgabe von Personen</source>
-            </trans-unit>
-            <trans-unit id="tx_nkc_address_domain_model_person.description">
-                <source>Frei konfigurierbare Listen und Detail-Ansicht von Personen</source>
-            </trans-unit>
-
-			<trans-unit id="wizard.address_person_list">
-				<source>Nordkirche Personen Liste / Sucher</source>
+			<trans-unit id="wizard.header">
+				<source>Nordkirche Adressen</source>
 			</trans-unit>
-			<trans-unit id="wizard.address_person_list.description">
+
+			<trans-unit id="wizard.nkcaddress_personlist">
+				<source>Personen Liste / Suchergebnis</source>
+			</trans-unit>
+			<trans-unit id="wizard.nkcaddress_personlist.description">
 				<source>Frei konfigurierbare Listenansicht von Personen</source>
 			</trans-unit>
 
-			<trans-unit id="wizard.address_person_searchform">
-				<source>Nordkirche Personen Suchformular</source>
+			<trans-unit id="wizard.nkcaddress_personsearchform">
+				<source>Personen Suchformular</source>
 			</trans-unit>
-			<trans-unit id="wizard.address_person_searchform.description">
+			<trans-unit id="wizard.nkcaddress_personsearchform.description">
 				<source>Formular für die Suche nach Personen</source>
 			</trans-unit>
 
-			<trans-unit id="wizard.address_person">
-				<source>Nordkirche Personen Visitenkarte</source>
+			<trans-unit id="wizard.nkcaddress_person">
+				<source>Personen Visitenkarte</source>
 			</trans-unit>
-			<trans-unit id="wizard.address_person.description">
+			<trans-unit id="wizard.nkcaddress_person.description">
 				<source>Detailansicht einer Person</source>
 			</trans-unit>
 
-            <trans-unit id="tx_nkc_address_map">
+            <trans-unit id="wizard.nkcaddress_map">
                 <source>Kartendarstellung von Adressen</source>
             </trans-unit>
-            <trans-unit id="tx_nkc_address_map.description">
+            <trans-unit id="wizard.nkcaddress_map.description">
                 <source>Frei konfigurierbare Google Karte für Personen und Institutionen</source>
             </trans-unit>
 
 
-			<trans-unit id="tx_nkc_address_maplist">
+			<trans-unit id="wizard.nkcaddress_maplist">
 				<source>Karten- und Listendarstellung von Adressen</source>
 			</trans-unit>
-			<trans-unit id="tx_nkc_address_maplist.description">
+			<trans-unit id="wizard.nkcaddress_maplist.description">
 				<source>Frei konfigurierbare Google Karte mit Liste für Personen und Institutionen</source>
 			</trans-unit>
 
 
-            <trans-unit id="wizard.address_institution_list">
-                <source>Nordkirche Institutionen Liste / Suchergebnis</source>
+            <trans-unit id="wizard.nkcaddress_institutionlist">
+                <source>Institutionen Liste / Suchergebnis</source>
             </trans-unit>
-            <trans-unit id="wizard.address_institution_list.description">
+            <trans-unit id="wizard.nkcaddress_institutionlist.description">
                 <source>Frei konfigurierbare Listenansicht von Institutionen</source>
             </trans-unit>
 
-            <trans-unit id="wizard.address_institution_searchform">
-                <source>Nordkirche Institutionen Suchformular</source>
+            <trans-unit id="wizard.nkcaddress_institutionsearchform">
+                <source>Institutionen Suchformular</source>
             </trans-unit>
-            <trans-unit id="wizard.address_institution_searchform.description">
+            <trans-unit id="wizard.nkcaddress_institutionsearchform.description">
                 <source>Formular für die Suche nach Institutionen</source>
             </trans-unit>
 
-            <trans-unit id="wizard.address_institution">
-                <source>Nordkirche Institutionen Visitenkarte</source>
+            <trans-unit id="wizard.nkcaddress_institution">
+                <source>Institutionen Visitenkarte</source>
             </trans-unit>
-            <trans-unit id="wizard.address_institution.description">
+            <trans-unit id="wizard.nkcaddress_institution.description">
                 <source>Detailansicht einer Institution</source>
             </trans-unit>
 

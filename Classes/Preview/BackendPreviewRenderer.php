@@ -1,15 +1,9 @@
 <?php
+namespace Nordkirche\NkcAddress\Preview;
 
-namespace Nordkirche\NkcAddress\Hook;
-
-/**
- * This file is part of the "nkc_address" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- */
 use Nordkirche\Ndk\Api;
 use Nordkirche\Ndk\Domain\Model\Institution\Institution;
+use Nordkirche\Ndk\Domain\Model\Person\Person;
 use Nordkirche\Ndk\Domain\Query\InstitutionQuery;
 use Nordkirche\Ndk\Domain\Query\PersonQuery;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
@@ -18,121 +12,80 @@ use Nordkirche\Ndk\Service\NapiService;
 use Nordkirche\Ndk\Service\Result;
 use Nordkirche\NkcAddress\Controller\MapController;
 use Nordkirche\NkcBase\Controller\BaseController;
-use Nordkirche\NkcBase\Exception\ApiException;
 use Nordkirche\NkcBase\Service\ApiService;
-use TYPO3\CMS\Backend\View\PageLayoutView;
-use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
+use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\Exception;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
-/**
- * Hook to display verbose information about the plugin
- */
-class CmsLayout implements PageLayoutViewDrawItemHookInterface
-{
+class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRendererInterface {
+
     /**
      * @var Api
      */
     protected $api;
 
     /**
-     * @var ObjectManager
-     */
-    protected $objectManager;
-
-    /**
      * @var array
      */
     protected $flexformData;
 
-    /**
-     * Preprocesses the preview rendering of a content element.
-     *
-     * @param PageLayoutView $parentObject Calling parent object
-     * @param bool $drawItem Whether to draw the item using the default functionalities
-     * @param string $headerContent Header content
-     * @param string $itemContent Item content
-     * @param array $row Record row of tt_content
-     * @throws ApiException
-     * @throws Exception
-     */
-    public function preProcess(PageLayoutView &$parentObject, &$drawItem, &$headerContent, &$itemContent, array &$row)
+
+    public function renderPageModulePreviewHeader(GridColumnItem $item): string
     {
-        if ($row['list_type'] == 'nkcaddress_institution') {
-            $this->api = ApiService::get();
-
-            $this->flexformData = GeneralUtility::xml2array($row['pi_flexform']);
-
-            $drawItem = false;
-
-            $headerContent = '<h3>Institution(en) darstellen</h3>';
-
-            [$controller, $action] = explode('->', $this->getFieldFromFlexform('switchableControllerActions', 'sDEF'));
-
-            $content = '<p>Funktion: ' . ucfirst($action) . '</p>';
-
-            $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
-            if ($action == 'show') {
-                $layoutKey = $this->getFieldFromFlexform('settings.flexform.showTemplate', 'sTemplate');
-
-                $content .= '<p>Layout: ' . ($layoutKey == 'MiniVCard' ? 'Mini-Visitenkarte' : 'Visitenkarte') . '</p>';
-
-                $content .= $this->renderInstitutionSingleView();
-            } elseif (($action == 'searchForm') || ($action == 'redirect')) {
-                $content .= '';
-            } else {
-                $content .= $this->renderInstitutionListView();
-            }
-
-            $itemContent = $content;
-        } elseif ($row['list_type'] == 'nkcaddress_person') {
-            $this->api = ApiService::get();
-
-            $this->flexformData = GeneralUtility::xml2array($row['pi_flexform']);
-
-            $drawItem = false;
-
-            $headerContent = '<h3>Person(en) darstellen</h3>';
-
-            [$controller, $action] = explode('->', $this->getFieldFromFlexform('switchableControllerActions', 'sDEF'));
-
-            $content = '<p>Funktion: ' . ucfirst($action) . '</p>';
-
-            $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
-            if ($action == 'show') {
-                $layoutKey = $this->getFieldFromFlexform('settings.flexform.showTemplate', 'sTemplate');
-
-                $content .= '<p>Layout: ' . ($layoutKey == 'MiniVCard' ? 'Mini-Visitenkarte' : 'Visitenkarte') . '</p>';
-
-                $content .= $this->renderPersonSingleView();
-            } elseif (($action == 'searchForm') || ($action == 'redirect')) {
-                $content .= '';
-            } else {
-                $content .= $this->renderPersonListView();
-            }
-
-            $itemContent = $content;
-        } elseif ($row['list_type'] == 'nkcaddress_map') {
-            $this->api = ApiService::get();
-
-            $this->flexformData = GeneralUtility::xml2array($row['pi_flexform']);
-
-            $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-
-            $drawItem = false;
-
-            $headerContent = '<h3>Karte mit Institutionen / Personen darstellen</h3>';
-
-            $itemContent = $this->renderMapView();
-        }
+        $row = $item->getRecord();
+        return sprintf('<h3>%s</h3>', LocalizationUtility::translate('LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.'.$row['list_type']));
     }
+
+    public function renderPageModulePreviewContent(GridColumnItem $item): string
+    {
+        $row = $item->getRecord();
+        $this->api = ApiService::get();
+        $this->flexformData = GeneralUtility::xml2array($row['pi_flexform']);
+        $content = '';
+
+        switch ($row['list_type']) {
+            case 'nkcaddress_institution':
+                $layoutKey = $this->getFieldFromFlexform('settings.flexform.showTemplate', 'sTemplate');
+                $content .= '<p>Layout: ' . ($layoutKey == 'MiniVCard' ? 'Mini-Visitenkarte' : 'Visitenkarte') . '</p>';
+                $content .= $this->renderInstitutionSingleView();
+                break;
+            case 'nkcaddress_institutionlist':
+                $content .= $this->renderInstitutionListView();
+                break;
+            case 'nkcaddress_person':
+                $layoutKey = $this->getFieldFromFlexform('settings.flexform.showTemplate', 'sTemplate');
+                $content .= '<p>Layout: ' . ($layoutKey == 'MiniVCard' ? 'Mini-Visitenkarte' : 'Visitenkarte') . '</p>';
+                $content .= $this->renderPersonSingleView();
+                break;
+            case 'nkcaddress_personlist':
+                $content .= $this->renderPersonListView();
+                break;
+            case 'nkcaddress_map':
+                $content = $this->renderMapView();
+                break;
+            case 'nkcaddress_maplist':
+                $content = $this->renderMapView();
+                break;
+        }
+        return $content;
+    }
+
+    public function renderPageModulePreviewFooter(GridColumnItem $item): string
+    {
+        // TODO: Implement renderPageModulePreviewFooter() method.
+        return 'Powered by NAPI';
+    }
+
+    public function wrapPageModulePreview(string $previewHeader, string $previewContent, GridColumnItem $item): string
+    {
+        return $previewHeader.$previewContent;
+    }
+
 
     /**
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     private function renderMapView()
     {
@@ -149,10 +102,10 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
                 'functionType' => $this->getFieldFromFlexform('settings.flexform.functionType', 'sMarker'),
                 'availableFunction' => $this->getFieldFromFlexform('settings.flexform.availableFunction', 'sMarker'),
                 'personCollection' => $this->getFieldFromFlexform('settings.flexform.personCollection', 'sMarker'),
-                ],
+            ],
         ];
 
-        $mapController = $this->objectManager->get(MapController::class);
+        $mapController = GeneralUtility::makeInstance(MapController::class);
 
         $mapController->initializeAction();
 
@@ -178,14 +131,14 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
 
     /**
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     private function renderInstitutionListView()
     {
         $content = '';
 
         $institutionRepository = $this->api->factory(InstitutionRepository::class);
-        $baseController = $this->objectManager->get(BaseController::class);
+        $baseController = GeneralUtility::makeInstance(BaseController::class);
         $query = $this->api->factory(InstitutionQuery::class);
 
         // Set pagination parameters
@@ -257,14 +210,14 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
 
     /**
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     private function renderPersonListView()
     {
         $content = '';
 
         $personRepository = $this->api->factory(PersonRepository::class);
-        $baseController = $this->objectManager->get(BaseController::class);
+        $baseController = GeneralUtility::makeInstance(BaseController::class);
         $query = $this->api->factory(PersonQuery::class);
 
         // Set pagination parameters
@@ -273,7 +226,7 @@ class CmsLayout implements PageLayoutViewDrawItemHookInterface
         // Filter by person
         $baseController->setPersonFilter($query, $this->getFieldFromFlexform('settings.flexform.personCollection', 'sDEF'));
 
-        // Filter persons
+        // Filter by institution
         $baseController->setPersonInstitutionFilter($query, $this->getFieldFromFlexform('settings.flexform.institutionCollection', 'sDEF'));
 
         // Filter by type
