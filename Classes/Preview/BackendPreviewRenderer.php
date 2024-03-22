@@ -62,8 +62,6 @@ class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRender
                 $content .= $this->renderPersonListView();
                 break;
             case 'nkcaddress_map':
-                $content = $this->renderMapView();
-                break;
             case 'nkcaddress_maplist':
                 $content = $this->renderMapView();
                 break;
@@ -73,7 +71,6 @@ class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRender
 
     public function renderPageModulePreviewFooter(GridColumnItem $item): string
     {
-        // TODO: Implement renderPageModulePreviewFooter() method.
         return 'Powered by NAPI';
     }
 
@@ -163,7 +160,7 @@ class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRender
         $institutions = $institutionRepository->get($query);
 
         if ($institutions) {
-            $content .= '<p>Liste von Institutionen:<br /><ul>';
+            $content .= '<p>Vorschau:<br /><ul>';
 
             foreach ($institutions as $institution) {
                 $content .= '<li>';
@@ -175,7 +172,7 @@ class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRender
             $content .= '</ul></p>';
 
             if ($institutions->getPageCount() > 1) {
-                $content .= '... ' . $institutions->getRecordCount() . ' Institutionen';
+                $content .= '... und ' . $institutions->getRecordCount() - 10 . ' weitere Institutionen';
             }
         } else {
             $content .= 'Keine Treffer!';
@@ -249,7 +246,7 @@ class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRender
         $persons = $personRepository->get($query);
 
         if ($persons) {
-            $content .= '<p>Liste von Personen:<br /><ul>';
+            $content .= '<p>Vorschau:<br /><ul>';
 
             foreach ($persons as $person) {
                 $content .= '<li>';
@@ -260,7 +257,7 @@ class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRender
             $content .= '</ul></p>';
 
             if ($persons->getPageCount() > 1) {
-                $content .= '... ' . $persons->getRecordCount() . ' Personen';
+                $content .= '... und ' . $persons->getRecordCount() -10 . ' weitere Personen';
             }
         } else {
             $content .= 'Keine Treffer!';
