@@ -18,7 +18,7 @@
                 <f:comment>
                     Async loading of markers
                 </f:comment>
-                <nkg:googleMap requestUri="{requestUri}" streamUri="{streamUri}" configuration="{center: settings.flexform.center, lon: settings.flexform.longitude, lat: settings.flexform.latitude, requestId: 'tx_nkcaddress_map[requestId]', facets: facets, header: settings.flexform.header, header_layout: settings.flexform.header_layout, cssClass: 'wide', pagination: 'tx_nkcaddress_map[page]'}" />
+                <nkg:googleMap requestUri="{requestUri}" streamUri="{streamUri}" configuration="{center: settings.flexform.center, lon: settings.flexform.longitude, lat: settings.flexform.latitude, requestId: 'tx_nkcaddress_maplist[requestId]', facets: facets, header: settings.flexform.header, header_layout: settings.flexform.header_layout, cssClass: 'wide', pagination: 'tx_nkcaddress_maplist[page]'}" />
             </f:else>
         </f:if>
         <f:if condition="{settings.flexform.paginate.mode} > 1">

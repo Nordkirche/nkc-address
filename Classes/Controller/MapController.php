@@ -105,16 +105,8 @@ class MapController extends BaseController
      */
     public function listAction($currentPage = 1): ResponseInterface
     {
-        $this->createView($currentPage);
+        $this->createView($currentPage, 'maplist');
         return $this->htmlResponse();
-    }
-
-    /**
-     * initializeDataAction
-     */
-    public function initializeDataAction()
-    {
-        $this->defaultViewObjectName = JsonView::class;
     }
 
     /**
@@ -123,8 +115,6 @@ class MapController extends BaseController
      */
     public function dataAction($forceReload = 0): ResponseInterface
     {
-        $this->view->setVariablesToRender(['json']);
-
         // Get current cObj
         $cObj = $this->request->getAttribute('currentContentObject');
 
@@ -152,8 +142,7 @@ class MapController extends BaseController
             $cacheInstance->set($this->getCacheKey($cObj), $mapMarkerJson);
         }
 
-        $this->view->assignMultiple(['json' => json_decode($mapMarkerJson, true)]);
-        return $this->htmlResponse();
+        return $this->jsonResponse($mapMarkerJson);
     }
 
     /**
@@ -200,14 +189,6 @@ class MapController extends BaseController
     }
 
     /**
-     * initializePaginatedDataAction
-     */
-    public function initializePaginatedDataAction()
-    {
-        $this->defaultViewObjectName = JsonView::class;
-    }
-
-    /**
      * @param int $page
      * @param string $requestId
      * @return string
@@ -218,15 +199,11 @@ class MapController extends BaseController
             return $this->htmlResponse('[]');
         }
 
-        $result = [];
-
-        $this->view->setVariablesToRender(['json']);
-
         // Manually activation of pagination mode
         $this->settings['flexform']['paginate']['mode'] = 1;
 
         // Get current cObj
-        $cObj = $this->configurationManager->getContentObject();
+        $cObj = $this->request->getAttribute('currentContentObject');
 
         $cacheInstance = GeneralUtility::makeInstance(CacheManager::class)->getCache('tx_nkgooglemaps');
 
@@ -238,9 +215,8 @@ class MapController extends BaseController
             $result = json_decode($mapMarkerJson, true);
             $markerCounter = count($result['data']);
         }
-        if ($markerCounter > 0) {
-            $this->view->assign('json', $result);
-        } else {
+        if ($markerCounter == 0) {
+
             // Try to get paginated cache
             $mapMarkerJson = $cacheInstance->get($this->getCacheKey($cObj) . '-' . $requestId . '-' . $page);
 
@@ -259,31 +235,28 @@ class MapController extends BaseController
                 $mapMarkerJson = json_encode(['crdate' => time(), 'data' => $mapMarkers]);
 
                 $cacheInstance->set($this->getCacheKey($cObj) . '-' . $requestId . '-' . $page, $mapMarkerJson);
-
-                $this->view->assign('json', ['data' => $mapMarkers]);
             }
         }
-        return $this->htmlResponse();
+        return $this->jsonResponse($mapMarkerJson);
     }
 
     /**
      * @param $currentPage
      */
-    private function createView($currentPage = 1)
+    private function createView($currentPage = 1, $action = 'map')
     {
         list($limitExceeded, $mapItems, $recordCount) = $this->getMapItems($this->settings, false, $currentPage);
 
+        $cObj = $this->request->getAttribute('currentContentObject');
+
         if ($limitExceeded) {
             // Too many objects: async loading
-
-            $cObj = $this->configurationManager->getContentObject();
-
             if (empty($this->settings['flexform']['stream'])) {
                 // In einem Rutsch nachladen
                 $this->uriBuilder->reset()
                     ->setTargetPageUid($GLOBALS['TSFE']->id)
                     ->setTargetPageType($this->settings['ajaxTypeNum'])
-                    ->setArguments(['tx_nkcaddress_map[action]' => 'data', 'uid' => $cObj->data['uid']]);
+                    ->setArguments(['tx_nkcaddress_' . $action . '[action]' => 'data', 'uid' => $cObj->data['uid']]);
 
                 $this->view->assign('requestUri', $this->uriBuilder->build());
             } else {
@@ -291,7 +264,7 @@ class MapController extends BaseController
                 $this->uriBuilder->reset()
                     ->setTargetPageUid($GLOBALS['TSFE']->id)
                     ->setTargetPageType($this->settings['ajaxTypeNum'])
-                    ->setArguments(['tx_nkcaddress_map[action]' => 'paginatedData', 'uid' => $cObj->data['uid']]);
+                    ->setArguments(['tx_nkcaddress_' . $action . '[action]' => 'paginatedData', 'uid' => $cObj->data['uid']]);
 
                 $this->view->assign('streamUri', $this->uriBuilder->build());
             }
@@ -304,9 +277,6 @@ class MapController extends BaseController
         list($currentPage, $pageSize) = $this->getPaginationData($currentPage, $this->settings);
 
         $numPages = ceil($recordCount / $pageSize);
-
-        // Get current cObj
-        $cObj = $this->configurationManager->getContentObject();
 
         $this->view->assignMultiple([   'mapItems'      =>  $mapItems,
                                         'content'       => $cObj->data,
