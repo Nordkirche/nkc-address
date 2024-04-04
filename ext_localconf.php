@@ -212,7 +212,7 @@ call_user_func(
            }'
         );
 
-        // Cache
+        // Institution Relation Cache
         if (empty($GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['cache_institution_relation'])) {
             $GLOBALS['TYPO3_CONF_VARS']['SYS']['caching']['cacheConfigurations']['cache_institution_relation'] = [];
         }

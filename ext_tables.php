@@ -15,12 +15,6 @@ call_user_func(
 
         ExtensionUtility::registerPlugin(
             'NkcAddress',
-            'PersonSearch',
-            'Person(en): Suchergebnis'
-        );
-
-        ExtensionUtility::registerPlugin(
-            'NkcAddress',
             'PersonSearchForm',
             'Person(en): Suchformular'
         );
@@ -41,12 +35,6 @@ call_user_func(
             'NkcAddress',
             'InstitutionList',
             'Institution: Listenansicht'
-        );
-
-        ExtensionUtility::registerPlugin(
-            'NkcAddress',
-            'InstitutionSearch',
-            'Institution: Suchergebnis'
         );
 
         ExtensionUtility::registerPlugin(
@@ -78,8 +66,7 @@ call_user_func(
             'MapList',
             'Karte und Liste mit Institutionen/Personen darstellen'
         );
-
-
+        
         ExtensionManagementUtility::addStaticFile('nkc_address', 'Configuration/TypoScript', 'Nordkirche Address Client');
     }
 );

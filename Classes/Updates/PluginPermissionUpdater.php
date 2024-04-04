@@ -25,7 +25,7 @@ class PluginPermissionUpdater implements UpgradeWizardInterface
 
     public function getDescription(): string
     {
-        $description = 'This update wizard updates all permissions and allows **all** address plugins instead of the previous two plugins.';
+        $description = 'This update wizard updates all permissions for address plugins.';
         $description .= ' Count of affected groups: ' . count($this->getMigrationRecords());
         return $description;
     }
@@ -94,20 +94,20 @@ class PluginPermissionUpdater implements UpgradeWizardInterface
 
     protected function updateRow(array $row): void
     {
-        $defaultInstitution = 'tt_content:CType:nkcaddress_institutionlist,tt_content:CType:nkcaddress_institution,tt_content:CType:nkcaddress_institutionsearchform';
-        $defaultPerson = 'tt_content:CType:nkcaddress_personlist,tt_content:CType:nkcaddress_person,tt_content:CType:nkcaddress_personsearchform';
-        $defaultMap = 'tt_content:CType:nkcaddress_map,tt_content:CType:nkcaddress_maplist';
+        $defaultInstitution = 'tt_content:list_type:nkcaddress_institutionlist,tt_content:list_type:nkcaddress_institution,tt_content:list_type:nkcaddress_institutionsearchform';
+        $defaultPerson = 'tt_content:list_type:nkcaddress_personlist,tt_content:list_type:nkcaddress_person,tt_content:list_type:nkcaddress_personsearchform';
+        $defaultMap = 'tt_content:list_type:nkcaddress_map,tt_content:list_type:nkcaddress_maplist';
 
         $searchReplace = [
-            'tt_content:list_type:tx_nkcaddress_institution:ALLOW' => $defaultInstitution,
-            'tt_content:list_type:tx_nkcaddress_institution:DENY' => '',
-            'tt_content:list_type:tx_nkcaddress_institution' => $defaultInstitution,
-            'tt_content:list_type:tx_nkcaddress_person:ALLOW' => $defaultPerson,
-            'tt_content:list_type:tx_nkcaddress_person:DENY' => '',
-            'tt_content:list_type:tx_nkcaddress_person' => $defaultPerson,
-            'tt_content:list_type:tx_nkcaddress_map:ALLOW' => $defaultMap,
-            'tt_content:list_type:tx_nkcaddress_map:DENY' => '',
-            'tt_content:list_type:tx_nkcaddress_map' => $defaultMap,
+            'tt_content:list_type:nkcaddress_institution:ALLOW' => $defaultInstitution,
+            'tt_content:list_type:nkcaddress_institution:DENY' => '',
+            'tt_content:list_type:nkcaddress_institution' => $defaultInstitution,
+            'tt_content:list_type:nkcaddress_person:ALLOW' => $defaultPerson,
+            'tt_content:list_type:nkcaddress_person:DENY' => '',
+            'tt_content:list_type:nkcaddress_person' => $defaultPerson,
+            'tt_content:list_type:nkcaddress_map:ALLOW' => $defaultMap,
+            'tt_content:list_type:nkcaddress_map:DENY' => '',
+            'tt_content:list_type:nkcaddress_map' => $defaultMap,
         ];
 
         $newList = str_replace(array_keys($searchReplace), array_values($searchReplace), $row['explicit_allowdeny']);

@@ -157,15 +157,15 @@ class PluginUpdater implements UpgradeWizardInterface
                 $queryBuilder->expr()->or(
                     $queryBuilder->expr()->eq(
                         'list_type',
-                        $queryBuilder->createNamedParameter('nkaddress_institution')
+                        $queryBuilder->createNamedParameter('nkcaddress_institution')
                     ),
                     $queryBuilder->expr()->eq(
                         'list_type',
-                        $queryBuilder->createNamedParameter('nkaddress_person')
+                        $queryBuilder->createNamedParameter('nkcaddress_person')
                     ),
                     $queryBuilder->expr()->eq(
                         'list_type',
-                        $queryBuilder->createNamedParameter('nkcevent_map')
+                        $queryBuilder->createNamedParameter('nkcaddress_map')
                     )
                 )
             )
@@ -187,11 +187,11 @@ class PluginUpdater implements UpgradeWizardInterface
 
     protected function getAllowedSettingsFromFlexForm(string $listType): array
     {
-        if (!isset($GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['config']['ds']['*,' . $listType])) {
+        if (!isset($GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['config']['ds'][$listType.',list'])) {
             return [];
         }
 
-        $flexFormFile = $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['config']['ds']['*,' . $listType];
+        $flexFormFile = $GLOBALS['TCA']['tt_content']['columns']['pi_flexform']['config']['ds'][$listType.',list'];
         $flexFormContent = file_get_contents(GeneralUtility::getFileAbsFileName(substr(trim($flexFormFile), 5)));
         $flexFormData = GeneralUtility::xml2array($flexFormContent);
 
@@ -210,15 +210,14 @@ class PluginUpdater implements UpgradeWizardInterface
      * Updates list_type and pi_flexform of the given content element UID
      *
      * @param int $uid
-     * @param string $newCtype
+     * @param string $newListType
      * @param string $flexform
      */
-    protected function updateContentElement(int $uid, string $newCtype, string $flexform): void
+    protected function updateContentElement(int $uid, string $newListType, string $flexform): void
     {
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tt_content');
         $queryBuilder->update('tt_content')
-            ->set('CType', $newCtype)
-            ->set('list_type', '')
+            ->set('list_type', $newListType)
             ->set('pi_flexform', $flexform)
             ->where(
                 $queryBuilder->expr()->in(
