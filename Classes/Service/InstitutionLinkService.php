@@ -34,7 +34,6 @@ class InstitutionLinkService implements SingletonInterface
 
     /**
      * @param ConfigurationManagerInterface $cm
-     * @return void
      */
     public function injectConfigurationManager(ConfigurationManagerInterface $cm)
     {
@@ -48,7 +47,6 @@ class InstitutionLinkService implements SingletonInterface
 
     /**
      * @param InstitutionRelationService $institutionRelationService
-     * @return void
      */
     public function injectInstitutionRelationService(InstitutionRelationService $institutionRelationService): void
     {
@@ -130,5 +128,4 @@ class InstitutionLinkService implements SingletonInterface
         // if we have no root institution id, fall back to internal linking
         return true;
     }
-
 }

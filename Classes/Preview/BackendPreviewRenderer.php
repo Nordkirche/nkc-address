@@ -1,4 +1,5 @@
 <?php
+
 namespace Nordkirche\NkcAddress\Preview;
 
 use Nordkirche\Ndk\Api;
@@ -15,11 +16,10 @@ use Nordkirche\NkcBase\Controller\BaseController;
 use Nordkirche\NkcBase\Service\ApiService;
 use TYPO3\CMS\Backend\View\BackendLayout\Grid\GridColumnItem;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
-class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRendererInterface {
-
+class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRendererInterface
+{
     /**
      * @var Api
      */
@@ -30,11 +30,10 @@ class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRender
      */
     protected $flexformData;
 
-
     public function renderPageModulePreviewHeader(GridColumnItem $item): string
     {
         $row = $item->getRecord();
-        return sprintf('<h3>%s</h3>', LocalizationUtility::translate('LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.'.$row['list_type']));
+        return sprintf('<h3>%s</h3>', LocalizationUtility::translate('LLL:EXT:nkc_address/Resources/Private/Language/locallang_db.xlf:wizard.' . $row['list_type']));
     }
 
     public function renderPageModulePreviewContent(GridColumnItem $item): string
@@ -76,9 +75,8 @@ class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRender
 
     public function wrapPageModulePreview(string $previewHeader, string $previewContent, GridColumnItem $item): string
     {
-        return $previewHeader.$previewContent;
+        return $previewHeader . $previewContent;
     }
-
 
     /**
      * @return string
@@ -257,7 +255,7 @@ class BackendPreviewRenderer implements \TYPO3\CMS\Backend\Preview\PreviewRender
             $content .= '</ul></p>';
 
             if ($persons->getPageCount() > 1) {
-                $content .= '... und ' . $persons->getRecordCount() -10 . ' weitere Personen';
+                $content .= '... und ' . $persons->getRecordCount() - 10 . ' weitere Personen';
             }
         } else {
             $content .= 'Keine Treffer!';

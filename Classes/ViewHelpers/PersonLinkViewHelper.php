@@ -184,7 +184,6 @@ class PersonLinkViewHelper extends AbstractTagBasedViewHelper
 
     /**
      * @param InstitutionLinkService $institutionLinkService
-     * @return void
      */
     public function injectInstitutionLinkService(InstitutionLinkService $institutionLinkService): void
     {
@@ -193,7 +192,6 @@ class PersonLinkViewHelper extends AbstractTagBasedViewHelper
 
     /**
      * @param InstitutionRelationService $institutionRelations
-     * @return void
      */
     public function injectInstitutionRelations(InstitutionRelationService $institutionRelations): void
     {

@@ -13,11 +13,11 @@ use Nordkirche\Ndk\Domain\Repository\FunctionTypeRepository;
 use Nordkirche\Ndk\Domain\Repository\InstitutionRepository;
 use Nordkirche\Ndk\Domain\Repository\PersonRepository;
 use Nordkirche\NkcAddress\Domain\Dto\SearchRequest;
-use Nordkirche\NkcBase\Domain\Repository\CategoryRepository;
 use Nordkirche\NkcAddress\Event\ModifyAssignedListValuesForInstitutionEvent;
 use Nordkirche\NkcAddress\Event\ModifyAssignedValuesForInstitutionEvent;
 use Nordkirche\NkcAddress\Event\ModifyInstitutionQueryEvent;
 use Nordkirche\NkcBase\Controller\BaseController;
+use Nordkirche\NkcBase\Domain\Repository\CategoryRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
@@ -70,7 +70,6 @@ class InstitutionController extends BaseController
     protected $middleWareRequest;
 
     /**
-     * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException
      */
     public function initializeAction()
@@ -261,7 +260,7 @@ class InstitutionController extends BaseController
     /**
      * @return ResponseInterface
      */
-    public function redirectAction():ResponseInterface
+    public function redirectAction(): ResponseInterface
     {
         $nkci = $this->request->getParsedBody()['nkci'] ?? $this->request->getQueryParams()['nkci'] ?? null;
 
@@ -269,7 +268,7 @@ class InstitutionController extends BaseController
             $this->uriBuilder->reset()->setTargetPageUid($this->settings['flexform']['pidSingle']);
             $uri = $this->uriBuilder->uriFor('show', ['uid' => $nkci]);
         } else {
-            $uri ='/';
+            $uri = '/';
         }
         return $this->redirectToURI($uri);
     }
@@ -278,7 +277,7 @@ class InstitutionController extends BaseController
      * Returns the NAPU includes for detail view
      * @return string[]
      */
-    private function getDetailIncludes():array
+    private function getDetailIncludes(): array
     {
         return [
             Institution::RELATION_ADDRESS,
@@ -353,7 +352,6 @@ class InstitutionController extends BaseController
 
         return $this->standaloneView->render();
     }
-
 
     /**
      * Add a marker, when geo-coordinates are available
@@ -486,7 +484,6 @@ class InstitutionController extends BaseController
 
     /**
      * @param $query
-     * @return void
      */
     private function setFilter($query)
     {
@@ -647,9 +644,8 @@ class InstitutionController extends BaseController
 
     /**
      * @param ServerRequestInterface $request
-     * @return void
      */
-    public function setMiddleWareRequest(ServerRequestInterface  $request)
+    public function setMiddleWareRequest(ServerRequestInterface $request)
     {
         $this->middleWareRequest = $request;
     }

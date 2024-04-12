@@ -48,7 +48,6 @@ class PersonController extends BaseController
     protected $middleWareRequest;
 
     /**
-     * @return void
      * @throws \TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException
      */
     public function initializeAction()
@@ -148,13 +147,12 @@ class PersonController extends BaseController
         // Forward to list view
         $response = new ForwardResponse('list');
         return $response->withArguments(['searchRequest' => $searchRequest->toArray()]);
-
     }
 
     /**
      * * @return ResponseInterface
      */
-    public function redirectAction():ResponseInterface
+    public function redirectAction(): ResponseInterface
     {
         if ($nkcp = (int)(GeneralUtility::_GP('nkcp'))) {
             $this->uriBuilder->reset()->setTargetPageUid($this->settings['flexform']['pidSingle']);
@@ -171,7 +169,6 @@ class PersonController extends BaseController
      */
     public function showAction($uid = null): ResponseInterface
     {
-
         try {
             if (!empty($this->settings['flexform']['singlePerson'])) {
                 // Person is selected in flexform
@@ -229,7 +226,6 @@ class PersonController extends BaseController
 
     /**
      * @param $query
-     * @return void
      */
     private function setFilters($query)
     {
@@ -268,14 +264,13 @@ class PersonController extends BaseController
         if (!empty($this->settings['flexform']['sortOption'])) {
             $query->setSort($this->settings['flexform']['sortOption']);
         }
-
     }
 
     /**
      * Returns the NAPU includes for detail view
      * @return string[]
      */
-    private function getDetailIncludes():array
+    private function getDetailIncludes(): array
     {
         return [
             Person::RELATION_FUNCTIONS => [
@@ -329,7 +324,6 @@ class PersonController extends BaseController
         }
 
         if ($address instanceof Address) {
-
             // Check geo coordinates
             if ($address->getLatitude() && $address->getLongitude()) {
                 $marker = [
@@ -539,9 +533,8 @@ class PersonController extends BaseController
 
     /**
      * @param ServerRequestInterface $request
-     * @return void
      */
-    public function setMiddleWareRequest(ServerRequestInterface  $request)
+    public function setMiddleWareRequest(ServerRequestInterface $request)
     {
         $this->middleWareRequest = $request;
     }

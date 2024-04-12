@@ -66,7 +66,7 @@ call_user_func(
             'MapList',
             'Karte und Liste mit Institutionen/Personen darstellen'
         );
-        
+
         ExtensionManagementUtility::addStaticFile('nkc_address', 'Configuration/TypoScript', 'Nordkirche Address Client');
     }
 );

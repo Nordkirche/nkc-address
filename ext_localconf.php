@@ -3,7 +3,6 @@
 use Nordkirche\NkcAddress\Controller\InstitutionController;
 use Nordkirche\NkcAddress\Controller\MapController;
 use Nordkirche\NkcAddress\Controller\PersonController;
-use Nordkirche\NkcAddress\Hook\CmsLayout;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
@@ -222,6 +221,5 @@ call_user_func(
         // Register Upgrade wizards
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['txNkcAddressPluginUpdater'] = \Nordkirche\NkcAddress\Updates\PluginUpdater::class;
         $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['ext/install']['update']['txNkcAddressPluginPermissionUpdater'] = \Nordkirche\NkcAddress\Updates\PluginPermissionUpdater::class;
-
     }
 );

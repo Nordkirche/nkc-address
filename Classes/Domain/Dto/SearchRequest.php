@@ -100,18 +100,16 @@ class SearchRequest
 
     /**
      * @param array|null $data
-     * @return void
      */
-    public function decorate($data):void
+    public function decorate($data): void
     {
         if (is_array($data)) {
-            foreach(['search', 'category', 'city'] as $property) {
+            foreach (['search', 'category', 'city'] as $property) {
                 if (!empty($data[$property])) {
-                    $setterName = 'set'.ucfirst($property);
+                    $setterName = 'set' . ucfirst($property);
                     $this->$setterName($data[$property]);
                 }
             }
         }
     }
-
 }
