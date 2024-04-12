@@ -19,22 +19,20 @@ use Nordkirche\NkcAddress\Event\ModifyAssignedValuesForInstitutionEvent;
 use Nordkirche\NkcAddress\Event\ModifyInstitutionQueryEvent;
 use Nordkirche\NkcBase\Controller\BaseController;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
 use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use TYPO3\CMS\Core\Routing\PageArguments;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Domain\Model\Category;
 use TYPO3\CMS\Extbase\Http\ForwardResponse;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Page\PageAccessFailureReasons;
@@ -65,6 +63,11 @@ class InstitutionController extends BaseController
      * @var StandaloneView
      */
     protected $standaloneView;
+
+    /**
+     * @var ServerRequestInterface
+     */
+    protected $middleWareRequest;
 
     /**
      * @return void
@@ -346,6 +349,8 @@ class InstitutionController extends BaseController
         $this->standaloneView->assignMultiple(['institution' => $institution,
             'settings' => $this->settings]);
 
+        $this->standaloneView->setRequest($this->middleWareRequest);
+
         return $this->standaloneView->render();
     }
 
@@ -397,18 +402,6 @@ class InstitutionController extends BaseController
         parent::initializeAction();
 
         $this->institutionRepository = $this->api->factory(InstitutionRepository::class);
-        $this->configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
-
-        /** @var ContentObjectRenderer $contentObjectRenderer */
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $this->configurationManager->setContentObject($contentObjectRenderer);
-
-        if (empty($GLOBALS['TSFE'])) {
-            // We need this for f:link.email viewhelper
-            $GLOBALS['TSFE'] = $this->getTSFE();
-        }
-
-        $GLOBALS['TSFE']->cObj = $contentObjectRenderer;
 
         $this->settings = $config['plugin']['tx_nkcaddress_institution']['settings'];
 
@@ -650,6 +643,15 @@ class InstitutionController extends BaseController
         $pageArguments = GeneralUtility::makeInstance(PageArguments::class, $sites[$firstSite]->getRootPageId(), 0, []);
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
         return GeneralUtility::makeInstance(TypoScriptFrontendController::class, $context, $sites[$firstSite], $siteLanguages[0], $pageArguments, $frontendUser);
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return void
+     */
+    public function setMiddleWareRequest(ServerRequestInterface  $request)
+    {
+        $this->middleWareRequest = $request;
     }
 
     /**

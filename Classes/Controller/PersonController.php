@@ -15,6 +15,7 @@ use Nordkirche\NkcAddress\Event\ModifyAssignedListValuesForPersonEvent;
 use Nordkirche\NkcAddress\Event\ModifyAssignedValuesForPersonEvent;
 use Nordkirche\NkcBase\Controller\BaseController;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\ImmediateResponseException;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
@@ -40,6 +41,11 @@ class PersonController extends BaseController
      * @var StandaloneView
      */
     protected $standaloneView = false;
+
+    /**
+     * @var ServerRequestInterface
+     */
+    protected $middleWareRequest;
 
     /**
      * @return void
@@ -427,6 +433,8 @@ class PersonController extends BaseController
                                                     'address'       => $address,
                                                     'settings'	    => $this->settings]);
 
+        $this->standaloneView->setRequest($this->middleWareRequest);
+
         return $this->standaloneView->render();
     }
 
@@ -527,5 +535,14 @@ class PersonController extends BaseController
         }
 
         return $filter;
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return void
+     */
+    public function setMiddleWareRequest(ServerRequestInterface  $request)
+    {
+        $this->middleWareRequest = $request;
     }
 }
