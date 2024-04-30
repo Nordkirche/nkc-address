@@ -4,13 +4,17 @@
     <f:then>
         <f:if condition="{institution.address.street}">
             <f:then>
-                {institution.address.street}<br />
-                {institution.address.zipCode} {institution.address.city}
+                <p>
+                    {institution.address.street}<br />
+                    {institution.address.zipCode} {institution.address.city}
+                </p>
             </f:then>
             <f:else if="{institution.address.poBox}">
                 <f:then>
-                    Postfach {institution.address.poBox}<br />
-                    {institution.address.poBoxZipCode} {institution.address.city}
+                    <p>
+                        Postfach {institution.address.poBox}<br />
+                        {institution.address.poBoxZipCode} {institution.address.city}
+                    </p>
                 </f:then>
             </f:else>
         </f:if>

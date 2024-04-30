@@ -31,6 +31,7 @@ use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Domain\Model\Category;
 use TYPO3\CMS\Extbase\Http\ForwardResponse;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\Controller\ErrorController;
@@ -180,9 +181,9 @@ class InstitutionController extends BaseController
 
     /**
      * @param int $uid
-     * @throws ImmediateResponseException
+     * @throws ImmediateResponseException|\TYPO3\CMS\Core\Error\Http\PageNotFoundException
      */
-    public function showAction($uid = null): ResponseInterface
+    public function showAction(int $uid = 0): ResponseInterface
     {
         if (!empty($this->settings['flexform']['singleInstitution'])) {
             // Institution is selected in flexform
@@ -283,6 +284,10 @@ class InstitutionController extends BaseController
             Institution::RELATION_ADDRESS,
             Institution::RELATION_INSTITUTION_TYPE,
             Institution::RELATION_MAP_CHILDREN,
+            Institution::RELATION_CHILD_INSTITUTIONS => [
+                Institution::RELATION_ADDRESS,
+                Institution::RELATION_INSTITUTION_TYPE
+            ],
             Institution::RELATION_PARENT_INSTITUTIONS,
             Institution::RELATION_TEAMS => [
                 Team::RELATION_FUNCTIONS => [

@@ -23,21 +23,24 @@
             </f:for>
 
             <f:if condition="{person.picture}">
-
+                <figure>
                 <img alt="{person.name.formatted}" title="{person.name.formatted}" src="{n:uri.image(image: person.picture, width: '373c', height: '223c')}" />
 
                 <f:if condition="{person.picture.details.copyright}">
-                    &copy; {person.picture.details.copyright}
+                    <figcaption>&copy; {person.picture.details.copyright}</figcaption>
                 </f:if>
+                </figure>
             </f:if>
 
             <f:for each="{person.functions}" as="function" iteration="iterator">
                 <f:if condition="{iterator.index} == 0">
 
                     <f:if condition="{function.institution.logo}">
+                        <div class="logo">
                         <img src="{n:uri.image(image:function.institution.logo)}"
                              width="320"
                              alt="{function.institution.name}" title="{function.institution.name}" />
+                        </div>
                     </f:if>
 
                     <f:render partial="Person/Institution" arguments="{function: function, institution: function.institution}" />

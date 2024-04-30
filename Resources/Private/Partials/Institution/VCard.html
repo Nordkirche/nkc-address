@@ -17,11 +17,15 @@
     <h1><f:render partial="Institution/Name" arguments="{institution: institution}" /></h1>
 
     <f:if condition="{institution.picture}">
-        <img alt="{institution.name}" src="{n:uri.image(image: institution.picture, width: '768c', height: '480c')}" />
+        <div class="picture">
+            <img alt="{institution.name}" src="{n:uri.image(image: institution.picture, width: '768c', height: '480c')}" />
+        </div>
     </f:if>
 
     <f:if condition="{institution.logo}">
-        <img alt="Logo {institution.name}" src="{n:uri.image(image: institution.logo, width: '320')}"
+        <div class="logo">
+            <img alt="Logo {institution.name}" src="{n:uri.image(image: institution.logo, width: '320')}"
+        </div>
     </f:if>
 
     <f:render partial="Institution/Address" arguments="{institution: institution}" />
@@ -47,7 +51,7 @@
         <f:if condition="{events->f:count()}">
 
             <h3>Treffen Sie uns vor Ort:</h3>
-            <f:link.action pageUid="{settings.flexform.pidEventList}" controller="Event" action="list" extensionName="NkcEvent" pluginName="Main" arguments="{searchRequest: {organizer : institution.id}}" >
+            <f:link.action pageUid="{settings.flexform.pidEventList}" controller="Event" extensionName="NkcEvent" pluginName="List" action="list" arguments="{searchRequest: {organizer : institution.id}}" >
                 <strong>{events.recordCount}</strong> Veranstaltungen
             </f:link.action>
         </f:if>

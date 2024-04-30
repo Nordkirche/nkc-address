@@ -10,7 +10,9 @@
 
     <h4><f:link.action action="show" controller="Person" pageUid="{settings.flexform.pidPersonSingle}" arguments="{uid: person.id}">{person.name.formatted}</f:link.action></h4>
 
-    <p>{function.responsibilities}</p>
+    <f:if condition="{function.responsibilities}">
+        <p>{function.responsibilities}</p>
+    </f:if>
 
     <f:if condition="{function.address}">
         <f:then>
